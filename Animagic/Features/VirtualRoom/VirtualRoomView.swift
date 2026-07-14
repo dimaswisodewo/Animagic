@@ -147,6 +147,7 @@ final class RoomCoordinator: NSObject {
     private var calibrationQuaternion: simd_quatf?
     private var currentDeviceQuaternion: simd_quatf?
     private var smoothedMotionQuaternion: simd_quatf?
+    private var motionInterfaceOrientation: UIInterfaceOrientation?
     private var manualYawOffset: Float = 0
     private var lastHandledCalibrationRequest = 0
     private var moveIndicatorTime: Float = 0
@@ -803,14 +804,27 @@ final class RoomCoordinator: NSObject {
 
     private func updateCameraOrientation(deltaTime: Float) {
         guard
-            let calibrationQuaternion,
+            let interfaceOrientation = currentInterfaceOrientation(),
             let currentDeviceQuaternion
         else {
             return
         }
 
+        if motionInterfaceOrientation != interfaceOrientation {
+            motionInterfaceOrientation = interfaceOrientation
+            self.calibrationQuaternion = currentDeviceQuaternion
+            smoothedMotionQuaternion = nil
+        }
+
+        guard let calibrationQuaternion = self.calibrationQuaternion else {
+            return
+        }
+
         let relativeDeviceRotation = calibrationQuaternion.inverse * currentDeviceQuaternion
-        let targetCameraRotation = cameraSpaceRotation(from: relativeDeviceRotation)
+        let targetCameraRotation = cameraSpaceRotation(
+            from: relativeDeviceRotation,
+            interfaceOrientation: interfaceOrientation
+        )
         let cameraRotation = smoothedCameraRotation(
             target: targetCameraRotation,
             deltaTime: deltaTime
@@ -850,10 +864,43 @@ final class RoomCoordinator: NSObject {
 
     // MARK: - Math
 
-    private func cameraSpaceRotation(from deviceRotation: simd_quatf) -> simd_quatf {
-        // In portrait, the device and RealityKit camera share the same local basis:
-        // +X is right, +Y is up, and forward is -Z.
-        deviceRotation
+    private func currentInterfaceOrientation() -> UIInterfaceOrientation? {
+        guard
+            let interfaceOrientation = arView?.window?.windowScene?.interfaceOrientation,
+            interfaceOrientation != .unknown
+        else {
+            return motionInterfaceOrientation
+        }
+
+        return interfaceOrientation
+    }
+
+    private func cameraSpaceRotation(
+        from deviceRotation: simd_quatf,
+        interfaceOrientation: UIInterfaceOrientation
+    ) -> simd_quatf {
+        // Core Motion reports attitude in the device's portrait-native basis.
+        // Express that rotation in the active screen basis before applying it to
+        // the RealityKit camera, whose local +X is right, +Y is up, and -Z is forward.
+        let screenToPortraitAngle: Float
+        switch interfaceOrientation {
+        case .portrait:
+            screenToPortraitAngle = 0
+        case .portraitUpsideDown:
+            screenToPortraitAngle = .pi
+        case .landscapeLeft:
+            screenToPortraitAngle = .pi / 2
+        case .landscapeRight:
+            screenToPortraitAngle = -.pi / 2
+        default:
+            screenToPortraitAngle = 0
+        }
+
+        let screenToPortrait = simd_quatf(
+            angle: screenToPortraitAngle,
+            axis: [0, 0, 1]
+        )
+        return screenToPortrait.inverse * deviceRotation * screenToPortrait
     }
 
     private func smoothedCameraRotation(target: simd_quatf, deltaTime: Float) -> simd_quatf {
