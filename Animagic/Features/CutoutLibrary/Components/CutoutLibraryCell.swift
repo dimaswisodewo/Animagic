@@ -26,6 +26,15 @@ struct CutoutLibraryCell: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
+            if let classification = cutoutAsset.doodleClassification {
+                Label(
+                    "\(classification.label.capitalized) \(classification.confidence, format: .percent.precision(.fractionLength(0)))",
+                    systemImage: "wand.and.stars"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
             HStack {
                 NavigationLink {
                     ARObjectPlacementView(
