@@ -12,6 +12,12 @@ import UIKit
 import Vision
 
 struct VisionForegroundCutoutProcessor: CutoutProcessing {
+    private let doodleClassifier: (any DoodleClassifying)?
+
+    init(doodleClassifier: (any DoodleClassifying)? = try? AnimalSpeciesDoodleClassifier()) {
+        self.doodleClassifier = doodleClassifier
+    }
+
     func makeCutout(from imageData: Data) async throws -> CutoutAsset {
         guard let sourceImage = UIImage(data: imageData),
               let sourceCGImage = Self.downsampledCGImage(from: imageData, maxDimension: 2048) else {
@@ -41,7 +47,12 @@ struct VisionForegroundCutoutProcessor: CutoutProcessing {
             scale: 1,
             orientation: .up
         )
-        return CutoutAsset(image: cutoutImage, originalSize: sourceImage.size)
+        let classification = try? doodleClassifier?.classify(sourceCGImage)
+        return CutoutAsset(
+            image: cutoutImage,
+            originalSize: sourceImage.size,
+            doodleClassification: classification
+        )
     }
 
     private static func downsampledCGImage(from data: Data, maxDimension: CGFloat) -> CGImage? {

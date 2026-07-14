@@ -12,10 +12,20 @@ struct CutoutAsset: Identifiable {
     let id = UUID()
     let image: UIImage
     let originalSize: CGSize
+    let doodleClassification: DoodleClassification?
     let defaultPhysicalWidth: Float = 0.35
+
+    init(
+        image: UIImage,
+        originalSize: CGSize,
+        doodleClassification: DoodleClassification? = nil
+    ) {
+        self.image = image
+        self.originalSize = originalSize
+        self.doodleClassification = doodleClassification
+    }
 
     var pngData: Data? {
         image.pngData()
     }
 }
-
