@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Keep the protected branch free of direct commits. Create a topic branch and
+# open a pull request instead.
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+
+if [ "$branch" = "main" ]; then
+    echo "Direct commits to 'main' are not allowed. Create a topic branch first." >&2
+    exit 1
+fi
+
+exit 0
