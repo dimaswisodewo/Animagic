@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var appState = AppState()
+    @State private var isAnimatingGraphics = false
     
     var body: some View {
         NavigationStack(path: $appState.navigationPath) {
@@ -20,12 +21,37 @@ struct ContentView: View {
                 // Background Graphics
                 GeometryReader { geometry in
                     TopRightGraphic()
+                        .offset(x: isAnimatingGraphics ? -30 : 20)
+                        .animation(.easeInOut(duration: 3.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .offset(y: isAnimatingGraphics ? -20 : 25)
+                        .animation(.easeInOut(duration: 4.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
                         .position(x: geometry.size.width - 50, y: 50)
                     
                     BottomLeftGraphic()
+                        .offset(x: isAnimatingGraphics ? 25 : -15)
+                        .animation(.easeInOut(duration: 3.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .offset(y: isAnimatingGraphics ? 30 : -20)
+                        .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
                         .position(x: 50, y: geometry.size.height - 50)
+                        
+                    TopLeftGraphic()
+                        .offset(x: isAnimatingGraphics ? 15 : -25)
+                        .animation(.easeInOut(duration: 4.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .offset(y: isAnimatingGraphics ? -30 : 15)
+                        .animation(.easeInOut(duration: 3.3).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .position(x: 50, y: 150)
+                        
+                    BottomRightGraphic()
+                        .offset(x: isAnimatingGraphics ? -20 : 30)
+                        .animation(.easeInOut(duration: 3.5).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .offset(y: isAnimatingGraphics ? 25 : -30)
+                        .animation(.easeInOut(duration: 4.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                        .position(x: geometry.size.width - 50, y: geometry.size.height - 150)
                 }
                 .ignoresSafeArea()
+                .onAppear {
+                    isAnimatingGraphics = true
+                }
                 
                 // Main Content
                 VStack(spacing: 20) {
@@ -108,6 +134,50 @@ struct BottomLeftGraphic: View {
                     .offset(x: 60, y: 0)
             }
             .offset(x: 50, y: -50)
+        }
+    }
+}
+
+struct TopLeftGraphic: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color(red: 1.0, green: 0.44, blue: 0.0)) // Orange
+                .frame(width: 300, height: 300)
+            
+            // Geometric shapes inside orange circle
+            VStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    Circle().fill(Color.white).frame(width: 30, height: 30)
+                    Circle().fill(Color.black).frame(width: 30, height: 30)
+                }
+                HStack(spacing: 8) {
+                    Circle().fill(Color.black).frame(width: 30, height: 30)
+                    Circle().fill(Color.white).frame(width: 30, height: 30)
+                }
+            }
+            .rotationEffect(.degrees(15))
+            .offset(x: 30, y: 30)
+        }
+    }
+}
+
+struct BottomRightGraphic: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: 350, height: 350)
+                .overlay(Circle().stroke(Color.black, lineWidth: 10))
+            
+            // Geometric shapes inside
+            HStack(spacing: -10) {
+                Rectangle().fill(Color(red: 0.05, green: 0.45, blue: 0.98)).frame(width: 50, height: 100)
+                Rectangle().fill(Color(red: 1.0, green: 0.45, blue: 0.75)).frame(width: 50, height: 100)
+                Rectangle().fill(Color.black).frame(width: 50, height: 100)
+            }
+            .rotationEffect(.degrees(-25))
+            .offset(x: -40, y: -40)
         }
     }
 }
