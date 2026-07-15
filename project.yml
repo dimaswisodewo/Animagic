@@ -37,7 +37,6 @@ targets:
         type: folder
         buildPhase: resources
       - path: Animagic/Core/ML/Models/AnimalSpeciesClassifierV4.mlpackage
-        type: folder
         buildPhase: resources
       - path: Animagic/Features/VirtualRoom/Resources
         type: folder
@@ -47,7 +46,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic
         PRODUCT_NAME: "$(TARGET_NAME)"
         INFOPLIST_FILE: Animagic/Info.plist
-        GENERATE_INFOPLIST_FILE: NO
+        GENERATE_INFOPLIST_FILE: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_STYLE: Automatic
@@ -73,3 +72,32 @@ targets:
           VALIDATE_PRODUCT: YES
           DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
           MTL_ENABLE_DEBUG_INFO: NO
+    postBuildScripts:
+      - name: Prepare Nested Resources for Signing
+        basedOnDependencyAnalysis: false
+        script: |
+          APP_BUNDLE="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          MODEL_NAME="AnimalSpeciesClassifierV4.mlmodelc"
+          MODEL_SOURCE="$APP_BUNDLE/$MODEL_NAME"
+          MODEL_DESTINATION="$APP_BUNDLE/Resources/$MODEL_NAME"
+
+          if [ -d "$MODEL_SOURCE" ]; then
+            /bin/mkdir -p "$APP_BUNDLE/Resources"
+            /bin/rm -rf "$MODEL_DESTINATION"
+            /bin/mv "$MODEL_SOURCE" "$MODEL_DESTINATION"
+          fi
+
+          if [ "$CODE_SIGNING_ALLOWED" != "YES" ] || [ -z "$EXPANDED_CODE_SIGN_IDENTITY" ]; then
+            exit 0
+          fi
+
+          for COMPONENT in "$APP_BUNDLE/default.metallib" "$APP_BUNDLE/embedded.mobileprovision"; do
+            if [ -f "$COMPONENT" ]; then
+              /usr/bin/codesign \
+                --force \
+                --sign "$EXPANDED_CODE_SIGN_IDENTITY" \
+                --timestamp=none \
+                --generate-entitlement-der \
+                "$COMPONENT"
+            fi
+          done
