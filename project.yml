@@ -1,4 +1,4 @@
-name: Animagic
+name: AniMagic
 
 options:
   bundleIdPrefix: com.DirouDough
@@ -15,7 +15,6 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
-    DEVELOPMENT_TEAM: A2WQZ32XVK
     SDKROOT: iphoneos
 
 targets:

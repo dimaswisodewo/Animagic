@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate Animagic.xcodeproj from the checked-in XcodeGen specification.
+# Generate AniMagic.xcodeproj from the checked-in XcodeGen specification.
 #
 # Usage:
 #   ./fixme.sh                         Regenerate the committed Xcode project.
@@ -13,7 +13,7 @@ set -euo pipefail
 
 # Resolve paths from the script location so the command works from any directory.
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_NAME="Animagic"
+PROJECT_NAME="AniMagic"
 PROJECT_PATH="$ROOT_DIR/$PROJECT_NAME.xcodeproj"
 DEFAULT_SPEC="${XCODEGEN_SPEC:-project.yml}"
 
@@ -97,7 +97,7 @@ if [[ "$MODE" == "check" ]]; then
     # Recreate the repository's relative layout outside the repository. XcodeGen
     # embeds path-dependent project entries, so a plain temporary output directory
     # would produce a false difference even when the specification is current.
-    TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/animagic-xcodegen.XXXXXX")"
+    TEMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/AniMagic-xcodegen.XXXXXX")"
     SHADOW_SPEC="$TEMP_DIR/$(basename "$SPEC_FILE")"
     cp "$SPEC_FILE" "$SHADOW_SPEC"
     ln -s "$ROOT_DIR/Animagic" "$TEMP_DIR/Animagic"
