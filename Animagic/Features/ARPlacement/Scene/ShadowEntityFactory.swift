@@ -24,6 +24,7 @@ final class ShadowEntityFactory {
         entity.position = [0, 0.002, 0]
         entity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
         entity.components.set(OpacityComponent(opacity: 1))
+        entity.components.set(GroundingShadowComponent(castsShadow: false))
         return entity
     }
 

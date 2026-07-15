@@ -101,30 +101,34 @@ struct BackpackPageView: View {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                         // Display saved drawings
                         ForEach(filteredDrawings) { savedDrawing in
-                            VStack(spacing: 0) {
-                                if !savedDrawing.drawing.bounds.isEmpty {
-                                    Image(uiImage: savedDrawing.drawing.image(from: savedDrawing.drawing.bounds, scale: 1.0))
-                                        .resizable()
-                                        .scaledToFit()
-                                        .padding(16)
-                                } else {
-                                    Spacer()
-                                    Text("Empty Drawing")
-                                        .font(.custom("Belanosima-Regular", size: 16))
-                                        .foregroundColor(.gray)
-                                    Spacer()
+                            Button(action: {
+                                appState.navigationPath.append(NavigationRoute.handdrawnDetail(savedDrawing))
+                            }) {
+                                VStack(spacing: 0) {
+                                    if !savedDrawing.drawing.bounds.isEmpty {
+                                        Image(uiImage: savedDrawing.drawing.image(from: savedDrawing.drawing.bounds, scale: 1.0))
+                                            .resizable()
+                                            .scaledToFit()
+                                            .padding(16)
+                                    } else {
+                                        Spacer()
+                                        Text("Empty Drawing")
+                                            .font(.custom("Belanosima-Regular", size: 16))
+                                            .foregroundColor(.gray)
+                                        Spacer()
+                                    }
+                                    
+                                    Text(savedDrawing.name.isEmpty ? "Untitled" : savedDrawing.name)
+                                        .font(.custom("Belanosima-Bold", size: 20))
+                                        .foregroundColor(.black)
+                                        .padding(.bottom, 12)
                                 }
-                                
-                                Text(savedDrawing.name.isEmpty ? "Untitled" : savedDrawing.name)
-                                    .font(.custom("Belanosima-Bold", size: 20))
-                                    .foregroundColor(.black)
-                                    .padding(.bottom, 12)
+                                .frame(height: 200)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black, lineWidth: 3))
                             }
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.white)
-                            .cornerRadius(16)
-                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black, lineWidth: 3))
                         }
                     }
                     .padding(.horizontal, 24)

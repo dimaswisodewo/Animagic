@@ -6,6 +6,7 @@ enum NavigationRoute: Hashable {
     case canvas
     case arView
     case backpack
+    case handdrawnDetail(SavedDrawing)
 }
 
 struct SavedDrawing: Identifiable, Hashable {

@@ -79,7 +79,6 @@ enum CutoutDeformationMaterial {
         material.custom.texture = .init(texture)
         material.custom.value = [archetype.shaderIndex, 1, phase, faceDirection]
         material.blending = .transparent(opacity: .init(floatLiteral: 1))
-        material.opacityThreshold = 0.01
         return material
     }
 

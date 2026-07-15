@@ -58,6 +58,8 @@ struct ContentView: View {
                     ARObjectPlacementView(cutoutAssets: appState.cutoutLibrary, initialCutoutID: appState.cutoutLibrary.last?.id)
                 case .backpack:
                     BackpackPageView()
+                case .handdrawnDetail(let drawing):
+                    HanddrawnDetailView(drawing: drawing)
                 }
             }
         }
