@@ -14,7 +14,7 @@ struct CutoutSceneConfiguration {
     var maximumObjectCount: Int?
 
     static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: nil)
-    static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: 1.0 / 30.0, maximumObjectCount: 12)
+    static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: nil, maximumObjectCount: 12)
 }
 
 enum CutoutPlacementResult: Equatable {

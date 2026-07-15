@@ -56,6 +56,7 @@
 		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
 		D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */; };
 		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
+		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
 		D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */; };
 		D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4F33D5C4ECB695106958159D /* StatueRoom.usdz */; };
 		D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */; };
@@ -133,6 +134,7 @@
 		E67231FD4CC90120FA5A8816 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
 		EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
+		F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionOrientationStore.swift; sourceTree = "<group>"; };
 		F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutSceneEditor.swift; sourceTree = "<group>"; };
 		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
 		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
@@ -467,6 +469,7 @@
 				28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */,
 				F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */,
 				F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */,
+				F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */,
 				FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */,
 				DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */,
 			);
@@ -608,6 +611,7 @@
 				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
 				B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */,
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
+				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
 				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
 				5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */,
 				BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */,
