@@ -39,7 +39,8 @@ targets:
       - path: Animagic/Core/ML/Models/AnimalSpeciesClassifierV4.mlpackage
         buildPhase: resources
       - path: Animagic/Features/VirtualRoom/Resources
-        type: folder
+        excludes:
+          - AnimalSpeciesClassifierV4.mlpackage/**
         buildPhase: resources
     settings:
       base:
@@ -72,32 +73,3 @@ targets:
           VALIDATE_PRODUCT: YES
           DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
           MTL_ENABLE_DEBUG_INFO: NO
-    postBuildScripts:
-      - name: Prepare Nested Resources for Signing
-        basedOnDependencyAnalysis: false
-        script: |
-          APP_BUNDLE="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
-          MODEL_NAME="AnimalSpeciesClassifierV4.mlmodelc"
-          MODEL_SOURCE="$APP_BUNDLE/$MODEL_NAME"
-          MODEL_DESTINATION="$APP_BUNDLE/Resources/$MODEL_NAME"
-
-          if [ -d "$MODEL_SOURCE" ]; then
-            /bin/mkdir -p "$APP_BUNDLE/Resources"
-            /bin/rm -rf "$MODEL_DESTINATION"
-            /bin/mv "$MODEL_SOURCE" "$MODEL_DESTINATION"
-          fi
-
-          if [ "$CODE_SIGNING_ALLOWED" != "YES" ] || [ -z "$EXPANDED_CODE_SIGN_IDENTITY" ]; then
-            exit 0
-          fi
-
-          for COMPONENT in "$APP_BUNDLE/default.metallib" "$APP_BUNDLE/embedded.mobileprovision"; do
-            if [ -f "$COMPONENT" ]; then
-              /usr/bin/codesign \
-                --force \
-                --sign "$EXPANDED_CODE_SIGN_IDENTITY" \
-                --timestamp=none \
-                --generate-entitlement-der \
-                "$COMPONENT"
-            fi
-          done

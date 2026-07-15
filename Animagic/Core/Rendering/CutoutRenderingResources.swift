@@ -88,14 +88,10 @@ enum CutoutDeformationMaterial {
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let library = device.makeDefaultLibrary() else {
-            throw CutoutDeformationError.metalLibraryUnavailable
-        }
-
         let texture = try TextureResource(image: image, options: .init(semantic: .color))
         return try make(texture: texture, archetype: archetype, phase: phase, faceDirection: faceDirection)
     }
+
 }
 
 private enum CutoutDeformationError: Error {
