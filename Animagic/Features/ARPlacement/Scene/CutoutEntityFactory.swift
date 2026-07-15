@@ -41,7 +41,8 @@ final class CutoutEntityFactory {
     func makeEntity(
         from asset: CutoutAsset,
         archetype: AnimalArchetype,
-        objectID: UUID
+        objectID: UUID,
+        physicalWidth: Float? = nil
     ) throws -> CutoutEntityParts {
         guard let cgImage = asset.image.cgImage else {
             throw CutoutEntityFactoryError.invalidImage
@@ -49,7 +50,7 @@ final class CutoutEntityFactory {
 
         let imageSize = asset.image.size
         let aspectRatio = Float(max(imageSize.width / max(imageSize.height, 1), 0.01))
-        let width = asset.defaultPhysicalWidth
+        let width = physicalWidth ?? asset.defaultPhysicalWidth
         let height = width / aspectRatio
         let phase = Float.random(in: 0...(2 * Float.pi))
         let textures = try textures(for: asset, cgImage: cgImage)

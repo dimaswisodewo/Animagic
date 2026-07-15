@@ -18,23 +18,32 @@ enum ARPlacementStatus: Equatable {
 }
 
 final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
-    var cutoutAssets: [CutoutAsset]
-    var selectedCutoutID: CutoutAsset.ID?
-    var selectedAnimalArchetype: AnimalArchetype
-    var selectedSpawnMode: SpawnMode
+    var cutoutAssets: [CutoutAsset] {
+        get { sceneEditor.cutoutAssets }
+        set { sceneEditor.cutoutAssets = newValue }
+    }
+    var selectedCutoutID: CutoutAsset.ID? {
+        get { sceneEditor.selectedCutoutID }
+        set { sceneEditor.selectedCutoutID = newValue }
+    }
+    var selectedAnimalArchetype: AnimalArchetype {
+        get { sceneEditor.selectedAnimalArchetype }
+        set { sceneEditor.selectedAnimalArchetype = newValue }
+    }
+    var selectedSpawnMode: SpawnMode {
+        get { sceneEditor.selectedSpawnMode }
+        set { sceneEditor.selectedSpawnMode = newValue }
+    }
     private var displayLink: CADisplayLink?
     private var lastFrameTimestamp: CFTimeInterval?
-    private let entityFactory: CutoutEntityFactory
-    private let registry: SceneObjectRegistry
-    private let interactionManager: ObjectInteractionManager
-    private var interactionAdapter: ARViewInteractionAdapter?
+    private let sceneEditor: CutoutSceneEditor
     var handledDeleteRequestID: UUID?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? {
         didSet {
-            interactionManager.onSelectionChanged = onSelectionChanged
+            sceneEditor.onSelectionChanged = onSelectionChanged
         }
     }
 
@@ -47,18 +56,18 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
     ) {
-        let registry = SceneObjectRegistry()
-        self.cutoutAssets = cutoutAssets
-        self.selectedCutoutID = selectedCutoutID
-        self.selectedAnimalArchetype = selectedAnimalArchetype
-        self.selectedSpawnMode = selectedSpawnMode
-        self.entityFactory = entityFactory
-        self.registry = registry
-        interactionManager = ObjectInteractionManager(registry: registry)
+        sceneEditor = CutoutSceneEditor(
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedSpawnMode: selectedSpawnMode,
+            entityFactory: entityFactory,
+            onSelectionChanged: onSelectionChanged
+        )
         self.onSelectionChanged = onSelectionChanged
         self.onPlacementStatusChanged = onPlacementStatusChanged
         super.init()
-        interactionManager.onSelectionChanged = onSelectionChanged
+        sceneEditor.onSelectionChanged = onSelectionChanged
     }
 
     func runSession(on arView: ARView) {
@@ -76,8 +85,8 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         )
         arView.renderOptions.insert(.disableGroundingShadows)
         arView.renderOptions.insert(.disableDepthOfField)
-        let adapter = ARViewInteractionAdapter(
-            manager: interactionManager,
+        sceneEditor.attachInteraction(
+            to: arView,
             surfaceProjector: ARSurfaceProjector()
         ) { [weak self, weak arView] point in
             guard let self, let arView else {
@@ -85,8 +94,6 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
             }
             self.handleEmptyTap(at: point, in: arView)
         }
-        adapter.attach(to: arView)
-        interactionAdapter = adapter
         startAnimationLoop(in: arView)
         updateStatus(.searching)
     }
@@ -132,7 +139,18 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
             return
         }
 
-        placeCutout(in: arView, at: result.worldTransform)
+        let placed = sceneEditor.placeOnPlane(
+            at: result.worldTransform.translation,
+            normal: simd_normalize([
+                result.worldTransform.columns.1.x,
+                result.worldTransform.columns.1.y,
+                result.worldTransform.columns.1.z
+            ]),
+            cameraTransform: arView.session.currentFrame?.camera.transform
+        )
+        if case .placed = placed {
+            updateStatus(.placed)
+        }
     }
 
     private func raycast(
@@ -148,116 +166,11 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         .first
     }
 
-    private func placeCutout(in arView: ARView, at transform: simd_float4x4) {
-        let objectID = UUID()
-        guard let cutoutAsset = selectedCutoutAsset,
-              let cutout = try? entityFactory.makeEntity(
-                  from: cutoutAsset,
-                  archetype: selectedAnimalArchetype,
-                  objectID: objectID
-              ) else {
-            return
-        }
-
-        // Keep the motion stage world-up even when the raycast hits a rotated
-        // or vertical surface. The detected normal is retained for interaction.
-        var stageTransform = matrix_identity_float4x4
-        stageTransform.columns.3 = transform.columns.3
-        let anchor = AnchorEntity(world: stageTransform)
-        anchor.addChild(cutout.root)
-        arView.scene.addAnchor(anchor)
-        let cameraTransform = arView.session.currentFrame?.camera.transform
-        let spawnOrientation = makeSpawnOrientation(
-            cameraTransform: cameraTransform,
-            anchorTransform: stageTransform
-        )
-        registry.register(
-            PlacedCutout(
-                id: objectID,
-                anchor: anchor,
-                parts: cutout,
-                archetype: selectedAnimalArchetype,
-                spawnMode: .plane,
-                initialYaw: spawnOrientation.yaw,
-                initialRoll: spawnOrientation.roll,
-                supportSurfaceNormal: simd_normalize([
-                    transform.columns.1.x,
-                    transform.columns.1.y,
-                    transform.columns.1.z
-                ])
-            )
-        )
-        updateStatus(.placed)
-    }
-
     private func placeRoamingCutout(in arView: ARView) {
-        let objectID = UUID()
-        guard let cutoutAsset = selectedCutoutAsset,
-              let cutout = try? entityFactory.makeEntity(
-                  from: cutoutAsset,
-                  archetype: selectedAnimalArchetype,
-                  objectID: objectID
-              ),
-              let cameraTransform = arView.session.currentFrame?.camera.transform else {
+        guard let cameraTransform = arView.session.currentFrame?.camera.transform else {
             return
         }
-
-        var spawnTransform = matrix_identity_float4x4
-        let forward = -cameraTransform.forward
-        let right = cameraTransform.right
-        let up = cameraTransform.up
-        let spawnPosition = cameraTransform.translation
-            + (forward * 1.05)
-            + (right * Float.random(in: -0.28...0.28))
-            + (up * Float.random(in: -0.08...0.18))
-        spawnTransform.columns.3 = [spawnPosition.x, spawnPosition.y, spawnPosition.z, 1]
-
-        let anchor = AnchorEntity(world: spawnTransform)
-        anchor.addChild(cutout.root)
-        arView.scene.addAnchor(anchor)
-        let spawnOrientation = makeSpawnOrientation(
-            cameraTransform: cameraTransform,
-            anchorTransform: spawnTransform
-        )
-        registry.register(
-            PlacedCutout(
-                id: objectID,
-                anchor: anchor,
-                parts: cutout,
-                archetype: selectedAnimalArchetype,
-                spawnMode: .cameraRoam,
-                initialYaw: spawnOrientation.yaw,
-                initialRoll: spawnOrientation.roll,
-                supportSurfaceNormal: [0, 1, 0]
-            )
-        )
-    }
-
-    private var selectedCutoutAsset: CutoutAsset? {
-        if let selectedCutoutID,
-           let selectedAsset = cutoutAssets.first(where: { $0.id == selectedCutoutID }) {
-            return selectedAsset
-        }
-
-        return cutoutAssets.first
-    }
-
-    private func makeSpawnOrientation(
-        cameraTransform: simd_float4x4?,
-        anchorTransform: simd_float4x4
-    ) -> (yaw: Float, roll: Float) {
-        let cameraFacingYaw: Float
-        if let cameraTransform {
-            let worldDirection = cameraTransform.translation - anchorTransform.translation
-            let localDirection = anchorTransform.inverse * SIMD4<Float>(worldDirection, 0)
-            cameraFacingYaw = atan2(localDirection.x, localDirection.z)
-        } else {
-            cameraFacingYaw = 0
-        }
-        return (
-            yaw: cameraFacingYaw + Float.random(in: (-.pi / 30)...(.pi / 30)),
-            roll: Float.random(in: (-.pi / 45)...(.pi / 45))
-        )
+        _ = sceneEditor.placeRoaming(cameraTransform: cameraTransform)
     }
 
     private func startAnimationLoop(in arView: ARView) {
@@ -271,9 +184,7 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     }
 
     func stopAnimationLoop() {
-        interactionAdapter?.detach()
-        interactionAdapter = nil
-        interactionManager.clearSelection()
+        sceneEditor.detachInteraction()
         displayLink?.invalidate()
         displayLink = nil
         lastFrameTimestamp = nil
@@ -287,8 +198,7 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     }
 
     private func updatePlacedObjects(deltaTime: Float) {
-        guard !registry.isEmpty else { return }
-        registry.forEach { $0.update(deltaTime: deltaTime) }
+        sceneEditor.update(deltaTime: deltaTime)
     }
 
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
@@ -305,15 +215,15 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     }
 
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        interactionManager.setSelectedAnimalArchetype(archetype)
+        sceneEditor.setSelectedObjectAnimalArchetype(archetype)
     }
 
     var placedObjectSelection: PlacedObjectSelection? {
-        interactionManager.selection
+        sceneEditor.placedObjectSelection
     }
 
     func deleteSelectedObject() {
-        interactionManager.deleteSelected()
+        sceneEditor.deleteSelectedObject()
     }
 }
 
