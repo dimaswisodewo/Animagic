@@ -12,9 +12,10 @@ struct CutoutSceneConfiguration {
     var physicalWidthOverride: Float?
     var simulationInterval: Float?
     var maximumObjectCount: Int?
+    var showsShadow: Bool
 
-    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: nil)
-    static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: nil, maximumObjectCount: 12)
+    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: nil, showsShadow: false)
+    static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: nil, maximumObjectCount: 12, showsShadow: false)
 }
 
 enum CutoutPlacementResult: Equatable {
@@ -180,7 +181,8 @@ final class CutoutSceneEditor: SceneEditing {
                   from: cutoutAsset,
                   archetype: selectedAnimalArchetype,
                   objectID: objectID,
-                  physicalWidth: configuration.physicalWidthOverride
+                  physicalWidth: configuration.physicalWidthOverride,
+                  showsShadow: configuration.showsShadow
               ) else {
             return .creationFailed
         }
