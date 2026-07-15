@@ -11,16 +11,21 @@ import Vision
 struct DoodleClassification: Equatable {
     let label: String
     let confidence: Float
+
+    nonisolated init(label: String, confidence: Float) {
+        self.label = label
+        self.confidence = confidence
+    }
 }
 
 protocol DoodleClassifying {
-    func classify(_ image: CGImage) throws -> DoodleClassification
+    nonisolated func classify(_ image: CGImage) throws -> DoodleClassification
 }
 
 struct AnimalSpeciesDoodleClassifier: DoodleClassifying {
-    private let visionModel: VNCoreMLModel
+    nonisolated(unsafe) private let visionModel: VNCoreMLModel
 
-    init(bundle: Bundle = .main) throws {
+    nonisolated init(bundle: Bundle = .main) throws {
         guard let modelURL = bundle.url(
             forResource: "AnimalSpeciesClassifierV4",
             withExtension: "mlmodelc"
@@ -33,7 +38,7 @@ struct AnimalSpeciesDoodleClassifier: DoodleClassifying {
         visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL, configuration: configuration))
     }
 
-    func classify(_ image: CGImage) throws -> DoodleClassification {
+    nonisolated func classify(_ image: CGImage) throws -> DoodleClassification {
         let request = VNCoreMLRequest(model: visionModel)
         request.imageCropAndScaleOption = .scaleFit
 
@@ -51,7 +56,7 @@ struct AnimalSpeciesDoodleClassifier: DoodleClassifying {
         )
     }
 
-    private static func preprocess(_ image: CGImage) throws -> CGImage {
+    nonisolated private static func preprocess(_ image: CGImage) throws -> CGImage {
         let canvasSize = CGSize(width: 64, height: 64)
         let renderer = UIGraphicsImageRenderer(size: canvasSize)
         let normalizedImage = renderer.image { context in
@@ -104,13 +109,13 @@ enum DoodleClassificationError: LocalizedError {
 }
 
 struct DoodleClassificationService {
-    private let classifier: any DoodleClassifying
+    nonisolated(unsafe) private let classifier: any DoodleClassifying
 
-    init(classifier: (any DoodleClassifying)? = nil) throws {
+    nonisolated init(classifier: (any DoodleClassifying)? = nil) throws {
         self.classifier = try classifier ?? AnimalSpeciesDoodleClassifier()
     }
 
-    func classify(_ image: UIImage) -> Result<DoodleClassification, Error> {
+    nonisolated func classify(_ image: UIImage) -> Result<DoodleClassification, Error> {
         guard let cgImage = image.cgImage else {
             return .failure(DoodleClassificationError.invalidImage)
         }
