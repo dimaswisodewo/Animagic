@@ -27,8 +27,19 @@ void cutoutGeometryModifier(realitykit::geometry_parameters params)
     float archetype = floor(configuration.x + 0.001);
     float behavior = round(fract(configuration.x) * 100.0);
     float activity = configuration.y;
-    float phase = configuration.z;
+    float phaseOffset = configuration.z;
     float faceDirection = configuration.w;
+    float gaitFrequency = archetype < 0.5 ? 3.8 :
+        archetype < 1.5 ? 5.6 :
+        archetype < 2.5 ? 8.2 :
+        archetype < 3.5 ? 3.8 :
+        archetype < 4.5 ? 2.0 :
+        archetype < 5.5 ? 2.7 :
+        archetype < 6.5 ? 3.2 : 6.5;
+    float cadence = behavior < 0.5 ? 1.0 :
+        behavior < 1.5 ? 1.75 :
+        behavior < 2.5 ? 0.55 : 0.18;
+    float phase = phaseOffset + params.uniforms().time() * gaitFrequency * cadence;
 
     float2 sourceUV = geometry.uv0();
     float2 uv = float2(faceDirection < 0.0 ? 1.0 - sourceUV.x : sourceUV.x, sourceUV.y);

@@ -10,7 +10,7 @@ import RealityKit
 import UIKit
 
 enum DenseCutoutMesh {
-    static let subdivisions = 32
+    static let subdivisions = 20
 
     static func generate(width: Float, height: Float) throws -> MeshResource {
         let columns = subdivisions + 1

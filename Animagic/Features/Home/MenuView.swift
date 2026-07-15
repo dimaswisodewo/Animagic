@@ -35,7 +35,7 @@ struct MenuView: View {
                     Button {
                         router.push(.virtualRoom)
                     } label: {
-                        Label("RealityKit View", systemImage: "cube.transparent")
+                        Label("Virtual Room", systemImage: "cube.transparent")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)

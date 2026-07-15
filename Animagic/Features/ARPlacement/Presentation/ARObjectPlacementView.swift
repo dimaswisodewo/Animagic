@@ -119,7 +119,7 @@ struct ARObjectPlacementView: View {
     }
 }
 
-private struct DoodleCorrectionMenu: View {
+struct DoodleCorrectionMenu: View {
     let asset: CutoutAsset
     let onOverride: (String?) -> Void
 

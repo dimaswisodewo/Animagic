@@ -12,28 +12,274 @@ import SwiftUI
 import UIKit
 
 struct VirtualRoomView: View {
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var calibrationRequest = 0
+    @State private var interactionMode = VirtualRoomInteractionMode.explore
+    @State private var selectedSkybox = VirtualRoomSkybox.citrusOrchard
+    @State private var skyboxLoadState = SkyboxLoadState.loading
+    @State private var selectedCutoutID: CutoutAsset.ID?
+    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedSpawnMode = SpawnMode.plane
+    @State private var placedObjectSelection: PlacedObjectSelection?
+    @State private var deleteRequestID: UUID?
+    @State private var placementMessage: String?
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            RealityRoomView(calibrationRequest: calibrationRequest)
+        ZStack {
+            RealityRoomView(
+                calibrationRequest: calibrationRequest,
+                interactionMode: interactionMode,
+                selectedSkybox: selectedSkybox,
+                cutoutAssets: artworkStore.cutoutLibrary,
+                selectedCutoutID: selectedCutoutID,
+                spawnAnimalArchetype: selectedAnimalArchetype,
+                selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
+                selectedSpawnMode: selectedSpawnMode,
+                placedObjectSelection: $placedObjectSelection,
+                skyboxLoadState: $skyboxLoadState,
+                placementMessage: $placementMessage,
+                deleteRequestID: deleteRequestID
+            )
                 .ignoresSafeArea()
 
             CinematicOverlay()
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            Button {
-                calibrationRequest += 1
-            } label: {
-                Image(systemName: "scope")
-                    .font(.system(size: 18, weight: .semibold))
-                    .frame(width: 44, height: 44)
+            VStack(spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
+                    Picker("Interaction mode", selection: $interactionMode) {
+                        ForEach(VirtualRoomInteractionMode.allCases) { mode in
+                            Label(mode.title, systemImage: mode.systemImageName).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 280)
+
+                    Spacer()
+
+                    skyboxMenu
+                    calibrationButton
+                }
+
+                if let skyboxErrorMessage {
+                    Text(skyboxErrorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(.red.opacity(0.82))
+                        .clipShape(Capsule())
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+
+                Spacer()
+
+                if interactionMode == .edit {
+                    editControls
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .accessibilityLabel("Calibrate")
             .padding()
         }
+        .onAppear {
+            synchronizeCutoutSelection()
+        }
+        .onChange(of: artworkStore.cutoutLibrary.map(\.id)) { _, _ in
+            synchronizeCutoutSelection()
+        }
+        .onChange(of: selectedCutoutID) { _, selectedID in
+            guard placedObjectSelection == nil,
+                  let suggested = suggestedArchetype(
+                      for: artworkStore.cutoutLibrary.first(where: { $0.id == selectedID })
+                  ) else {
+                return
+            }
+            selectedAnimalArchetype = suggested
+        }
+        .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
+            guard placedObjectSelection == nil,
+                  let suggested = suggestedArchetype(for: selectedCutoutAsset) else {
+                return
+            }
+            selectedAnimalArchetype = suggested
+        }
+        .navigationTitle("Virtual Room")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var calibrationButton: some View {
+        Button {
+            calibrationRequest += 1
+        } label: {
+            Image(systemName: "scope")
+                .font(.system(size: 18, weight: .semibold))
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.borderedProminent)
+        .accessibilityLabel("Calibrate")
+    }
+
+    private var skyboxErrorMessage: String? {
+        if case .failed(let message) = skyboxLoadState {
+            return message
+        }
+        return nil
+    }
+
+    private var skyboxMenu: some View {
+        Menu {
+            Picker("Skybox", selection: $selectedSkybox) {
+                ForEach(VirtualRoomSkybox.allCases) { skybox in
+                    Text(skybox.title).tag(skybox)
+                }
+            }
+        } label: {
+            HStack(spacing: 8) {
+                if skyboxLoadState == .loading {
+                    ProgressView()
+                } else {
+                    Image(systemName: skyboxLoadState.isFailure ? "exclamationmark.triangle" : "globe")
+                }
+                Text(selectedSkybox.title)
+            }
+            .frame(minHeight: 44)
+        }
+        .buttonStyle(.borderedProminent)
+        .accessibilityLabel("Choose skybox")
+    }
+
+    @ViewBuilder
+    private var editControls: some View {
+        VStack(spacing: 12) {
+            VirtualRoomInstructionBanner(
+                spawnMode: selectedSpawnMode,
+                hasCutouts: !artworkStore.cutoutLibrary.isEmpty,
+                placementMessage: placementMessage
+            )
+            SpawnModePicker(selection: $selectedSpawnMode)
+            if artworkStore.cutoutLibrary.isEmpty {
+                Text("Create a cutout in the library before placing a doodle.")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                CutoutPicker(assets: artworkStore.cutoutLibrary, selection: $selectedCutoutID)
+                if let selectedCutoutAsset {
+                    DoodleCorrectionMenu(asset: selectedCutoutAsset) { label in
+                        artworkStore.updateCutoutOverride(id: selectedCutoutAsset.id, label: label)
+                    }
+                }
+                AnimalArchetypePicker(selection: archetypeSelection)
+                if placedObjectSelection != nil {
+                    SelectedObjectToolbar {
+                        deleteRequestID = UUID()
+                    }
+                }
+            }
+        }
+    }
+
+    private var selectedCutoutAsset: CutoutAsset? {
+        if let selectedCutoutID {
+            return artworkStore.cutoutLibrary.first(where: { $0.id == selectedCutoutID })
+        }
+        return artworkStore.cutoutLibrary.first
+    }
+
+    private var archetypeSelection: Binding<AnimalArchetype> {
+        Binding(
+            get: { placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype },
+            set: { archetype in
+                if let selection = placedObjectSelection {
+                    placedObjectSelection = PlacedObjectSelection(
+                        objectID: selection.objectID,
+                        animalArchetype: archetype
+                    )
+                } else {
+                    selectedAnimalArchetype = archetype
+                }
+            }
+        )
+    }
+
+    private func synchronizeCutoutSelection() {
+        if let selectedCutoutID,
+           artworkStore.cutoutLibrary.contains(where: { $0.id == selectedCutoutID }) {
+            return
+        }
+        selectedCutoutID = artworkStore.cutoutLibrary.first?.id
+        if let suggested = suggestedArchetype(for: artworkStore.cutoutLibrary.first) {
+            selectedAnimalArchetype = suggested
+        }
+    }
+
+    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
+        guard let asset, let label = asset.resolvedDoodleLabel else {
+            return nil
+        }
+        return AnimalArchetype(
+            doodleLabel: label,
+            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
+        )
+    }
+}
+
+enum VirtualRoomInteractionMode: String, CaseIterable, Identifiable {
+    case explore
+    case edit
+
+    var id: String { rawValue }
+    var title: String { rawValue.capitalized }
+    var systemImageName: String { self == .explore ? "figure.walk" : "wand.and.stars" }
+}
+
+enum VirtualRoomSkybox: String, CaseIterable, Identifiable {
+    case citrusOrchard = "CitrusOrchard"
+    case land = "Land"
+    case underwater = "Underwater"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .citrusOrchard: "Citrus Orchard"
+        case .land: "Land"
+        case .underwater: "Underwater"
+        }
+    }
+}
+
+enum SkyboxLoadState: Equatable {
+    case loading
+    case loaded(VirtualRoomSkybox)
+    case failed(String)
+
+    var isFailure: Bool {
+        if case .failed = self { return true }
+        return false
+    }
+}
+
+private struct VirtualRoomInstructionBanner: View {
+    let spawnMode: SpawnMode
+    let hasCutouts: Bool
+    let placementMessage: String?
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Label("Edit Room", systemImage: "wand.and.stars")
+                .font(.headline)
+            Text(placementMessage ?? (hasCutouts ? spawnMode.instruction : "Your cutout library is empty."))
+                .font(.subheadline)
+        }
+        .multilineTextAlignment(.center)
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
@@ -77,9 +323,28 @@ struct CinematicOverlay: View {
 
 struct RealityRoomView: UIViewRepresentable {
     let calibrationRequest: Int
+    let interactionMode: VirtualRoomInteractionMode
+    let selectedSkybox: VirtualRoomSkybox
+    let cutoutAssets: [CutoutAsset]
+    let selectedCutoutID: CutoutAsset.ID?
+    let spawnAnimalArchetype: AnimalArchetype
+    let selectedObjectAnimalArchetype: AnimalArchetype?
+    let selectedSpawnMode: SpawnMode
+    @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var skyboxLoadState: SkyboxLoadState
+    @Binding var placementMessage: String?
+    let deleteRequestID: UUID?
 
     func makeCoordinator() -> RoomCoordinator {
-        RoomCoordinator()
+        RoomCoordinator(
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedSpawnMode: selectedSpawnMode,
+            onSelectionChanged: updateSelection,
+            onSkyboxLoadStateChanged: updateSkyboxLoadState,
+            onPlacementMessageChanged: updatePlacementMessage
+        )
     }
 
     func makeUIView(context: Context) -> ARView {
@@ -88,10 +353,45 @@ struct RealityRoomView: UIViewRepresentable {
 
     func updateUIView(_ uiView: ARView, context: Context) {
         context.coordinator.handleCalibrationRequest(calibrationRequest)
+        context.coordinator.update(
+            interactionMode: interactionMode,
+            skybox: selectedSkybox,
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedObjectAnimalArchetype: selectedObjectAnimalArchetype,
+            selectedSpawnMode: selectedSpawnMode,
+            deleteRequestID: deleteRequestID,
+            onSelectionChanged: updateSelection,
+            onSkyboxLoadStateChanged: updateSkyboxLoadState,
+            onPlacementMessageChanged: updatePlacementMessage
+        )
     }
 
     static func dismantleUIView(_ uiView: ARView, coordinator: RoomCoordinator) {
         coordinator.stop()
+    }
+
+    private func updateSelection(_ selection: PlacedObjectSelection?) {
+        Task { @MainActor in
+            if placedObjectSelection != selection {
+                placedObjectSelection = selection
+            }
+        }
+    }
+
+    private func updateSkyboxLoadState(_ state: SkyboxLoadState) {
+        Task { @MainActor in
+            if skyboxLoadState != state {
+                skyboxLoadState = state
+            }
+        }
+    }
+
+    private func updatePlacementMessage(_ message: String?) {
+        Task { @MainActor in
+            placementMessage = message
+        }
     }
 }
 
@@ -108,7 +408,6 @@ final class RoomCoordinator: NSObject {
         static let motionUpdateInterval = 1.0 / 60.0
         static let movementPaddingFromWall: Float = 0.45
         static let panYawSensitivity: Float = 0.006
-        static let skyboxResourceName = "CitrusOrchard"
         static let moveIndicatorRadius: Float = 0.22
         static let moveIndicatorThickness: Float = 0.012
         static let moveIndicatorHover: Float = 0.008
@@ -138,6 +437,7 @@ final class RoomCoordinator: NSObject {
     private let cameraEntity = Entity()
     private let moveIndicator = Entity()
     private let ambienceEntity = Entity()
+    private let cutoutEditor: CutoutSceneEditor
 
     private weak var arView: ARView?
     private var updateSubscription: (any Cancellable)?
@@ -153,6 +453,36 @@ final class RoomCoordinator: NSObject {
     private var moveIndicatorTime: Float = 0
     private var ambiencePlaybackController: AudioPlaybackController?
     private weak var heldEntity: ModelEntity?
+    private weak var roomTapGesture: UITapGestureRecognizer?
+    private weak var roomPanGesture: UIPanGestureRecognizer?
+    private var interactionMode = VirtualRoomInteractionMode.explore
+    private var selectedSkybox = VirtualRoomSkybox.citrusOrchard
+    private var skyboxTasks: [VirtualRoomSkybox: Task<EnvironmentResource, Error>] = [:]
+    private var appliedSkybox: VirtualRoomSkybox?
+    private var handledDeleteRequestID: UUID?
+    private var onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)?
+    private var onPlacementMessageChanged: ((String?) -> Void)?
+
+    init(
+        cutoutAssets: [CutoutAsset],
+        selectedCutoutID: CutoutAsset.ID?,
+        selectedAnimalArchetype: AnimalArchetype,
+        selectedSpawnMode: SpawnMode,
+        onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
+        onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)? = nil,
+        onPlacementMessageChanged: ((String?) -> Void)? = nil
+    ) {
+        self.onSkyboxLoadStateChanged = onSkyboxLoadStateChanged
+        self.onPlacementMessageChanged = onPlacementMessageChanged
+        cutoutEditor = CutoutSceneEditor(
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedSpawnMode: selectedSpawnMode,
+            configuration: .virtualRoom,
+            onSelectionChanged: onSelectionChanged
+        )
+    }
 
     func makeView() -> ARView {
         let arView = ARView(
@@ -178,6 +508,9 @@ final class RoomCoordinator: NSObject {
         ambiencePlaybackController?.stop()
         updateSubscription?.cancel()
         updateSubscription = nil
+        cutoutEditor.detachInteraction()
+        skyboxTasks.values.forEach { $0.cancel() }
+        skyboxTasks.removeAll()
     }
 
     func handleCalibrationRequest(_ request: Int) {
@@ -189,18 +522,88 @@ final class RoomCoordinator: NSObject {
         calibrateCamera()
     }
 
+    func update(
+        interactionMode: VirtualRoomInteractionMode,
+        skybox: VirtualRoomSkybox,
+        cutoutAssets: [CutoutAsset],
+        selectedCutoutID: CutoutAsset.ID?,
+        selectedAnimalArchetype: AnimalArchetype,
+        selectedObjectAnimalArchetype: AnimalArchetype?,
+        selectedSpawnMode: SpawnMode,
+        deleteRequestID: UUID?,
+        onSelectionChanged: ((PlacedObjectSelection?) -> Void)?,
+        onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)?,
+        onPlacementMessageChanged: ((String?) -> Void)?
+    ) {
+        cutoutEditor.cutoutAssets = cutoutAssets
+        cutoutEditor.selectedCutoutID = selectedCutoutID
+        cutoutEditor.selectedAnimalArchetype = selectedAnimalArchetype
+        cutoutEditor.selectedSpawnMode = selectedSpawnMode
+        cutoutEditor.onSelectionChanged = onSelectionChanged
+        self.onSkyboxLoadStateChanged = onSkyboxLoadStateChanged
+        self.onPlacementMessageChanged = onPlacementMessageChanged
+
+        if self.interactionMode != interactionMode {
+            setInteractionMode(interactionMode)
+        }
+        if selectedSkybox != skybox || appliedSkybox == nil {
+            applySkybox(skybox)
+        }
+        if let selectedObjectAnimalArchetype,
+           cutoutEditor.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
+            cutoutEditor.setSelectedObjectAnimalArchetype(selectedObjectAnimalArchetype)
+        }
+        if let deleteRequestID,
+           handledDeleteRequestID != deleteRequestID {
+            handledDeleteRequestID = deleteRequestID
+            cutoutEditor.deleteSelectedObject()
+            onPlacementMessageChanged?(nil)
+        }
+    }
+
     private func configureSceneBackground(on arView: ARView) {
         arView.environment.background = .color(UIColor(red: 0.03, green: 0.035, blue: 0.045, alpha: 1.0))
+        VirtualRoomSkybox.allCases.forEach { _ = skyboxTask(for: $0) }
+        applySkybox(selectedSkybox)
+    }
 
-        Task { @MainActor in
+    private func skyboxTask(
+        for skybox: VirtualRoomSkybox
+    ) -> Task<EnvironmentResource, Error> {
+        if let task = skyboxTasks[skybox] {
+            return task
+        }
+        let task = Task {
+            try await EnvironmentResource(named: skybox.rawValue, in: .main)
+        }
+        skyboxTasks[skybox] = task
+        return task
+    }
+
+    private func applySkybox(_ skybox: VirtualRoomSkybox) {
+        selectedSkybox = skybox
+        guard appliedSkybox != skybox else {
+            onSkyboxLoadStateChanged?(.loaded(skybox))
+            return
+        }
+
+        onSkyboxLoadStateChanged?(.loading)
+        let task = skyboxTask(for: skybox)
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             do {
-                let skybox = try await EnvironmentResource(
-                    named: Constants.skyboxResourceName,
-                    in: .main
-                )
-                arView.environment.background = .skybox(skybox)
+                let resource = try await task.value
+                guard self.selectedSkybox == skybox else { return }
+                self.arView?.environment.background = .skybox(resource)
+                self.appliedSkybox = skybox
+                self.onSkyboxLoadStateChanged?(.loaded(skybox))
+            } catch is CancellationError {
+                return
             } catch {
-                arView.environment.background = .color(UIColor(red: 0.03, green: 0.035, blue: 0.045, alpha: 1.0))
+                guard self.selectedSkybox == skybox else { return }
+                self.onSkyboxLoadStateChanged?(
+                    .failed("Unable to load \(skybox.title).")
+                )
             }
         }
     }
@@ -719,6 +1122,80 @@ final class RoomCoordinator: NSObject {
         tapGesture.require(toFail: panGesture)
         arView.addGestureRecognizer(tapGesture)
         arView.addGestureRecognizer(panGesture)
+        roomTapGesture = tapGesture
+        roomPanGesture = panGesture
+    }
+
+    private func setInteractionMode(_ mode: VirtualRoomInteractionMode) {
+        guard let arView else {
+            interactionMode = mode
+            return
+        }
+
+        interactionMode = mode
+        let isExploring = mode == .explore
+        roomTapGesture?.isEnabled = isExploring
+        roomPanGesture?.isEnabled = isExploring
+
+        if isExploring {
+            cutoutEditor.detachInteraction()
+        } else {
+            releaseHeldEntityIfNeeded()
+            let projector = NonARPlaneProjector(
+                planeTransform: floorPlaneTransform,
+                horizontalBounds: -Constants.movementLimit...Constants.movementLimit
+            )
+            cutoutEditor.attachInteraction(
+                to: arView,
+                surfaceProjector: projector
+            ) { [weak self, weak arView] point in
+                guard let self, let arView else { return }
+                self.handleEditTap(at: point, in: arView, projector: projector)
+            }
+        }
+    }
+
+    private func handleEditTap(
+        at point: CGPoint,
+        in arView: ARView,
+        projector: NonARPlaneProjector
+    ) {
+        guard !cutoutEditor.cutoutAssets.isEmpty else { return }
+        let cameraTransform = cameraEntity.transformMatrix(relativeTo: nil)
+        if cutoutEditor.selectedSpawnMode == .cameraRoam {
+            handlePlacementResult(cutoutEditor.placeRoaming(cameraTransform: cameraTransform))
+            return
+        }
+
+        guard let projection = projector.project(point, in: arView) else {
+            return
+        }
+        handlePlacementResult(cutoutEditor.placeOnPlane(
+            at: projection.position,
+            normal: projection.normal,
+            cameraTransform: cameraTransform
+        ))
+    }
+
+    private func handlePlacementResult(_ result: CutoutPlacementResult) {
+        switch result {
+        case .placed:
+            onPlacementMessageChanged?(nil)
+        case .limitReached(let maximum):
+            onPlacementMessageChanged?("Room full (\(maximum) objects). Delete one to place another.")
+        case .missingAsset:
+            onPlacementMessageChanged?("Choose a cutout before placing it.")
+        case .creationFailed:
+            onPlacementMessageChanged?("This cutout could not be created.")
+        }
+    }
+
+    private var floorPlaneTransform: simd_float4x4 {
+        var transform = matrix_identity_float4x4
+        transform.columns.0 = [1, 0, 0, 0]
+        transform.columns.1 = [0, 0, -1, 0]
+        transform.columns.2 = [0, 1, 0, 0]
+        return transform
     }
 
     private func startMotionUpdates() {
@@ -800,6 +1277,7 @@ final class RoomCoordinator: NSObject {
         updateCameraPosition(deltaTime: deltaTime)
         updateMoveIndicator(deltaTime: deltaTime)
         updateHeldEntity(deltaTime: deltaTime)
+        cutoutEditor.update(deltaTime: deltaTime)
     }
 
     private func updateCameraOrientation(deltaTime: Float) {
@@ -982,6 +1460,19 @@ final class RoomCoordinator: NSObject {
         heldEntity = nil
     }
 
+    private func releaseHeldEntityIfNeeded() {
+        guard let heldEntity else { return }
+        var physicsBody = heldEntity.components[PhysicsBodyComponent.self] ?? PhysicsBodyComponent()
+        physicsBody.mode = .dynamic
+        heldEntity.components.set(physicsBody)
+
+        var motion = heldEntity.components[PhysicsMotionComponent.self] ?? PhysicsMotionComponent()
+        motion.linearVelocity = .zero
+        motion.angularVelocity = .zero
+        heldEntity.components.set(motion)
+        self.heldEntity = nil
+    }
+
     private func updateHeldEntity(deltaTime: Float) {
         guard
             let heldEntity,
@@ -1052,4 +1543,5 @@ private extension simd_quatf {
 
 #Preview {
     VirtualRoomView()
+        .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

@@ -51,13 +51,14 @@ struct ARSurfaceProjector: SurfaceProjecting {
 
 struct NonARPlaneProjector: SurfaceProjecting {
     let planeTransform: simd_float4x4
+    var horizontalBounds: ClosedRange<Float>? = nil
 
-    func project(
-        _ point: CGPoint,
-        in arView: ARView,
-        for object: PlacedCutout
-    ) -> SurfaceProjection? {
+    func project(_ point: CGPoint, in arView: ARView) -> SurfaceProjection? {
         guard let position = arView.unproject(point, ontoPlane: planeTransform) else {
+            return nil
+        }
+        if let horizontalBounds,
+           (!horizontalBounds.contains(position.x) || !horizontalBounds.contains(position.z)) {
             return nil
         }
         return SurfaceProjection(
@@ -68,5 +69,13 @@ struct NonARPlaneProjector: SurfaceProjecting {
                 planeTransform.columns.2.z
             ])
         )
+    }
+
+    func project(
+        _ point: CGPoint,
+        in arView: ARView,
+        for object: PlacedCutout
+    ) -> SurfaceProjection? {
+        project(point, in: arView)
     }
 }

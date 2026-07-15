@@ -71,6 +71,10 @@ struct ContentView: View {
                         drawingSession.clearDrawing()
                         router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
                     }
+
+                    CustomButton(title: "Virtual Room") {
+                        router.push(.virtualRoom)
+                    }
                     
                     CustomButton(title: "My Backpack") {
                         router.push(.backpack)

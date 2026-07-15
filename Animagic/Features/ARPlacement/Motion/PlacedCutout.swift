@@ -26,6 +26,8 @@ final class PlacedCutout {
     private var previousSample: MotionSample?
     private var transitionSample: MotionSample?
     private var transitionElapsed: Float = 1
+    private var lastMaterialArchetype: AnimalArchetype?
+    private var lastMaterialBehavior: AnimalBehavior?
     private(set) var animalArchetype: AnimalArchetype
     var isAnimationPaused = false
     var supportSurfaceNormal: SIMD3<Float>
@@ -93,6 +95,7 @@ final class PlacedCutout {
         transitionSample = previousSample
         transitionElapsed = 0
         animalArchetype = archetype
+        lastMaterialArchetype = nil
 
         let nextConfiguration = MotionInstanceConfiguration.make(
             for: archetype,
@@ -118,8 +121,7 @@ final class PlacedCutout {
             * simd_quatf(angle: sample.roll + initialRoll, axis: [0, 0, 1])
         animatedRoot.scale = [sample.scaleX, sample.scaleY, 1]
         updateShadow(for: sample)
-        updateDeformationMaterial(on: frontEntity, sample: sample, faceDirection: 1)
-        updateDeformationMaterial(on: backEntity, sample: sample, faceDirection: -1)
+        updateDeformationMaterialIfNeeded(sample)
     }
 
     private func updateShadow(for sample: MotionSample) {
@@ -138,6 +140,17 @@ final class PlacedCutout {
         shadowEntity.components[OpacityComponent.self]?.opacity = 1 - easedHeight * 0.78
     }
 
+    private func updateDeformationMaterialIfNeeded(_ sample: MotionSample) {
+        guard lastMaterialArchetype != animalArchetype ||
+              lastMaterialBehavior != sample.behavior else {
+            return
+        }
+        lastMaterialArchetype = animalArchetype
+        lastMaterialBehavior = sample.behavior
+        updateDeformationMaterial(on: frontEntity, sample: sample, faceDirection: 1)
+        updateDeformationMaterial(on: backEntity, sample: sample, faceDirection: -1)
+    }
+
     private func updateDeformationMaterial(
         on entity: ModelEntity,
         sample: MotionSample,
@@ -145,10 +158,11 @@ final class PlacedCutout {
     ) {
         guard var model = entity.model,
               var material = model.materials.first as? CustomMaterial else { return }
+        let phaseOffset = material.custom.value.z
         material.custom.value = [
             animalArchetype.shaderIndex + Float(sample.behavior.rawValue) * 0.01,
             sample.deformationActivity,
-            sample.deformationPhase,
+            phaseOffset,
             faceDirection
         ]
         model.materials = [material]
