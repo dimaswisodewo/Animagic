@@ -17,6 +17,7 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     let selectedObjectAnimalArchetype: AnimalArchetype?
     let selectedSpawnMode: SpawnMode
     @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var placementStatus: ARPlacementStatus
     let deleteRequestID: UUID?
 
     func makeCoordinator() -> ARSceneController {
@@ -26,7 +27,18 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
             selectedAnimalArchetype: spawnAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
             onSelectionChanged: { selection in
-                placedObjectSelection = selection
+                Task { @MainActor in
+                    if placedObjectSelection != selection {
+                        placedObjectSelection = selection
+                    }
+                }
+            },
+            onPlacementStatusChanged: { status in
+                Task { @MainActor in
+                    if placementStatus != status {
+                        placementStatus = status
+                    }
+                }
             }
         )
     }
@@ -34,6 +46,19 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
         arView.automaticallyConfigureSession = false
+
+        let coaching = ARCoachingOverlayView()
+        coaching.goal = .horizontalPlane
+        coaching.session = arView.session
+        coaching.activatesAutomatically = true
+        coaching.translatesAutoresizingMaskIntoConstraints = false
+        arView.addSubview(coaching)
+        NSLayoutConstraint.activate([
+            coaching.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
+            coaching.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
+            coaching.topAnchor.constraint(equalTo: arView.topAnchor),
+            coaching.bottomAnchor.constraint(equalTo: arView.bottomAnchor)
+        ])
 
         context.coordinator.runSession(on: arView)
         return arView
@@ -45,7 +70,18 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
         context.coordinator.selectedAnimalArchetype = spawnAnimalArchetype
         context.coordinator.selectedSpawnMode = selectedSpawnMode
         context.coordinator.onSelectionChanged = { selection in
-            placedObjectSelection = selection
+            Task { @MainActor in
+                if placedObjectSelection != selection {
+                    placedObjectSelection = selection
+                }
+            }
+        }
+        context.coordinator.onPlacementStatusChanged = { status in
+            Task { @MainActor in
+                if placementStatus != status {
+                    placementStatus = status
+                }
+            }
         }
 
         if let selectedObjectAnimalArchetype,

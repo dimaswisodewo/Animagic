@@ -31,7 +31,7 @@ enum SpawnMode: String, CaseIterable, Identifiable {
     var instruction: String {
         switch self {
         case .plane:
-            "Choose an object and animal archetype, then tap a horizontal or vertical surface to spawn it."
+            "Choose an object and animal archetype, then tap a horizontal surface to spawn it."
         case .cameraRoam:
             "Choose an object and animal archetype, then tap anywhere to spawn it roaming around that area."
         }

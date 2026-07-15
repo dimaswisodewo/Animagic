@@ -15,6 +15,7 @@ struct ARObjectPlacementView: View {
     @State private var selectedSpawnMode = SpawnMode.plane
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
+    @State private var placementStatus: ARPlacementStatus = .searching
 
     init(cutoutAssets: [CutoutAsset], initialCutoutID: CutoutAsset.ID? = nil) {
         self.cutoutAssets = cutoutAssets
@@ -36,12 +37,13 @@ struct ARObjectPlacementView: View {
                 selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
                 selectedSpawnMode: selectedSpawnMode,
                 placedObjectSelection: $placedObjectSelection,
+                placementStatus: $placementStatus,
                 deleteRequestID: deleteRequestID
             )
             .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                ARInstructionBanner(spawnMode: selectedSpawnMode)
+                ARInstructionBanner(spawnMode: selectedSpawnMode, status: placementStatus)
                 SpawnModePicker(selection: $selectedSpawnMode)
                 CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
                 AnimalArchetypePicker(selection: archetypeSelection)

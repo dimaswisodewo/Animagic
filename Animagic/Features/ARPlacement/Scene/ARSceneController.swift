@@ -9,7 +9,15 @@ import ARKit
 import RealityKit
 import UIKit
 
-final class ARSceneController: NSObject, SceneEditing {
+enum ARPlacementStatus: Equatable {
+    case searching
+    case ready
+    case limited(String)
+    case placed
+    case failed(String)
+}
+
+final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     var cutoutAssets: [CutoutAsset]
     var selectedCutoutID: CutoutAsset.ID?
     var selectedAnimalArchetype: AnimalArchetype
@@ -21,6 +29,8 @@ final class ARSceneController: NSObject, SceneEditing {
     private let interactionManager: ObjectInteractionManager
     private var interactionAdapter: ARViewInteractionAdapter?
     var handledDeleteRequestID: UUID?
+    var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
+    private(set) var placementStatus: ARPlacementStatus = .searching
 
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? {
         didSet {
@@ -34,7 +44,8 @@ final class ARSceneController: NSObject, SceneEditing {
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
         entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
-        onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil
+        onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
+        onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
     ) {
         let registry = SceneObjectRegistry()
         self.cutoutAssets = cutoutAssets
@@ -45,6 +56,7 @@ final class ARSceneController: NSObject, SceneEditing {
         self.registry = registry
         interactionManager = ObjectInteractionManager(registry: registry)
         self.onSelectionChanged = onSelectionChanged
+        self.onPlacementStatusChanged = onPlacementStatusChanged
         super.init()
         interactionManager.onSelectionChanged = onSelectionChanged
     }
@@ -55,7 +67,8 @@ final class ARSceneController: NSObject, SceneEditing {
         }
 
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal, .vertical]
+        configuration.planeDetection = [.horizontal]
+        arView.session.delegate = self
         configureSceneOcclusion(on: arView, with: configuration)
         arView.session.run(
             configuration,
@@ -75,6 +88,7 @@ final class ARSceneController: NSObject, SceneEditing {
         adapter.attach(to: arView)
         interactionAdapter = adapter
         startAnimationLoop(in: arView)
+        updateStatus(.searching)
     }
 
     private func configureSceneOcclusion(
@@ -114,6 +128,7 @@ final class ARSceneController: NSObject, SceneEditing {
         )
 
         guard let result = estimatedPlaneResult else {
+            updateStatus(.failed("No horizontal surface found. Try moving to a clearer area."))
             return
         }
 
@@ -128,7 +143,7 @@ final class ARSceneController: NSObject, SceneEditing {
         arView.raycast(
             from: location,
             allowing: target,
-            alignment: .any
+            alignment: .horizontal
         )
         .first
     }
@@ -172,6 +187,7 @@ final class ARSceneController: NSObject, SceneEditing {
                 ])
             )
         )
+        updateStatus(.placed)
     }
 
     private func placeRoamingCutout(in arView: ARView) {
@@ -275,6 +291,19 @@ final class ARSceneController: NSObject, SceneEditing {
         registry.forEach { $0.update(deltaTime: deltaTime) }
     }
 
+    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        switch camera.trackingState {
+        case .normal: updateStatus(.ready)
+        case .limited(let reason): updateStatus(.limited(reason.message))
+        case .notAvailable: updateStatus(.limited("Camera tracking is unavailable."))
+        }
+    }
+
+    private func updateStatus(_ status: ARPlacementStatus) {
+        placementStatus = status
+        onPlacementStatusChanged?(status)
+    }
+
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
         interactionManager.setSelectedAnimalArchetype(archetype)
     }
@@ -285,5 +314,17 @@ final class ARSceneController: NSObject, SceneEditing {
 
     func deleteSelectedObject() {
         interactionManager.deleteSelected()
+    }
+}
+
+private extension ARCamera.TrackingState.Reason {
+    var message: String {
+        switch self {
+        case .initializing: return "Move your phone slowly to scan the floor or a table."
+        case .excessiveMotion: return "Move more slowly to improve tracking."
+        case .insufficientFeatures: return "Move to a brighter area with more visible texture."
+        case .relocalizing: return "Reacquiring the scene…"
+        @unknown default: return "Tracking is limited. Move the phone slowly."
+        }
     }
 }

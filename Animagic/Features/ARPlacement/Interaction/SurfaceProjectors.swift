@@ -27,12 +27,12 @@ struct ARSurfaceProjector: SurfaceProjecting {
         let existing = arView.raycast(
             from: point,
             allowing: .existingPlaneGeometry,
-            alignment: .any
+            alignment: .horizontal
         ).first
         let result = existing ?? arView.raycast(
             from: point,
             allowing: .estimatedPlane,
-            alignment: .any
+            alignment: .horizontal
         ).first
 
         guard let result else {
