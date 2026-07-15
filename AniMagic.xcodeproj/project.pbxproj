@@ -69,7 +69,7 @@
 		1FA02314790A0466D6FD18C1 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
 		2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
-		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F2AEA1E9DBDC3ECE41983FE /* ArtworkPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkPersistence.swift; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
 		DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
 		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
-		EE81684059B2CCFECEE4A490 /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AnimalSpeciesClassifierV4.mlpackage; path = Animagic/Core/ML/Models/AnimalSpeciesClassifierV4.mlpackage; sourceTree = SOURCE_ROOT; };
+		EE81684059B2CCFECEE4A490 /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
 		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
 		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
@@ -342,6 +342,7 @@
 			buildPhases = (
 				0D022ED0551782D1764681EA /* Sources */,
 				9D002397F4273668E4CFDCE6 /* Resources */,
+				3CE36FD996D4056F87801C72 /* Prepare Nested Resources for Signing */,
 			);
 			buildRules = (
 			);
@@ -400,6 +401,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3CE36FD996D4056F87801C72 /* Prepare Nested Resources for Signing */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Prepare Nested Resources for Signing";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APP_BUNDLE=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nMODEL_NAME=\"AnimalSpeciesClassifierV4.mlmodelc\"\nMODEL_SOURCE=\"$APP_BUNDLE/$MODEL_NAME\"\nMODEL_DESTINATION=\"$APP_BUNDLE/Resources/$MODEL_NAME\"\n\nif [ -d \"$MODEL_SOURCE\" ]; then\n  /bin/mkdir -p \"$APP_BUNDLE/Resources\"\n  /bin/rm -rf \"$MODEL_DESTINATION\"\n  /bin/mv \"$MODEL_SOURCE\" \"$MODEL_DESTINATION\"\nfi\n\nif [ \"$CODE_SIGNING_ALLOWED\" != \"YES\" ] || [ -z \"$EXPANDED_CODE_SIGN_IDENTITY\" ]; then\n  exit 0\nfi\n\nfor COMPONENT in \"$APP_BUNDLE/default.metallib\" \"$APP_BUNDLE/embedded.mobileprovision\"; do\n  if [ -f \"$COMPONENT\" ]; then\n    /usr/bin/codesign \\\n      --force \\\n      --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \\\n      --timestamp=none \\\n      --generate-entitlement-der \\\n      \"$COMPONENT\"\n  fi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0D022ED0551782D1764681EA /* Sources */ = {
@@ -465,12 +488,19 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
-				GENERATE_INFOPLIST_FILE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -559,11 +589,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic;

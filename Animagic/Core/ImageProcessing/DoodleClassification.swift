@@ -23,7 +23,8 @@ struct AnimalSpeciesDoodleClassifier: DoodleClassifying {
     init(bundle: Bundle = .main) throws {
         guard let modelURL = bundle.url(
             forResource: "AnimalSpeciesClassifierV4",
-            withExtension: "mlmodelc"
+            withExtension: "mlmodelc",
+            subdirectory: "Resources"
         ) else {
             throw DoodleClassificationError.modelNotFound
         }
