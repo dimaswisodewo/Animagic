@@ -31,9 +31,20 @@ struct HanddrawnDetailView: View {
                 DetailActionButton(icon: "camera", secondaryIcon: "sparkles", bgColor: Color(red: 1.0, green: 0.44, blue: 0.0)) {
                     guard !drawing.drawing.bounds.isEmpty else { return }
                     let image = drawing.drawing.image(from: drawing.drawing.bounds, scale: 1.0)
-                    let newCutout = CutoutAsset(image: image, originalSize: image.size)
-                    appState.cutoutLibrary.append(newCutout)
-                    appState.navigationPath.append(NavigationRoute.arView)
+                    Task.detached(priority: .userInitiated) {
+                        let classificationResult = Result {
+                            try DoodleClassificationService().classify(image).get()
+                        }
+                        let newCutout = Self.makeCutoutAsset(
+                            image: image,
+                            originalSize: image.size,
+                            classificationResult: classificationResult
+                        )
+                        await MainActor.run {
+                            appState.cutoutLibrary.append(newCutout)
+                            appState.navigationPath.append(NavigationRoute.arView)
+                        }
+                    }
                 }
                 
                 // Share Button
@@ -105,6 +116,27 @@ struct HanddrawnDetailView: View {
     private func deleteDrawing() {
         appState.savedDrawings.removeAll { $0.id == drawing.id }
         dismiss()
+    }
+
+    private static func makeCutoutAsset(
+        image: UIImage,
+        originalSize: CGSize,
+        classificationResult: Result<DoodleClassification, Error>
+    ) -> CutoutAsset {
+        switch classificationResult {
+        case .success(let classification):
+            return CutoutAsset(
+                image: image,
+                originalSize: originalSize,
+                doodleClassification: classification
+            )
+        case .failure(let error):
+            return CutoutAsset(
+                image: image,
+                originalSize: originalSize,
+                doodleClassificationError: error.localizedDescription
+            )
+        }
     }
 }
 

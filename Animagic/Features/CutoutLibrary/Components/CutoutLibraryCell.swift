@@ -33,6 +33,10 @@ struct CutoutLibraryCell: View {
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            } else if let error = cutoutAsset.doodleClassificationError {
+                Label(error, systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
             }
 
             HStack {

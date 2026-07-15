@@ -7,6 +7,7 @@ struct CanvasTopBarView: View {
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
     @Binding var showGuidePopup: Bool
+    @Binding var isClassifyingDoodle: Bool
     
     var body: some View {
         HStack(spacing: 16) {
@@ -40,7 +41,8 @@ struct CanvasTopBarView: View {
             }
             
             // Save Button (Navigates to AR Page)
-            TopBarButton(title: "Save") {
+            TopBarButton(title: "Save", isDisabled: isClassifyingDoodle) {
+                guard !isClassifyingDoodle else { return }
                 appState.drawing = canvasView.drawing
                 
                 let newDrawing = SavedDrawing(name: documentTitle, drawing: canvasView.drawing)
@@ -49,21 +51,27 @@ struct CanvasTopBarView: View {
                 let bounds = canvasView.drawing.bounds
                 if !bounds.isEmpty {
                     let image = canvasView.drawing.image(from: bounds, scale: 1.0)
-                    if let imageData = image.pngData() {
-                        Task {
-                            let processor = VisionForegroundCutoutProcessor()
-                            // We attempt to process the drawing. If it fails (e.g., already transparent without clear foreground), we fallback to the raw image.
-                            let newCutout: CutoutAsset
-                            if let processedCutout = try? await processor.makeCutout(from: imageData) {
-                                newCutout = processedCutout
-                            } else {
-                                newCutout = CutoutAsset(image: image, originalSize: bounds.size)
-                            }
-                            
-                            await MainActor.run {
-                                appState.cutoutLibrary.append(newCutout)
-                                appState.navigationPath.append(NavigationRoute.arView)
-                            }
+                    isClassifyingDoodle = true
+                    Task.detached(priority: .userInitiated) {
+                        let startedAt = DispatchTime.now().uptimeNanoseconds
+                        let classificationResult = Result {
+                            try DoodleClassificationService().classify(image).get()
+                        }
+                        let elapsed = DispatchTime.now().uptimeNanoseconds - startedAt
+                        let minimumDuration: UInt64 = 1_200_000_000
+                        if elapsed < minimumDuration {
+                            try? await Task.sleep(nanoseconds: minimumDuration - elapsed)
+                        }
+                        let newCutout = Self.makeCutoutAsset(
+                            image: image,
+                            originalSize: bounds.size,
+                            classificationResult: classificationResult
+                        )
+
+                        await MainActor.run {
+                            appState.cutoutLibrary.append(newCutout)
+                            isClassifyingDoodle = false
+                            appState.navigationPath.append(NavigationRoute.arView)
                         }
                     }
                 } else {
@@ -75,11 +83,33 @@ struct CanvasTopBarView: View {
         .padding(.vertical, 16)
         .background(Color(red: 1.0, green: 0.79, blue: 0.07)) // Yellow #FFC812
     }
+
+    private static func makeCutoutAsset(
+        image: UIImage,
+        originalSize: CGSize,
+        classificationResult: Result<DoodleClassification, Error>
+    ) -> CutoutAsset {
+        switch classificationResult {
+        case .success(let classification):
+            return CutoutAsset(
+                image: image,
+                originalSize: originalSize,
+                doodleClassification: classification
+            )
+        case .failure(let error):
+            return CutoutAsset(
+                image: image,
+                originalSize: originalSize,
+                doodleClassificationError: error.localizedDescription
+            )
+        }
+    }
 }
 
 // Reusable Button components for the Top Bar with bounce animation
 struct TopBarButton: View {
     let title: String
+    var isDisabled = false
     let action: () -> Void
     @State private var isPressed = false
     
@@ -109,6 +139,7 @@ struct TopBarButton: View {
                 )
         }
         .scaleEffect(isPressed ? 0.9 : 1.0)
+        .disabled(isDisabled)
     }
 }
 
@@ -142,4 +173,3 @@ struct TopBarIconButton: View {
         .scaleEffect(isPressed ? 0.9 : 1.0)
     }
 }
-

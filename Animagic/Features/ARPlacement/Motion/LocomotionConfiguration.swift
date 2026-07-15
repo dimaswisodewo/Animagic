@@ -42,6 +42,13 @@ enum AnimalArchetype: String, CaseIterable, Identifiable {
     case fish, bird, butterfly, cat, cow, rabbit, snake, crab
 
     var id: String { rawValue }
+
+    init?(doodleLabel: String, confidence: Float) {
+        guard confidence >= 0.5 else {
+            return nil
+        }
+        self.init(rawValue: doodleLabel)
+    }
     var title: String { rawValue.capitalized }
 
     var systemImageName: String {
