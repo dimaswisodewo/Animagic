@@ -26,7 +26,7 @@
 			exceptions = (
 				28741E1E30073B7200B63727 /* Exceptions for "AniMagic" folder in "AniMagic" target */,
 			);
-			path = AniMagic;
+			path = Animagic;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -269,7 +269,7 @@
 				DEVELOPMENT_TEAM = GQS6FW2LLL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AniMagic/Info.plist;
+				INFOPLIST_FILE = Animagic/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -303,7 +303,7 @@
 				DEVELOPMENT_TEAM = GQS6FW2LLL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AniMagic/Info.plist;
+				INFOPLIST_FILE = Animagic/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

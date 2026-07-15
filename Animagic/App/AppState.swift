@@ -17,6 +17,7 @@ struct SavedDrawing: Identifiable, Hashable {
     var category: ArtworkCategory
     var doodleClassification: DoodleClassification?
     var doodleOverrideLabel: String?
+    var isNameManuallyEdited: Bool
     var createdAt: Date
 
     init(
@@ -24,10 +25,12 @@ struct SavedDrawing: Identifiable, Hashable {
         category: ArtworkCategory = .land,
         doodleClassification: DoodleClassification? = nil,
         doodleOverrideLabel: String? = nil,
+        isNameManuallyEdited: Bool = false,
         createdAt: Date = .now
     ) {
         self.id = id; self.name = name; self.drawing = drawing; self.category = category
         self.doodleClassification = doodleClassification; self.doodleOverrideLabel = doodleOverrideLabel
+        self.isNameManuallyEdited = isNameManuallyEdited
         self.createdAt = createdAt
     }
     
@@ -60,6 +63,7 @@ class AppState: ObservableObject {
         savedDrawings = drawings.compactMap { $0.asValue() }
         let cutouts = (try? context.fetch(FetchDescriptor<CutoutAssetRecord>())) ?? []
         cutoutLibrary = cutouts.compactMap { $0.asValue() }
+        migrateLegacyAutomaticNames()
     }
 
     func addSavedDrawing(_ drawing: SavedDrawing) {
@@ -78,11 +82,19 @@ class AppState: ObservableObject {
         savedDrawings[index].doodleClassification = classification
         savedDrawings[index].doodleOverrideLabel = overrideLabel
         savedDrawings[index].category = .category(forDoodleLabel: overrideLabel ?? classification?.label)
+        if !savedDrawings[index].isNameManuallyEdited {
+            savedDrawings[index].name = automaticDrawingName(
+                for: overrideLabel ?? classification?.label,
+                excluding: id
+            )
+        }
         guard let record = savedDrawingRecord(withID: id) else { return }
+        record.name = savedDrawings[index].name
         record.predictedLabel = classification?.label
         record.predictionConfidence = classification.map { Double($0.confidence) }
         record.overrideLabel = overrideLabel
         record.categoryRawValue = savedDrawings[index].category.rawValue
+        record.isNameManuallyEdited = savedDrawings[index].isNameManuallyEdited
         saveContext()
     }
 
@@ -123,5 +135,38 @@ class AppState: ObservableObject {
     private func cutoutRecord(withID id: UUID) -> CutoutAssetRecord? {
         try? modelContext?.fetch(FetchDescriptor<CutoutAssetRecord>()).first(where: { $0.id == id })
     }
+
+    private func migrateLegacyAutomaticNames() {
+        for drawing in savedDrawings where !drawing.isNameManuallyEdited && isPlaceholderName(drawing.name) {
+            guard let index = savedDrawings.firstIndex(where: { $0.id == drawing.id }) else { continue }
+            savedDrawings[index].name = automaticDrawingName(
+                for: drawing.doodleOverrideLabel ?? drawing.doodleClassification?.label,
+                excluding: drawing.id
+            )
+            if let record = savedDrawingRecord(withID: drawing.id) {
+                record.name = savedDrawings[index].name
+                record.isNameManuallyEdited = false
+            }
+        }
+        saveContext()
+    }
+
+    private func automaticDrawingName(for label: String?, excluding id: UUID) -> String {
+        let baseName = (label ?? "").trimmingCharacters(in: .whitespacesAndNewlines).capitalized
+        let prefix = baseName.isEmpty ? "Drawing" : baseName
+        var number = 1
+        while savedDrawings.contains(where: {
+            $0.id != id && $0.name.localizedCaseInsensitiveCompare("\(prefix) #\(number)") == .orderedSame
+        }) {
+            number += 1
+        }
+        return "\(prefix) #\(number)"
+    }
+
+    private func isPlaceholderName(_ name: String) -> Bool {
+        let normalized = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return normalized.isEmpty || normalized.caseInsensitiveCompare("Untitled") == .orderedSame
+    }
+
     private func saveContext() { try? modelContext?.save() }
 }

@@ -12,6 +12,7 @@ final class SavedDrawingRecord {
     var predictedLabel: String?
     var predictionConfidence: Double?
     var overrideLabel: String?
+    var isNameManuallyEdited: Bool = false
     var createdAt: Date
 
     init(_ drawing: SavedDrawing) {
@@ -22,6 +23,7 @@ final class SavedDrawingRecord {
         predictedLabel = drawing.doodleClassification?.label
         predictionConfidence = drawing.doodleClassification.map { Double($0.confidence) }
         overrideLabel = drawing.doodleOverrideLabel
+        isNameManuallyEdited = drawing.isNameManuallyEdited
         createdAt = drawing.createdAt
     }
 
@@ -36,6 +38,7 @@ final class SavedDrawingRecord {
                 DoodleClassification(label: $0, confidence: Float(predictionConfidence ?? 0))
             },
             doodleOverrideLabel: overrideLabel,
+            isNameManuallyEdited: isNameManuallyEdited,
             createdAt: createdAt
         )
     }
