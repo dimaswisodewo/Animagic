@@ -9,6 +9,8 @@ struct CanvasPageView: View {
     @State private var showGuidePopup = false
     @State private var selectedGuideAnimal: GuideAnimal? = nil
     @State private var isClassifyingDoodle = false
+    @State private var hasDrawing = false
+    @State private var showEmptyCanvasMessage = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -19,7 +21,9 @@ struct CanvasPageView: View {
                         documentTitle: $documentTitle,
                         canvasView: canvasView,
                         showGuidePopup: $showGuidePopup,
-                        isClassifyingDoodle: $isClassifyingDoodle
+                        isClassifyingDoodle: $isClassifyingDoodle,
+                        hasDrawing: $hasDrawing,
+                        showEmptyCanvasMessage: $showEmptyCanvasMessage
                     )
                     
                     // Drawing Area
@@ -36,7 +40,11 @@ struct CanvasPageView: View {
                                 .padding(100)
                         }
                         
-                        DrawingView(canvasView: $canvasView, isToolPickerVisible: !showGuidePopup)
+                        DrawingView(
+                            canvasView: $canvasView,
+                            isToolPickerVisible: !showGuidePopup,
+                            onDrawingChanged: { hasDrawing = $0 }
+                        )
                     }
                 }
                 
@@ -60,6 +68,11 @@ struct CanvasPageView: View {
             .animation(.easeInOut, value: showGuidePopup)
             .navigationBarHidden(true)
         .ignoresSafeArea(.keyboard)
+        .alert("Your canvas is empty", isPresented: $showEmptyCanvasMessage) {
+            Button("Keep Drawing", role: .cancel) {}
+        } message: {
+            Text("Draw something first, then let’s bring it to life!")
+        }
         .onAppear {
             if appState.drawing.strokes.isEmpty {
                 // If AppState drawing is empty, ensure canvas is blank
@@ -68,6 +81,7 @@ struct CanvasPageView: View {
                 // Load existing drawing from state
                 canvasView.drawing = appState.drawing
             }
+            hasDrawing = !canvasView.drawing.strokes.isEmpty
         }
         }
     }
