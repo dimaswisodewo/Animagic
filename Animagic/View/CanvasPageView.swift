@@ -11,6 +11,7 @@ struct CanvasPageView: View {
     @State private var isClassifyingDoodle = false
     @State private var hasDrawing = false
     @State private var showEmptyCanvasMessage = false
+    @State private var isDocumentTitleManuallyEdited = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -23,7 +24,8 @@ struct CanvasPageView: View {
                         showGuidePopup: $showGuidePopup,
                         isClassifyingDoodle: $isClassifyingDoodle,
                         hasDrawing: $hasDrawing,
-                        showEmptyCanvasMessage: $showEmptyCanvasMessage
+                        showEmptyCanvasMessage: $showEmptyCanvasMessage,
+                        isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited
                     )
                     
                     // Drawing Area
@@ -74,7 +76,11 @@ struct CanvasPageView: View {
             Text("Draw something first, then let’s bring it to life!")
         }
         .onAppear {
-            if appState.drawing.strokes.isEmpty {
+            if let activeDrawing = appState.activeDrawing {
+                canvasView.drawing = activeDrawing.drawing
+                documentTitle = activeDrawing.name
+                isDocumentTitleManuallyEdited = activeDrawing.isNameManuallyEdited
+            } else if appState.drawing.strokes.isEmpty {
                 // If AppState drawing is empty, ensure canvas is blank
                 canvasView.drawing = PKDrawing()
             } else {

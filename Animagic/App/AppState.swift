@@ -48,13 +48,18 @@ class AppState: ObservableObject {
     @Published var savedDrawings: [SavedDrawing] = []
     @Published var navigationPath = NavigationPath()
     @Published var cutoutLibrary: [CutoutAsset] = []
+    @Published var activeDrawingID: UUID?
     private var modelContext: ModelContext?
     
     func clearDrawing() {
         drawing = PKDrawing()
+        activeDrawingID = nil
     }
 
-    func startNewDrawing() { drawing = PKDrawing() }
+    func startNewDrawing() {
+        drawing = PKDrawing()
+        activeDrawingID = nil
+    }
 
     func configurePersistence(with context: ModelContext) {
         guard modelContext == nil else { return }
@@ -70,6 +75,42 @@ class AppState: ObservableObject {
         savedDrawings.append(drawing)
         guard let modelContext else { return }
         modelContext.insert(SavedDrawingRecord(drawing)); saveContext()
+    }
+
+    func saveActiveDrawing(
+        name: String,
+        drawing: PKDrawing,
+        isNameManuallyEdited: Bool
+    ) -> SavedDrawing {
+        if let activeDrawingID,
+           let index = savedDrawings.firstIndex(where: { $0.id == activeDrawingID }) {
+            savedDrawings[index].drawing = drawing
+            savedDrawings[index].isNameManuallyEdited = isNameManuallyEdited
+            if isNameManuallyEdited || savedDrawings[index].name.isEmpty {
+                savedDrawings[index].name = name
+            }
+
+            if let record = savedDrawingRecord(withID: activeDrawingID) {
+                record.drawingData = drawing.dataRepresentation()
+                record.isNameManuallyEdited = isNameManuallyEdited
+                if isNameManuallyEdited || record.name.isEmpty {
+                    record.name = name
+                }
+                saveContext()
+            }
+            self.drawing = drawing
+            return savedDrawings[index]
+        }
+
+        let newDrawing = SavedDrawing(
+            name: name,
+            drawing: drawing,
+            isNameManuallyEdited: isNameManuallyEdited
+        )
+        addSavedDrawing(newDrawing)
+        activeDrawingID = newDrawing.id
+        self.drawing = drawing
+        return newDrawing
     }
 
     func removeSavedDrawing(id: UUID) {
@@ -104,6 +145,14 @@ class AppState: ObservableObject {
         modelContext.insert(record); saveContext()
     }
 
+    func replaceCutout(_ asset: CutoutAsset, forDrawingID drawingID: UUID) {
+        let existingAssets = cutoutLibrary.filter { $0.sourceDrawingID == drawingID }
+        for existingAsset in existingAssets {
+            removeCutout(existingAsset)
+        }
+        addCutout(asset)
+    }
+
     func removeCutout(_ asset: CutoutAsset) {
         cutoutLibrary.removeAll { $0.id == asset.id }
         if let record = cutoutRecord(withID: asset.id) { modelContext?.delete(record); saveContext() }
@@ -127,6 +176,11 @@ class AppState: ObservableObject {
         if let sourceDrawingID = old.sourceDrawingID {
             updateSavedDrawingClassification(id: sourceDrawingID, classification: old.doodleClassification, overrideLabel: label)
         }
+    }
+
+    var activeDrawing: SavedDrawing? {
+        guard let activeDrawingID else { return nil }
+        return savedDrawings.first(where: { $0.id == activeDrawingID })
     }
 
     private func savedDrawingRecord(withID id: UUID) -> SavedDrawingRecord? {
