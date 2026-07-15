@@ -16,10 +16,22 @@ struct CanvasTopBarView: View {
                 dismiss()
             }
             
-            // Title TextField
-            TextField("Untitled", text: $documentTitle)
-                .font(.custom("Belanosima-Regular", size: 24))
-                .foregroundColor(.black)
+            HStack(spacing: 8) {
+                Image(systemName: "pencil")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.black.opacity(0.65))
+                TextField("Name your drawing", text: $documentTitle)
+                    .font(.custom("Belanosima-Regular", size: 22))
+                    .foregroundColor(.black)
+                    .textInputAutocapitalization(.words)
+                    .accessibilityLabel("Drawing name")
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(.white.opacity(0.78), in: Capsule())
+            .overlay(Capsule().stroke(.black.opacity(0.3), lineWidth: 2))
+            .frame(maxWidth: 290)
+            .accessibilityHint("Tap to name your drawing")
             
             Spacer()
             
@@ -43,7 +55,12 @@ struct CanvasTopBarView: View {
             // Save Button (Navigates to AR Page)
             TopBarButton(title: "Save", isDisabled: isClassifyingDoodle) {
                 guard !isClassifyingDoodle else { return }
-                let newDrawing = SavedDrawing(name: documentTitle, drawing: canvasView.drawing)
+                let trimmedTitle = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                let newDrawing = SavedDrawing(
+                    name: trimmedTitle,
+                    drawing: canvasView.drawing,
+                    isNameManuallyEdited: !trimmedTitle.isEmpty
+                )
                 appState.addSavedDrawing(newDrawing)
                 
                 let bounds = canvasView.drawing.bounds

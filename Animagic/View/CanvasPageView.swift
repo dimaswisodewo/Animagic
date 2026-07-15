@@ -3,7 +3,7 @@ import PencilKit
 
 struct CanvasPageView: View {
     @EnvironmentObject var appState: AppState
-    @State private var documentTitle: String = "Untitled"
+    @State private var documentTitle = ""
     @State private var canvasView = PKCanvasView()
     
     @State private var showGuidePopup = false
