@@ -8,13 +8,19 @@ struct CanvasPageView: View {
     
     @State private var showGuidePopup = false
     @State private var selectedGuideAnimal: GuideAnimal? = nil
+    @State private var isClassifyingDoodle = false
     
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 VStack(spacing: 0) {
                     // Top Bar
-                    CanvasTopBarView(documentTitle: $documentTitle, canvasView: canvasView, showGuidePopup: $showGuidePopup)
+                    CanvasTopBarView(
+                        documentTitle: $documentTitle,
+                        canvasView: canvasView,
+                        showGuidePopup: $showGuidePopup,
+                        isClassifyingDoodle: $isClassifyingDoodle
+                    )
                     
                     // Drawing Area
                     ZStack {
@@ -45,6 +51,11 @@ struct CanvasPageView: View {
                     .transition(.move(edge: .trailing))
                     .zIndex(1)
                 }
+
+                if isClassifyingDoodle {
+                    DoodleClassificationOverlay()
+                        .zIndex(2)
+                }
             }
             .animation(.easeInOut, value: showGuidePopup)
             .navigationBarHidden(true)
@@ -63,6 +74,32 @@ struct CanvasPageView: View {
             appState.drawing = canvasView.drawing
         }
         }
+    }
+}
+
+private struct DoodleClassificationOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.34)
+                .ignoresSafeArea()
+
+            VStack(spacing: 18) {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(.black)
+                Text("AniMagic is recognizing your doodle…")
+                    .font(.custom("Belanosima-SemiBold", size: 28))
+                    .multilineTextAlignment(.center)
+                Text("Preparing it for AR")
+                    .font(.custom("Belanosima-Regular", size: 20))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(36)
+            .background(.white, in: RoundedRectangle(cornerRadius: 28))
+            .padding(32)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("AniMagic is recognizing your doodle")
     }
 }
 

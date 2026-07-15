@@ -18,7 +18,13 @@ struct ARObjectPlacementView: View {
 
     init(cutoutAssets: [CutoutAsset], initialCutoutID: CutoutAsset.ID? = nil) {
         self.cutoutAssets = cutoutAssets
-        _selectedCutoutID = State(initialValue: initialCutoutID ?? cutoutAssets.first?.id)
+        let selectedID = initialCutoutID ?? cutoutAssets.first?.id
+        _selectedCutoutID = State(initialValue: selectedID)
+        _selectedAnimalArchetype = State(
+            initialValue: Self.suggestedArchetype(
+                for: cutoutAssets.first(where: { $0.id == selectedID })
+            ) ?? .fish
+        )
     }
 
     var body: some View {
@@ -49,6 +55,15 @@ struct ARObjectPlacementView: View {
         }
         .navigationTitle("AR Placement")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: selectedCutoutID) { _, selectedID in
+            guard placedObjectSelection == nil,
+                  let suggested = Self.suggestedArchetype(
+                      for: cutoutAssets.first(where: { $0.id == selectedID })
+                  ) else {
+                return
+            }
+            selectedAnimalArchetype = suggested
+        }
     }
 
     private var activeAnimalArchetype: AnimalArchetype {
@@ -68,6 +83,16 @@ struct ARObjectPlacementView: View {
                     selectedAnimalArchetype = archetype
                 }
             }
+        )
+    }
+
+    private static func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
+        guard let classification = asset?.doodleClassification else {
+            return nil
+        }
+        return AnimalArchetype(
+            doodleLabel: classification.label,
+            confidence: classification.confidence
         )
     }
 }
