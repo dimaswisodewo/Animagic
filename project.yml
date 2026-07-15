@@ -3,7 +3,7 @@ name: AniMagic
 options:
   bundleIdPrefix: com.DirouDough
   deploymentTarget:
-    iOS: "26.0"
+    iOS: "18.0"
   createIntermediateGroups: true
   developmentLanguage: en
 
@@ -14,14 +14,14 @@ configs:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
     SDKROOT: iphoneos
 
 targets:
   AniMagic:
     type: application
     platform: iOS
-    deploymentTarget: "26.0"
+    deploymentTarget: "18.0"
     sources:
       - path: Animagic
         excludes:

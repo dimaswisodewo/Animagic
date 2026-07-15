@@ -30,7 +30,7 @@ struct VirtualRoomView: View {
                     .font(.system(size: 18, weight: .semibold))
                     .frame(width: 44, height: 44)
             }
-            .buttonStyle(.glass(.clear))
+            .buttonStyle(.borderedProminent)
             .accessibilityLabel("Calibrate")
             .padding()
         }

@@ -21,7 +21,6 @@
 		5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */; };
 		56983DFE25116693FC679A4F /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD3796D204ED446BC9A9C30 /* HanddrawnDetailComponents.swift */; };
 		57556B92543330D7556422E9 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA02314790A0466D6FD18C1 /* CanvasTopBarView.swift */; };
-		5A2BB0876E36F629B1BDE606 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A692583070E60924095B235 /* DrawingSessionManager.swift */; };
 		5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */; };
 		5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */; };
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
@@ -37,6 +36,7 @@
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
+		7C9205B714D4C3541FCFB274 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16AAD04E3CBB76E5F35DACF8 /* DrawingSessionManager.swift */; };
 		7D031AE97B5BCA144E2860C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422083642B5E91548C3F0510 /* ContentView.swift */; };
 		8541E48B43B58E6935AB94CC /* Underwater.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 8715AA83A5B45C7EDDEAB8E3 /* Underwater.skybox */; };
 		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
@@ -73,10 +73,10 @@
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		06B3543619698F8440EE0B81 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
-		0A692583070E60924095B235 /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
 		0C96C4320EF4E1F45FF2B98B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		14720E9E927521DF4B139AAF /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
 		15A234D89D17DC112408BAC4 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		16AAD04E3CBB76E5F35DACF8 /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
 		1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
 		1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDrawing.swift; sourceTree = "<group>"; };
 		1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowEntityFactory.swift; sourceTree = "<group>"; };
@@ -223,8 +223,8 @@
 				AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */,
 				539A07CF7672D13036057391 /* AppRoute.swift */,
 				DC6CCD73F07DC5872D167BC7 /* AppRoute+Modifier.swift */,
-				0A692583070E60924095B235 /* DrawingSessionManager.swift */,
 				422083642B5E91548C3F0510 /* ContentView.swift */,
+				16AAD04E3CBB76E5F35DACF8 /* DrawingSessionManager.swift */,
 				428B6C585A279B611A77495E /* MenuView.swift */,
 			);
 			path = App;
@@ -487,7 +487,6 @@
 				10A3F39F5534BFE1BFFFD8EC /* AnimagicDesignSystem.swift in Sources */,
 				50D76266330C62C47F2DCD54 /* AppRoute+Modifier.swift in Sources */,
 				B2B38B320686CC530820A4DA /* AppRoute.swift in Sources */,
-				5A2BB0876E36F629B1BDE606 /* DrawingSessionManager.swift in Sources */,
 				4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */,
 				60354CC3F8031B9E06CF8926 /* ArtworkLibraryStore.swift in Sources */,
 				647182296E0CE99888CC7CCA /* ArtworkPersistence.swift in Sources */,
@@ -509,6 +508,7 @@
 				33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */,
 				DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */,
 				B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */,
+				7C9205B714D4C3541FCFB274 /* DrawingSessionManager.swift in Sources */,
 				06ED99A2A1B6C33A1455A59B /* DrawingView.swift in Sources */,
 				D15E7D1AA12F7C203D8A333C /* GuidePopupView.swift in Sources */,
 				56983DFE25116693FC679A4F /* HanddrawnDetailComponents.swift in Sources */,
@@ -553,7 +553,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -625,7 +625,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -650,7 +650,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -715,7 +715,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
