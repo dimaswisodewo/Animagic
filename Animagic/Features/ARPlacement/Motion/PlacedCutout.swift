@@ -8,7 +8,8 @@
 import Foundation
 import RealityKit
 
-final class PlacedCutout {
+@MainActor
+final class PlacedCutout: PlacedSceneObject {
     let id: UUID
     let anchor: AnchorEntity
     let interactionRoot: Entity
@@ -31,6 +32,10 @@ final class PlacedCutout {
     private(set) var animalArchetype: AnimalArchetype
     var isAnimationPaused = false
     var supportSurfaceNormal: SIMD3<Float>
+
+    var selection: PlacedObjectSelection {
+        PlacedObjectSelection(objectID: id, content: .doodle(animalArchetype))
+    }
 
     init(
         id: UUID,
@@ -88,6 +93,10 @@ final class PlacedCutout {
 
     func setSelected(_ isSelected: Bool) {
         selectionIndicator.isEnabled = isSelected
+    }
+
+    func setInteractionPaused(_ isPaused: Bool) {
+        isAnimationPaused = isPaused
     }
 
     func setAnimalArchetype(_ archetype: AnimalArchetype) {

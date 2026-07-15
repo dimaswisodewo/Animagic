@@ -12,12 +12,14 @@ import UIKit
 enum ARPlacementStatus: Equatable {
     case searching
     case ready
+    case loading(String)
     case limited(String)
     case placed
     case failed(String)
 }
 
-final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
+@MainActor
+final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
         set { sceneEditor.cutoutAssets = newValue }
@@ -33,6 +35,14 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     var selectedSpawnMode: SpawnMode {
         get { sceneEditor.selectedSpawnMode }
         set { sceneEditor.selectedSpawnMode = newValue }
+    }
+    var selectedContentType: PlacementContentType {
+        get { sceneEditor.selectedContentType }
+        set { sceneEditor.selectedContentType = newValue }
+    }
+    var selectedModelID: PlaceableUSDZModel.ID? {
+        get { sceneEditor.selectedModelID }
+        set { sceneEditor.selectedModelID = newValue }
     }
     private var displayLink: CADisplayLink?
     private var lastFrameTimestamp: CFTimeInterval?
@@ -52,6 +62,8 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         selectedCutoutID: CutoutAsset.ID?,
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
+        selectedContentType: PlacementContentType,
+        selectedModelID: PlaceableUSDZModel.ID?,
         entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
@@ -61,6 +73,8 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: selectedAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             entityFactory: entityFactory,
             onSelectionChanged: onSelectionChanged
         )
@@ -68,6 +82,9 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         self.onPlacementStatusChanged = onPlacementStatusChanged
         super.init()
         sceneEditor.onSelectionChanged = onSelectionChanged
+        sceneEditor.onPlacementResult = { [weak self] result in
+            self?.handlePlacementResult(result)
+        }
     }
 
     func runSession(on arView: ARView) {
@@ -118,7 +135,7 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
     }
 
     private func handleEmptyTap(at location: CGPoint, in arView: ARView) {
-        if selectedSpawnMode == .cameraRoam {
+        if selectedContentType == .doodle && selectedSpawnMode == .cameraRoam {
             placeRoamingCutout(in: arView)
             return
         }
@@ -148,9 +165,7 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
             ]),
             cameraTransform: arView.session.currentFrame?.camera.transform
         )
-        if case .placed = placed {
-            updateStatus(.placed)
-        }
+        handlePlacementResult(placed)
     }
 
     private func raycast(
@@ -170,7 +185,19 @@ final class ARSceneController: NSObject, SceneEditing, ARSessionDelegate {
         guard let cameraTransform = arView.session.currentFrame?.camera.transform else {
             return
         }
-        _ = sceneEditor.placeRoaming(cameraTransform: cameraTransform)
+        handlePlacementResult(sceneEditor.placeRoaming(cameraTransform: cameraTransform))
+    }
+
+    private func handlePlacementResult(_ result: CutoutPlacementResult) {
+        switch result {
+        case .placed: updateStatus(.placed)
+        case .loading(let message): updateStatus(.loading(message))
+        case .limitReached(let maximum):
+            updateStatus(.failed("Scene full (\(maximum) objects). Delete one to place another."))
+        case .missingAsset: updateStatus(.failed("Choose a doodle before placing it."))
+        case .missingModel: updateStatus(.failed("Choose a 3D model before placing it."))
+        case .creationFailed(let message): updateStatus(.failed(message))
+        }
     }
 
     private func startAnimationLoop(in arView: ARView) {

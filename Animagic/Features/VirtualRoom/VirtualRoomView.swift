@@ -20,6 +20,8 @@ struct VirtualRoomView: View {
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedAnimalArchetype = AnimalArchetype.fish
     @State private var selectedSpawnMode = SpawnMode.plane
+    @State private var selectedContentType = PlacementContentType.doodle
+    @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
     @State private var placementMessage: String?
@@ -35,6 +37,8 @@ struct VirtualRoomView: View {
                 spawnAnimalArchetype: selectedAnimalArchetype,
                 selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
                 selectedSpawnMode: selectedSpawnMode,
+                selectedContentType: selectedContentType,
+                selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
                 skyboxLoadState: $skyboxLoadState,
                 placementMessage: $placementMessage,
@@ -152,31 +156,31 @@ struct VirtualRoomView: View {
     private var editControls: some View {
         VStack(spacing: 12) {
             VirtualRoomInstructionBanner(
+                contentType: selectedContentType,
                 spawnMode: selectedSpawnMode,
                 hasCutouts: !artworkStore.cutoutLibrary.isEmpty,
                 placementMessage: placementMessage
             )
-            SpawnModePicker(selection: $selectedSpawnMode)
-            if artworkStore.cutoutLibrary.isEmpty {
-                Text("Create a cutout in the library before placing a doodle.")
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-                    .padding(12)
-                    .frame(maxWidth: .infinity)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            PlacementContentTypePicker(selection: $selectedContentType)
+            if selectedContentType == .model {
+                USDZModelPicker(selection: $selectedModelID)
             } else {
-                CutoutPicker(assets: artworkStore.cutoutLibrary, selection: $selectedCutoutID)
-                if let selectedCutoutAsset {
-                    DoodleCorrectionMenu(asset: selectedCutoutAsset) { label in
-                        artworkStore.updateCutoutOverride(id: selectedCutoutAsset.id, label: label)
+                SpawnModePicker(selection: $selectedSpawnMode)
+                if artworkStore.cutoutLibrary.isEmpty {
+                    EmptyDoodleLibraryMessage()
+                } else {
+                    CutoutPicker(assets: artworkStore.cutoutLibrary, selection: $selectedCutoutID)
+                    if let selectedCutoutAsset {
+                        DoodleCorrectionMenu(asset: selectedCutoutAsset) { label in
+                            artworkStore.updateCutoutOverride(id: selectedCutoutAsset.id, label: label)
+                        }
                     }
+                    AnimalArchetypePicker(selection: archetypeSelection)
                 }
-                AnimalArchetypePicker(selection: archetypeSelection)
-                if placedObjectSelection != nil {
-                    SelectedObjectToolbar {
-                        deleteRequestID = UUID()
-                    }
+            }
+            if let placedObjectSelection {
+                SelectedObjectToolbar(title: placedObjectSelection.title) {
+                    deleteRequestID = UUID()
                 }
             }
         }
@@ -193,10 +197,11 @@ struct VirtualRoomView: View {
         Binding(
             get: { placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype },
             set: { archetype in
-                if let selection = placedObjectSelection {
+                if let selection = placedObjectSelection,
+                   selection.animalArchetype != nil {
                     placedObjectSelection = PlacedObjectSelection(
                         objectID: selection.objectID,
-                        animalArchetype: archetype
+                        content: .doodle(archetype)
                     )
                 } else {
                     selectedAnimalArchetype = archetype
@@ -264,6 +269,7 @@ enum SkyboxLoadState: Equatable {
 }
 
 private struct VirtualRoomInstructionBanner: View {
+    let contentType: PlacementContentType
     let spawnMode: SpawnMode
     let hasCutouts: Bool
     let placementMessage: String?
@@ -272,7 +278,7 @@ private struct VirtualRoomInstructionBanner: View {
         VStack(spacing: 6) {
             Label("Edit Room", systemImage: "wand.and.stars")
                 .font(.headline)
-            Text(placementMessage ?? (hasCutouts ? spawnMode.instruction : "Your cutout library is empty."))
+            Text(placementMessage ?? instruction)
                 .font(.subheadline)
         }
         .multilineTextAlignment(.center)
@@ -280,6 +286,13 @@ private struct VirtualRoomInstructionBanner: View {
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var instruction: String {
+        if contentType == .model {
+            return "Choose a 3D model, then tap the floor to place it."
+        }
+        return hasCutouts ? spawnMode.instruction : "Your cutout library is empty."
     }
 }
 
@@ -330,6 +343,8 @@ struct RealityRoomView: UIViewRepresentable {
     let spawnAnimalArchetype: AnimalArchetype
     let selectedObjectAnimalArchetype: AnimalArchetype?
     let selectedSpawnMode: SpawnMode
+    let selectedContentType: PlacementContentType
+    let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
     @Binding var skyboxLoadState: SkyboxLoadState
     @Binding var placementMessage: String?
@@ -341,6 +356,8 @@ struct RealityRoomView: UIViewRepresentable {
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: spawnAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             onSelectionChanged: updateSelection,
             onSkyboxLoadStateChanged: updateSkyboxLoadState,
             onPlacementMessageChanged: updatePlacementMessage
@@ -361,6 +378,8 @@ struct RealityRoomView: UIViewRepresentable {
             selectedAnimalArchetype: spawnAnimalArchetype,
             selectedObjectAnimalArchetype: selectedObjectAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             deleteRequestID: deleteRequestID,
             onSelectionChanged: updateSelection,
             onSkyboxLoadStateChanged: updateSkyboxLoadState,
@@ -395,6 +414,7 @@ struct RealityRoomView: UIViewRepresentable {
     }
 }
 
+@MainActor
 final class RoomCoordinator: NSObject {
     private enum Constants {
         static let roomSize: Float = 8.0
@@ -476,6 +496,8 @@ final class RoomCoordinator: NSObject {
         selectedCutoutID: CutoutAsset.ID?,
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
+        selectedContentType: PlacementContentType,
+        selectedModelID: PlaceableUSDZModel.ID?,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)? = nil,
         onPlacementMessageChanged: ((String?) -> Void)? = nil
@@ -487,9 +509,15 @@ final class RoomCoordinator: NSObject {
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: selectedAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             configuration: .virtualRoom,
             onSelectionChanged: onSelectionChanged
         )
+        super.init()
+        cutoutEditor.onPlacementResult = { [weak self] result in
+            self?.handlePlacementResult(result)
+        }
     }
 
     func makeView() -> ARView {
@@ -542,6 +570,8 @@ final class RoomCoordinator: NSObject {
         selectedAnimalArchetype: AnimalArchetype,
         selectedObjectAnimalArchetype: AnimalArchetype?,
         selectedSpawnMode: SpawnMode,
+        selectedContentType: PlacementContentType,
+        selectedModelID: PlaceableUSDZModel.ID?,
         deleteRequestID: UUID?,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)?,
         onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)?,
@@ -551,6 +581,8 @@ final class RoomCoordinator: NSObject {
         cutoutEditor.selectedCutoutID = selectedCutoutID
         cutoutEditor.selectedAnimalArchetype = selectedAnimalArchetype
         cutoutEditor.selectedSpawnMode = selectedSpawnMode
+        cutoutEditor.selectedContentType = selectedContentType
+        cutoutEditor.selectedModelID = selectedModelID
         cutoutEditor.onSelectionChanged = onSelectionChanged
         self.onSkyboxLoadStateChanged = onSkyboxLoadStateChanged
         self.onPlacementMessageChanged = onPlacementMessageChanged
@@ -1172,9 +1204,12 @@ final class RoomCoordinator: NSObject {
         in arView: ARView,
         projector: NonARPlaneProjector
     ) {
-        guard !cutoutEditor.cutoutAssets.isEmpty else { return }
+        guard cutoutEditor.selectedContentType == .model || !cutoutEditor.cutoutAssets.isEmpty else {
+            return
+        }
         let cameraTransform = cameraEntity.transformMatrix(relativeTo: nil)
-        if cutoutEditor.selectedSpawnMode == .cameraRoam {
+        if cutoutEditor.selectedContentType == .doodle &&
+            cutoutEditor.selectedSpawnMode == .cameraRoam {
             handlePlacementResult(cutoutEditor.placeRoaming(cameraTransform: cameraTransform))
             return
         }
@@ -1193,12 +1228,16 @@ final class RoomCoordinator: NSObject {
         switch result {
         case .placed:
             onPlacementMessageChanged?(nil)
+        case .loading(let message):
+            onPlacementMessageChanged?(message)
         case .limitReached(let maximum):
             onPlacementMessageChanged?("Room full (\(maximum) objects). Delete one to place another.")
         case .missingAsset:
             onPlacementMessageChanged?("Choose a cutout before placing it.")
-        case .creationFailed:
-            onPlacementMessageChanged?("This cutout could not be created.")
+        case .missingModel:
+            onPlacementMessageChanged?("Choose a 3D model before placing it.")
+        case .creationFailed(let message):
+            onPlacementMessageChanged?(message)
         }
     }
 

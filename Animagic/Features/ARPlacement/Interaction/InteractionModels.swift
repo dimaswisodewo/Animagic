@@ -12,9 +12,43 @@ struct InteractableComponent: Component {
     let objectID: UUID
 }
 
+enum PlacementContentType: String, CaseIterable, Identifiable {
+    case doodle
+    case model
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .doodle: "Doodles"
+        case .model: "3D Models"
+        }
+    }
+}
+
+enum PlacedObjectContent: Equatable {
+    case doodle(AnimalArchetype)
+    case model(PlaceableUSDZModel.ID)
+
+    var animalArchetype: AnimalArchetype? {
+        guard case .doodle(let archetype) = self else { return nil }
+        return archetype
+    }
+
+    var title: String {
+        switch self {
+        case .doodle: "Doodle"
+        case .model(let modelID): PlaceableUSDZModel.model(withID: modelID)?.title ?? "3D Model"
+        }
+    }
+}
+
 struct PlacedObjectSelection: Equatable {
     let objectID: UUID
-    let animalArchetype: AnimalArchetype
+    let content: PlacedObjectContent
+
+    var animalArchetype: AnimalArchetype? { content.animalArchetype }
+    var title: String { content.title }
 }
 
 struct SurfaceProjection {
@@ -28,7 +62,7 @@ extension CollisionGroup {
 
 @MainActor
 protocol ObjectInteractionManaging: AnyObject {
-    var selectedObject: PlacedCutout? { get }
+    var selectedObject: (any PlacedSceneObject)? { get }
     var selection: PlacedObjectSelection? { get }
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? { get set }
 
@@ -45,6 +79,26 @@ protocol ObjectInteractionManaging: AnyObject {
     func setSelectedAnimalArchetype(_ archetype: AnimalArchetype)
     func deleteSelected()
     func clearSelection()
+}
+
+@MainActor
+protocol PlacedSceneObject: AnyObject {
+    var id: UUID { get }
+    var anchor: AnchorEntity { get }
+    var interactionRoot: Entity { get }
+    var supportSurfaceNormal: SIMD3<Float> { get set }
+    var selection: PlacedObjectSelection { get }
+
+    func update(deltaTime: Float)
+    func setSelected(_ isSelected: Bool)
+    func setInteractionPaused(_ isPaused: Bool)
+    func setAnimalArchetype(_ archetype: AnimalArchetype)
+}
+
+extension PlacedSceneObject {
+    func update(deltaTime: Float) {}
+    func setInteractionPaused(_ isPaused: Bool) {}
+    func setAnimalArchetype(_ archetype: AnimalArchetype) {}
 }
 
 @MainActor

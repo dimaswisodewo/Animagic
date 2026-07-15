@@ -14,7 +14,7 @@ protocol SurfaceProjecting {
     func project(
         _ point: CGPoint,
         in arView: ARView,
-        for object: PlacedCutout
+        for object: any PlacedSceneObject
     ) -> SurfaceProjection?
 }
 
@@ -22,7 +22,7 @@ struct ARSurfaceProjector: SurfaceProjecting {
     func project(
         _ point: CGPoint,
         in arView: ARView,
-        for object: PlacedCutout
+        for object: any PlacedSceneObject
     ) -> SurfaceProjection? {
         let existing = arView.raycast(
             from: point,
@@ -74,7 +74,7 @@ struct NonARPlaneProjector: SurfaceProjecting {
     func project(
         _ point: CGPoint,
         in arView: ARView,
-        for object: PlacedCutout
+        for object: any PlacedSceneObject
     ) -> SurfaceProjection? {
         project(point, in: arView)
     }

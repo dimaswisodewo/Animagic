@@ -16,6 +16,8 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     let spawnAnimalArchetype: AnimalArchetype
     let selectedObjectAnimalArchetype: AnimalArchetype?
     let selectedSpawnMode: SpawnMode
+    let selectedContentType: PlacementContentType
+    let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
     @Binding var placementStatus: ARPlacementStatus
     let deleteRequestID: UUID?
@@ -26,6 +28,8 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: spawnAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             onSelectionChanged: { selection in
                 Task { @MainActor in
                     if placedObjectSelection != selection {
@@ -69,6 +73,8 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
         context.coordinator.selectedCutoutID = selectedCutoutID
         context.coordinator.selectedAnimalArchetype = spawnAnimalArchetype
         context.coordinator.selectedSpawnMode = selectedSpawnMode
+        context.coordinator.selectedContentType = selectedContentType
+        context.coordinator.selectedModelID = selectedModelID
         context.coordinator.onSelectionChanged = { selection in
             Task { @MainActor in
                 if placedObjectSelection != selection {
