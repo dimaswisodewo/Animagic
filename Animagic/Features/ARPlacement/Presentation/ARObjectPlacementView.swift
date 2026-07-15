@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ARObjectPlacementView: View {
-    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     let cutoutAssets: [CutoutAsset]
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedAnimalArchetype = AnimalArchetype.fish
@@ -49,7 +49,7 @@ struct ARObjectPlacementView: View {
                 CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
                 if let selectedAsset = selectedCutoutAsset {
                     DoodleCorrectionMenu(asset: selectedAsset) { label in
-                        appState.updateCutoutOverride(id: selectedAsset.id, label: label)
+                        artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
                     }
                 }
                 AnimalArchetypePicker(selection: archetypeSelection)

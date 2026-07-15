@@ -15,6 +15,9 @@
 		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
+		4C0833C4B1468F1303B4D043 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AD /* SavedDrawing.swift */; };
+		4C0833C4B1468F1303B4D044 /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AE /* ArtworkRepository.swift */; };
+		4C0833C4B1468F1303B4D045 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AF /* ArtworkLibraryStore.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */; };
@@ -79,6 +82,9 @@
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCategory.swift; sourceTree = "<group>"; };
+		374F07DE0B3BD252E95351AD /* SavedDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDrawing.swift; sourceTree = "<group>"; };
+		374F07DE0B3BD252E95351AE /* ArtworkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkRepository.swift; sourceTree = "<group>"; };
+		374F07DE0B3BD252E95351AF /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
 		3B2C6B5D21F3BDEAA098F049 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		422083642B5E91548C3F0510 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		428B6C585A279B611A77495E /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
@@ -270,8 +276,11 @@
 			isa = PBXGroup;
 			children = (
 				374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */,
+				374F07DE0B3BD252E95351AF /* ArtworkLibraryStore.swift */,
 				2F2AEA1E9DBDC3ECE41983FE /* ArtworkPersistence.swift */,
+				374F07DE0B3BD252E95351AE /* ArtworkRepository.swift */,
 				6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */,
+				374F07DE0B3BD252E95351AD /* SavedDrawing.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -440,7 +449,9 @@
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,
 				5A2BB0876E36F629B1BDE606 /* AppState.swift in Sources */,
 				4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */,
+				4C0833C4B1468F1303B4D045 /* ArtworkLibraryStore.swift in Sources */,
 				647182296E0CE99888CC7CCA /* ArtworkPersistence.swift in Sources */,
+				4C0833C4B1468F1303B4D044 /* ArtworkRepository.swift in Sources */,
 				0340F51D8B5688870C824C52 /* BackpackPageView.swift in Sources */,
 				32035E3EF1F32A2DAD6062D2 /* CanvasPageView.swift in Sources */,
 				57556B92543330D7556422E9 /* CanvasTopBarView.swift in Sources */,
@@ -448,6 +459,7 @@
 				7D031AE97B5BCA144E2860C0 /* ContentView.swift in Sources */,
 				5F70267B7F6242DC91E5CC3C /* CustomButton.swift in Sources */,
 				8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */,
+				4C0833C4B1468F1303B4D043 /* SavedDrawing.swift in Sources */,
 				B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */,
 				A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */,
 				5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */,

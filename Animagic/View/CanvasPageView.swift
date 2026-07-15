@@ -3,6 +3,7 @@ import PencilKit
 
 struct CanvasPageView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var documentTitle = ""
     @State private var canvasView = PKCanvasView()
     
@@ -76,7 +77,7 @@ struct CanvasPageView: View {
             Text("Draw something first, then let’s bring it to life!")
         }
         .onAppear {
-            if let activeDrawing = appState.activeDrawing {
+            if let activeDrawing = artworkStore.drawing(id: appState.activeDrawingID) {
                 canvasView.drawing = activeDrawing.drawing
                 documentTitle = activeDrawing.name
                 isDocumentTitleManuallyEdited = activeDrawing.isNameManuallyEdited
@@ -122,5 +123,6 @@ private struct DoodleClassificationOverlay: View {
 #Preview {
     CanvasPageView()
         .environmentObject(AppState())
+        .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
         .previewDevice("iPad Pro (11-inch) (4th generation)")
 }

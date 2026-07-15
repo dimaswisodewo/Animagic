@@ -27,6 +27,17 @@ final class SavedDrawingRecord {
         createdAt = drawing.createdAt
     }
 
+    func update(from drawing: SavedDrawing) {
+        name = drawing.name
+        categoryRawValue = drawing.category.rawValue
+        drawingData = drawing.drawing.dataRepresentation()
+        predictedLabel = drawing.doodleClassification?.label
+        predictionConfidence = drawing.doodleClassification.map { Double($0.confidence) }
+        overrideLabel = drawing.doodleOverrideLabel
+        isNameManuallyEdited = drawing.isNameManuallyEdited
+        createdAt = drawing.createdAt
+    }
+
     func asValue() -> SavedDrawing? {
         guard let drawing = try? PKDrawing(data: drawingData) else { return nil }
         return SavedDrawing(
@@ -67,6 +78,17 @@ final class CutoutAssetRecord {
         predictionConfidence = asset.doodleClassification.map { Double($0.confidence) }
         classificationError = asset.doodleClassificationError
         overrideLabel = asset.doodleOverrideLabel
+    }
+
+    func update(from record: CutoutAssetRecord) {
+        sourceDrawingID = record.sourceDrawingID
+        imageData = record.imageData
+        originalWidth = record.originalWidth
+        originalHeight = record.originalHeight
+        predictedLabel = record.predictedLabel
+        predictionConfidence = record.predictionConfidence
+        classificationError = record.classificationError
+        overrideLabel = record.overrideLabel
     }
 
     func asValue() -> CutoutAsset? {

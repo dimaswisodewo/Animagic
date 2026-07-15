@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @StateObject private var appState = AppState()
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
     
     var body: some View {
@@ -82,16 +81,43 @@ struct ContentView: View {
                 case .canvas:
                     CanvasPageView()
                 case .arView:
-                    ARObjectPlacementView(cutoutAssets: appState.cutoutLibrary, initialCutoutID: appState.cutoutLibrary.last?.id)
+                    ARObjectPlacementView(
+                        cutoutAssets: artworkStore.cutoutLibrary,
+                        initialCutoutID: artworkStore.cutoutLibrary.last?.id
+                    )
                 case .backpack:
                     BackpackPageView()
-                case .handdrawnDetail(let drawing):
-                    HanddrawnDetailView(drawing: drawing)
+                case .handdrawnDetail(let drawingID):
+                    HanddrawnDetailView(drawingID: drawingID)
                 }
             }
         }
-        .environmentObject(appState)
-        .onAppear { appState.configurePersistence(with: modelContext) }
+        .alert(
+            artworkStore.persistenceAlert?.title ?? "Artwork Couldn’t Be Updated",
+            isPresented: persistenceAlertIsPresented,
+            presenting: artworkStore.persistenceAlert
+        ) { alert in
+            Button("Cancel", role: .cancel) {
+                artworkStore.persistenceAlert = nil
+            }
+            Button("Retry") {
+                artworkStore.persistenceAlert = nil
+                alert.retry()
+            }
+        } message: { alert in
+            Text(alert.message)
+        }
+    }
+
+    private var persistenceAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { artworkStore.persistenceAlert != nil },
+            set: { isPresented in
+                if !isPresented {
+                    artworkStore.persistenceAlert = nil
+                }
+            }
+        )
     }
 }
 
@@ -186,4 +212,6 @@ struct BottomRightGraphic: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppState())
+        .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

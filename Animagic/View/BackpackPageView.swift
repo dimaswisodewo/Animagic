@@ -4,6 +4,7 @@ import PencilKit
 struct BackpackPageView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     
     // Tab selection state
     @State private var selectedTab: ArtworkCategory?
@@ -17,7 +18,7 @@ struct BackpackPageView: View {
     @State private var searchText = ""
     
     var filteredDrawings: [SavedDrawing] {
-        var filtered = appState.savedDrawings
+        var filtered = artworkStore.savedDrawings
         
         if !searchText.isEmpty {
             filtered = filtered.filter { $0.name.lowercased().contains(searchText.lowercased()) }
@@ -109,7 +110,7 @@ struct BackpackPageView: View {
                         // Display saved drawings
                         ForEach(filteredDrawings) { savedDrawing in
                             Button(action: {
-                                appState.navigationPath.append(NavigationRoute.handdrawnDetail(savedDrawing))
+                                appState.navigationPath.append(NavigationRoute.handdrawnDetail(savedDrawing.id))
                             }) {
                                 VStack(spacing: 0) {
                                     if !savedDrawing.drawing.bounds.isEmpty {
@@ -248,5 +249,6 @@ struct BackpackTabButton: View {
 #Preview {
     BackpackPageView()
         .environmentObject(AppState())
+        .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
         .previewDevice("iPad Pro (11-inch) (4th generation)")
 }

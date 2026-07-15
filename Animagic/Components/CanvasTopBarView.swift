@@ -4,6 +4,7 @@ import PencilKit
 struct CanvasTopBarView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
     @Binding var showGuidePopup: Bool
@@ -68,43 +69,46 @@ struct CanvasTopBarView: View {
                     return
                 }
                 let trimmedTitle = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                let savedDrawing = appState.saveActiveDrawing(
+                artworkStore.saveActiveDrawing(
+                    id: appState.activeDrawingID,
                     name: trimmedTitle,
                     drawing: canvasView.drawing,
                     isNameManuallyEdited: isDocumentTitleManuallyEdited && !trimmedTitle.isEmpty
-                )
-                
-                let image = canvasView.drawing.image(from: bounds, scale: 1.0)
-                isClassifyingDoodle = true
-                Task.detached(priority: .userInitiated) {
-                    let startedAt = DispatchTime.now().uptimeNanoseconds
-                    let classificationResult = Result {
-                        try DoodleClassificationService().classify(image).get()
-                    }
-                    let elapsed = DispatchTime.now().uptimeNanoseconds - startedAt
-                    let minimumDuration: UInt64 = 1_200_000_000
-                    if elapsed < minimumDuration {
-                        try? await Task.sleep(nanoseconds: minimumDuration - elapsed)
-                    }
-                    let newCutout = Self.makeCutoutAsset(
-                        image: image,
-                        originalSize: bounds.size,
-                        classificationResult: classificationResult,
-                        sourceDrawingID: savedDrawing.id
-                    )
-
-                    await MainActor.run {
-                        appState.updateSavedDrawingClassification(
-                            id: savedDrawing.id,
-                            classification: newCutout.doodleClassification
-                        )
-                        appState.replaceCutout(newCutout, forDrawingID: savedDrawing.id)
-                        if let updatedDrawing = appState.activeDrawing {
-                            documentTitle = updatedDrawing.name
-                            isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
+                ) { savedDrawing in
+                    appState.activeDrawingID = savedDrawing.id
+                    appState.drawing = canvasView.drawing
+                    let image = canvasView.drawing.image(from: bounds, scale: 1.0)
+                    isClassifyingDoodle = true
+                    Task.detached(priority: .userInitiated) {
+                        let startedAt = DispatchTime.now().uptimeNanoseconds
+                        let classificationResult = Result {
+                            try DoodleClassificationService().classify(image).get()
                         }
-                        isClassifyingDoodle = false
-                        appState.navigationPath.append(NavigationRoute.arView)
+                        let elapsed = DispatchTime.now().uptimeNanoseconds - startedAt
+                        let minimumDuration: UInt64 = 1_200_000_000
+                        if elapsed < minimumDuration {
+                            try? await Task.sleep(nanoseconds: minimumDuration - elapsed)
+                        }
+                        let newCutout = Self.makeCutoutAsset(
+                            image: image,
+                            originalSize: bounds.size,
+                            classificationResult: classificationResult,
+                            sourceDrawingID: savedDrawing.id
+                        )
+
+                        await MainActor.run {
+                            artworkStore.persistClassifiedCutout(
+                                newCutout,
+                                forDrawingID: savedDrawing.id,
+                                replacingExistingCutouts: true,
+                                onFailure: { isClassifyingDoodle = false }
+                            ) { updatedDrawing in
+                                documentTitle = updatedDrawing.name
+                                isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
+                                isClassifyingDoodle = false
+                                appState.navigationPath.append(NavigationRoute.arView)
+                            }
+                        }
                     }
                 }
             }

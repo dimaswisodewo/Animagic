@@ -4,8 +4,9 @@ import PencilKit
 struct HanddrawnDetailView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     
-    let drawing: SavedDrawing
+    let drawingID: UUID
     
     @State private var showDeleteConfirmation = false
     @State private var showShareSheet = false
@@ -42,12 +43,13 @@ struct HanddrawnDetailView: View {
                             sourceDrawingID: drawing.id
                         )
                         await MainActor.run {
-                            appState.updateSavedDrawingClassification(
-                                id: drawing.id,
-                                classification: newCutout.doodleClassification
-                            )
-                            appState.addCutout(newCutout)
-                            appState.navigationPath.append(NavigationRoute.arView)
+                            artworkStore.persistClassifiedCutout(
+                                newCutout,
+                                forDrawingID: drawing.id,
+                                replacingExistingCutouts: false
+                            ) { _ in
+                                appState.navigationPath.append(NavigationRoute.arView)
+                            }
                         }
                     }
                 }
@@ -119,8 +121,14 @@ struct HanddrawnDetailView: View {
     }
     
     private func deleteDrawing() {
-        appState.removeSavedDrawing(id: drawing.id)
-        dismiss()
+        artworkStore.deleteDrawing(id: drawing.id) {
+            dismiss()
+        }
+    }
+
+    private var drawing: SavedDrawing {
+        artworkStore.drawing(id: drawingID)
+            ?? SavedDrawing(id: drawingID, name: "", drawing: PKDrawing())
     }
 
     private static func makeCutoutAsset(
@@ -210,6 +218,7 @@ struct DetailActionButton: View {
 }
 
 #Preview {
-    HanddrawnDetailView(drawing: SavedDrawing(name: "Test", drawing: PKDrawing()))
+    HanddrawnDetailView(drawingID: UUID())
         .environmentObject(AppState())
+        .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
