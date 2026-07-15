@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(NavigationRouter.self) private var router
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
     
     var body: some View {
-        NavigationStack(path: $appState.navigationPath) {
+        ZStack {
             ZStack {
                 // Background Color
                 Color(red: 1.0, green: 0.79, blue: 0.07) // Yellow #FFC812
@@ -62,36 +63,22 @@ struct ContentView: View {
                         .padding(.bottom, 20)
                     
                     CustomButton(title: "Let's Draw!") {
-                        appState.startNewDrawing()
-                        appState.navigationPath.append(NavigationRoute.canvas)
+                        drawingSession.startNewDrawing()
+                        router.push(.canvas)
                     }
                     
                     CustomButton(title: "Magic Lens") {
-                        appState.clearDrawing() // Magic Lens should start with blank canvas if they hit Draw More!
-                        appState.navigationPath.append(NavigationRoute.arView)
+                        drawingSession.clearDrawing()
+                        router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
                     }
                     
                     CustomButton(title: "My Backpack") {
-                        appState.navigationPath.append(NavigationRoute.backpack)
+                        router.push(.backpack)
                     }
                 }
             }
-            .navigationDestination(for: NavigationRoute.self) { route in
-                switch route {
-                case .canvas:
-                    CanvasPageView()
-                case .arView:
-                    ARObjectPlacementView(
-                        cutoutAssets: artworkStore.cutoutLibrary,
-                        initialCutoutID: artworkStore.cutoutLibrary.last?.id
-                    )
-                case .backpack:
-                    BackpackPageView()
-                case .handdrawnDetail(let drawingID):
-                    HanddrawnDetailView(drawingID: drawingID)
-                }
-            }
         }
+        .withAppRouter()
         .alert(
             artworkStore.persistenceAlert?.title ?? "Artwork Couldn’t Be Updated",
             isPresented: persistenceAlertIsPresented,
@@ -212,6 +199,7 @@ struct BottomRightGraphic: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppState())
+        .environment(NavigationRouter())
+        .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

@@ -2,7 +2,8 @@ import PencilKit
 import SwiftUI
 
 struct CanvasPageView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(NavigationRouter.self) private var router
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
 
     @State private var documentTitle = ""
@@ -87,14 +88,14 @@ struct CanvasPageView: View {
     }
 
     private func loadDrawing() {
-        if let activeDrawing = artworkStore.drawing(id: appState.activeDrawingID) {
+        if let activeDrawing = artworkStore.drawing(id: drawingSession.activeDrawingID) {
             canvasView.drawing = activeDrawing.drawing
             documentTitle = activeDrawing.name
             isDocumentTitleManuallyEdited = activeDrawing.isNameManuallyEdited
         } else {
-            canvasView.drawing = appState.drawing.strokes.isEmpty
+            canvasView.drawing = drawingSession.drawing.strokes.isEmpty
                 ? PKDrawing()
-                : appState.drawing
+                : drawingSession.drawing
         }
         hasDrawing = !canvasView.drawing.strokes.isEmpty
     }
@@ -126,6 +127,7 @@ private struct DoodleClassificationOverlay: View {
 
 #Preview {
     CanvasPageView()
-        .environmentObject(AppState())
+        .environment(NavigationRouter())
+        .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

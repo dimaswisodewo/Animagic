@@ -16,11 +16,12 @@
 		4B48B34326D7D31452CDF3A8 /* BackpackComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C839AF1FF423E7656F903 /* BackpackComponents.swift */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
+		50D76266330C62C47F2DCD54 /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6CCD73F07DC5872D167BC7 /* AppRoute+Modifier.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */; };
 		56983DFE25116693FC679A4F /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD3796D204ED446BC9A9C30 /* HanddrawnDetailComponents.swift */; };
 		57556B92543330D7556422E9 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA02314790A0466D6FD18C1 /* CanvasTopBarView.swift */; };
-		5A2BB0876E36F629B1BDE606 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A692583070E60924095B235 /* AppState.swift */; };
+		5A2BB0876E36F629B1BDE606 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A692583070E60924095B235 /* DrawingSessionManager.swift */; };
 		5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */; };
 		5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */; };
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
@@ -50,6 +51,7 @@
 		A82FF3623CC9FE128781C06E /* AnimalSpeciesClassifierV4.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = EE81684059B2CCFECEE4A490 /* AnimalSpeciesClassifierV4.mlpackage */; };
 		B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */; };
 		B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */; };
+		B2B38B320686CC530820A4DA /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539A07CF7672D13036057391 /* AppRoute.swift */; };
 		B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */; };
 		BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */; };
 		C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */; };
@@ -71,7 +73,7 @@
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		06B3543619698F8440EE0B81 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
-		0A692583070E60924095B235 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		0A692583070E60924095B235 /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
 		0C96C4320EF4E1F45FF2B98B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		14720E9E927521DF4B139AAF /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
 		15A234D89D17DC112408BAC4 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 		4BD3796D204ED446BC9A9C30 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
 		4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
 		4F8BF15392BF21A8DA2CD3D2 /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
+		539A07CF7672D13036057391 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
 		5B694AAF2C1AB0C59BD43C51 /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
 		6935690A842E78F3362B2E24 /* TokyoSpringAmbience.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TokyoSpringAmbience.mp3; sourceTree = "<group>"; };
 		6BA1840D2BBFFB401242C5DD /* ArtworkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkRepository.swift; sourceTree = "<group>"; };
@@ -116,6 +119,7 @@
 		CC80DAEFEE58B8BAA19482CD /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		CDDF7D6B7DF188D08E65C913 /* Font */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Font; path = Animagic/Asset/Font; sourceTree = SOURCE_ROOT; };
 		DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneController.swift; sourceTree = "<group>"; };
+		DC6CCD73F07DC5872D167BC7 /* AppRoute+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRoute+Modifier.swift"; sourceTree = "<group>"; };
 		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
 		DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
 		E18C839AF1FF423E7656F903 /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
@@ -217,7 +221,9 @@
 			isa = PBXGroup;
 			children = (
 				AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */,
-				0A692583070E60924095B235 /* AppState.swift */,
+				539A07CF7672D13036057391 /* AppRoute.swift */,
+				DC6CCD73F07DC5872D167BC7 /* AppRoute+Modifier.swift */,
+				0A692583070E60924095B235 /* DrawingSessionManager.swift */,
 				422083642B5E91548C3F0510 /* ContentView.swift */,
 				428B6C585A279B611A77495E /* MenuView.swift */,
 			);
@@ -479,7 +485,9 @@
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,
 				10A3F39F5534BFE1BFFFD8EC /* AnimagicDesignSystem.swift in Sources */,
-				5A2BB0876E36F629B1BDE606 /* AppState.swift in Sources */,
+				50D76266330C62C47F2DCD54 /* AppRoute+Modifier.swift in Sources */,
+				B2B38B320686CC530820A4DA /* AppRoute.swift in Sources */,
+				5A2BB0876E36F629B1BDE606 /* DrawingSessionManager.swift in Sources */,
 				4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */,
 				60354CC3F8031B9E06CF8926 /* ArtworkLibraryStore.swift in Sources */,
 				647182296E0CE99888CC7CCA /* ArtworkPersistence.swift in Sources */,

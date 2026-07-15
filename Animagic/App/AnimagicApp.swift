@@ -12,7 +12,8 @@ import SwiftUI
 @MainActor
 struct AnimagicApp: App {
     private let modelContainer: ModelContainer
-    @StateObject private var appState: AppState
+    @State private var router = NavigationRouter()
+    @State private var drawingSession = DrawingSessionManager()
     @StateObject private var artworkStore: ArtworkLibraryStore
 
     init() {
@@ -22,7 +23,6 @@ struct AnimagicApp: App {
                 CutoutAssetRecord.self
             )
             modelContainer = container
-            _appState = StateObject(wrappedValue: AppState())
             _artworkStore = StateObject(
                 wrappedValue: ArtworkLibraryStore(
                     repository: SwiftDataArtworkRepository(context: container.mainContext)
@@ -36,7 +36,8 @@ struct AnimagicApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(appState)
+                .environment(router)
+                .environment(drawingSession)
                 .environmentObject(artworkStore)
         }
         .modelContainer(modelContainer)

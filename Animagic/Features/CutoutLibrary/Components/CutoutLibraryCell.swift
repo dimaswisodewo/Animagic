@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CutoutLibraryCell: View {
+    @Environment(NavigationRouter.self) private var router
     let cutoutAsset: CutoutAsset
     let allCutouts: [CutoutAsset]
     let onRemove: () -> Void
@@ -54,11 +55,8 @@ struct CutoutLibraryCell: View {
             .buttonStyle(.bordered)
 
             HStack {
-                NavigationLink {
-                    ARObjectPlacementView(
-                        cutoutAssets: allCutouts,
-                        initialCutoutID: cutoutAsset.id
-                    )
+                Button {
+                    router.push(.arView(initialCutoutID: cutoutAsset.id))
                 } label: {
                     Image(systemName: "arkit")
                         .frame(width: 36, height: 32)

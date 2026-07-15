@@ -3,7 +3,8 @@ import PencilKit
 
 struct CanvasTopBarView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var appState: AppState
+    @Environment(NavigationRouter.self) private var router
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
@@ -81,7 +82,7 @@ struct CanvasTopBarView: View {
 
         let title = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         artworkStore.saveActiveDrawing(
-            id: appState.activeDrawingID,
+            id: drawingSession.activeDrawingID,
             name: title,
             drawing: drawing,
             isNameManuallyEdited: isDocumentTitleManuallyEdited && !title.isEmpty
@@ -93,8 +94,8 @@ struct CanvasTopBarView: View {
     private func classify(_ drawing: PKDrawing, for savedDrawing: SavedDrawing) {
         let bounds = drawing.bounds
         let image = drawing.image(from: bounds, scale: 1)
-        appState.activeDrawingID = savedDrawing.id
-        appState.drawing = drawing
+        drawingSession.activeDrawingID = savedDrawing.id
+        drawingSession.drawing = drawing
         isClassifyingDoodle = true
 
         Task.detached(priority: .userInitiated) {
@@ -126,7 +127,7 @@ struct CanvasTopBarView: View {
             documentTitle = updatedDrawing.name
             isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
             isClassifyingDoodle = false
-            appState.navigationPath.append(NavigationRoute.arView)
+            router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
         }
     }
 }

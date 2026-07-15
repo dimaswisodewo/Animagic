@@ -2,7 +2,8 @@ import SwiftUI
 
 struct BackpackPageView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var appState: AppState
+    @Environment(NavigationRouter.self) private var router
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
 
     @State private var selectedCategory: ArtworkCategory?
@@ -59,7 +60,7 @@ struct BackpackPageView: View {
             LazyVGrid(columns: Self.gridColumns, spacing: 20) {
                 ForEach(filteredDrawings) { drawing in
                     Button {
-                        appState.navigationPath.append(NavigationRoute.handdrawnDetail(drawing.id))
+                        router.push(.handdrawnDetail(drawing.id))
                     } label: {
                         BackpackDrawingCard(drawing: drawing)
                     }
@@ -93,12 +94,12 @@ struct BackpackPageView: View {
     }
 
     private func startNewDrawing() {
-        appState.startNewDrawing()
-        appState.navigationPath.append(NavigationRoute.canvas)
+        drawingSession.startNewDrawing()
+        router.push(.canvas)
     }
 
     private func openAR() {
-        appState.navigationPath.append(NavigationRoute.arView)
+        router.push(.arView(initialCutoutID: nil))
     }
 
     private static let scrollSpace = "backpack-scroll"
@@ -110,6 +111,7 @@ struct BackpackPageView: View {
 
 #Preview {
     BackpackPageView()
-        .environmentObject(AppState())
+        .environment(NavigationRouter())
+        .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

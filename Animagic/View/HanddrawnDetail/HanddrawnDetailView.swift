@@ -3,7 +3,7 @@ import SwiftUI
 
 struct HanddrawnDetailView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var appState: AppState
+    @Environment(NavigationRouter.self) private var router
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
 
     let drawingID: UUID
@@ -66,7 +66,7 @@ struct HanddrawnDetailView: View {
                     forDrawingID: drawing.id,
                     replacingExistingCutouts: false
                 ) { _ in
-                    appState.navigationPath.append(NavigationRoute.arView)
+                    router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
                 }
             }
         }
@@ -91,6 +91,7 @@ struct HanddrawnDetailView: View {
 
 #Preview {
     HanddrawnDetailView(drawingID: UUID())
-        .environmentObject(AppState())
+        .environment(NavigationRouter())
+        .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }

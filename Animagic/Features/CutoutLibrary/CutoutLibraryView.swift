@@ -9,6 +9,7 @@ import PhotosUI
 import SwiftUI
 
 struct CutoutLibraryView: View {
+    @Environment(NavigationRouter.self) private var router
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @StateObject private var viewModel = CutoutLibraryViewModel()
     @State private var selectedPhotos: [PhotosPickerItem] = []
@@ -114,8 +115,8 @@ struct CutoutLibraryView: View {
             .frame(maxWidth: .infinity, minHeight: 280)
         } else {
             VStack(alignment: .leading, spacing: 16) {
-                NavigationLink {
-                    ARObjectPlacementView(cutoutAssets: artworkStore.cutoutLibrary)
+                Button {
+                    router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.first?.id))
                 } label: {
                     Label("Open AR Library", systemImage: "arkit")
                         .frame(maxWidth: .infinity)

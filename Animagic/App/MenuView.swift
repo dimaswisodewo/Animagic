@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct MenuView: View {
+    @Environment(NavigationRouter.self) private var router
+
     var body: some View {
-        NavigationStack {
+        VStack {
             VStack(spacing: 20) {
                 Image(systemName: "cube.transparent")
                     .font(.system(size: 52))
@@ -22,16 +24,16 @@ struct MenuView: View {
                     .foregroundStyle(.secondary)
 
                 VStack(spacing: 12) {
-                    NavigationLink {
-                        CutoutLibraryView()
+                    Button {
+                        router.push(.cutoutLibrary)
                     } label: {
                         Label("AR View", systemImage: "arkit")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
 
-                    NavigationLink {
-                        VirtualRoomView()
+                    Button {
+                        router.push(.virtualRoom)
                     } label: {
                         Label("RealityKit View", systemImage: "cube.transparent")
                             .frame(maxWidth: .infinity)
