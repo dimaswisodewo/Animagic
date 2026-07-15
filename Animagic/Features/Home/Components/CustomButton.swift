@@ -7,7 +7,9 @@ struct CustomButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Belanosima-SemiBold", size: 30))
+                .font(.custom("Belanosima-SemiBold", size: 30, relativeTo: .title2))
+                .minimumScaleFactor(0.75)
+                .lineLimit(1)
                 .foregroundColor(.black)
                 .padding(.vertical, 16)
                 .padding(.horizontal, 48)

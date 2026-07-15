@@ -103,10 +103,9 @@ struct BackpackPageView: View {
     }
 
     private static let scrollSpace = "backpack-scroll"
-    private static let gridColumns = Array(
-        repeating: GridItem(.flexible()),
-        count: 3
-    )
+    private static let gridColumns = [
+        GridItem(.adaptive(minimum: 140))
+    ]
 }
 
 #Preview {
