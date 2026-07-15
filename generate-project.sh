@@ -2,17 +2,18 @@
 # Generate AniMagic.xcodeproj from the checked-in XcodeGen specification.
 #
 # Usage:
-#   ./Scripts/generate-project.sh                         Regenerate the committed Xcode project.
-#   ./Scripts/generate-project.sh --check                 Verify the committed project is current.
-#   ./Scripts/generate-project.sh --spec path/project.yml Use an alternate XcodeGen specification.
-#   ./Scripts/generate-project.sh --help                  Show this help text.
+#   ./generate-project.sh                         Regenerate the committed Xcode project.
+#   ./generate-project.sh --check                 Verify the committed project is current.
+#   ./generate-project.sh --spec path/project.yml Use an alternate XcodeGen specification.
+#   ./generate-project.sh --help                  Show this help text.
 #
 # The script exits nonzero when a dependency or input is missing, generation
 # fails, or --check detects that the committed project is stale.
 set -euo pipefail
 
-# Resolve the repository root so the command works from any directory.
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Resolve the repository root so the command works from any directory. This
+# script lives at the repository root (not in a Scripts subdirectory).
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_NAME="AniMagic"
 PROJECT_PATH="$ROOT_DIR/$PROJECT_NAME.xcodeproj"
 DEFAULT_SPEC="${XCODEGEN_SPEC:-project.yml}"
