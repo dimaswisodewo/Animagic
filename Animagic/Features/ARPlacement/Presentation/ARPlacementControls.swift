@@ -9,12 +9,29 @@ import SwiftUI
 
 struct ARInstructionBanner: View {
     let spawnMode: SpawnMode
+    let status: ARPlacementStatus
+
+    private var title: String {
+        switch status {
+        case .searching: return "Scan for a horizontal surface"
+        case .ready: return "Surface found — tap to place"
+        case .placed: return "Placed"
+        case .limited, .failed: return "Keep scanning"
+        }
+    }
+
+    private var detail: String {
+        switch status {
+        case .limited(let message), .failed(let message): return message
+        default: return spawnMode.instruction
+        }
+    }
 
     var body: some View {
         VStack(spacing: 8) {
-            Text("Move the device to find a plane")
+            Label(title, systemImage: status == .ready ? "checkmark.circle.fill" : "viewfinder")
                 .font(.headline)
-            Text(spawnMode.instruction)
+            Text(detail)
                 .font(.subheadline)
         }
         .multilineTextAlignment(.center)
