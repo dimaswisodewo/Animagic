@@ -38,10 +38,15 @@ struct HanddrawnDetailView: View {
                         let newCutout = Self.makeCutoutAsset(
                             image: image,
                             originalSize: image.size,
-                            classificationResult: classificationResult
+                            classificationResult: classificationResult,
+                            sourceDrawingID: drawing.id
                         )
                         await MainActor.run {
-                            appState.cutoutLibrary.append(newCutout)
+                            appState.updateSavedDrawingClassification(
+                                id: drawing.id,
+                                classification: newCutout.doodleClassification
+                            )
+                            appState.addCutout(newCutout)
                             appState.navigationPath.append(NavigationRoute.arView)
                         }
                     }
@@ -114,24 +119,27 @@ struct HanddrawnDetailView: View {
     }
     
     private func deleteDrawing() {
-        appState.savedDrawings.removeAll { $0.id == drawing.id }
+        appState.removeSavedDrawing(id: drawing.id)
         dismiss()
     }
 
     private static func makeCutoutAsset(
         image: UIImage,
         originalSize: CGSize,
-        classificationResult: Result<DoodleClassification, Error>
+        classificationResult: Result<DoodleClassification, Error>,
+        sourceDrawingID: UUID
     ) -> CutoutAsset {
         switch classificationResult {
         case .success(let classification):
             return CutoutAsset(
+                sourceDrawingID: sourceDrawingID,
                 image: image,
                 originalSize: originalSize,
                 doodleClassification: classification
             )
         case .failure(let error):
             return CutoutAsset(
+                sourceDrawingID: sourceDrawingID,
                 image: image,
                 originalSize: originalSize,
                 doodleClassificationError: error.localizedDescription

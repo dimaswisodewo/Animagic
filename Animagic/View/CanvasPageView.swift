@@ -69,10 +69,6 @@ struct CanvasPageView: View {
                 canvasView.drawing = appState.drawing
             }
         }
-        .onDisappear {
-            // Save the drawing to state when leaving
-            appState.drawing = canvasView.drawing
-        }
         }
     }
 }

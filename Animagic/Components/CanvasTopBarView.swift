@@ -43,10 +43,8 @@ struct CanvasTopBarView: View {
             // Save Button (Navigates to AR Page)
             TopBarButton(title: "Save", isDisabled: isClassifyingDoodle) {
                 guard !isClassifyingDoodle else { return }
-                appState.drawing = canvasView.drawing
-                
                 let newDrawing = SavedDrawing(name: documentTitle, drawing: canvasView.drawing)
-                appState.savedDrawings.append(newDrawing)
+                appState.addSavedDrawing(newDrawing)
                 
                 let bounds = canvasView.drawing.bounds
                 if !bounds.isEmpty {
@@ -65,11 +63,17 @@ struct CanvasTopBarView: View {
                         let newCutout = Self.makeCutoutAsset(
                             image: image,
                             originalSize: bounds.size,
-                            classificationResult: classificationResult
+                            classificationResult: classificationResult,
+                            sourceDrawingID: newDrawing.id
                         )
 
                         await MainActor.run {
-                            appState.cutoutLibrary.append(newCutout)
+                            appState.updateSavedDrawingClassification(
+                                id: newDrawing.id,
+                                classification: newCutout.doodleClassification
+                            )
+                            appState.addCutout(newCutout)
+                            appState.clearDrawing()
                             isClassifyingDoodle = false
                             appState.navigationPath.append(NavigationRoute.arView)
                         }
@@ -87,20 +91,25 @@ struct CanvasTopBarView: View {
     private static func makeCutoutAsset(
         image: UIImage,
         originalSize: CGSize,
-        classificationResult: Result<DoodleClassification, Error>
+        classificationResult: Result<DoodleClassification, Error>,
+        sourceDrawingID: UUID
     ) -> CutoutAsset {
         switch classificationResult {
         case .success(let classification):
             return CutoutAsset(
+                sourceDrawingID: sourceDrawingID,
                 image: image,
                 originalSize: originalSize,
-                doodleClassification: classification
+                doodleClassification: classification,
+                doodleOverrideLabel: nil
             )
         case .failure(let error):
             return CutoutAsset(
+                sourceDrawingID: sourceDrawingID,
                 image: image,
                 originalSize: originalSize,
-                doodleClassificationError: error.localizedDescription
+                doodleClassificationError: error.localizedDescription,
+                doodleOverrideLabel: nil
             )
         }
     }

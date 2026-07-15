@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct AnimagicApp: App {
@@ -13,5 +14,6 @@ struct AnimagicApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [SavedDrawingRecord.self, CutoutAssetRecord.self])
     }
 }

@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var appState = AppState()
     @State private var isAnimatingGraphics = false
     
@@ -61,8 +63,7 @@ struct ContentView: View {
                         .padding(.bottom, 20)
                     
                     CustomButton(title: "Let's Draw!") {
-                        // Drawing state can be kept or cleared depending on preference.
-                        // For a fresh start, you might clear it, but typically "Draw More!" does that.
+                        appState.startNewDrawing()
                         appState.navigationPath.append(NavigationRoute.canvas)
                     }
                     
@@ -90,6 +91,7 @@ struct ContentView: View {
             }
         }
         .environmentObject(appState)
+        .onAppear { appState.configurePersistence(with: modelContext) }
     }
 }
 

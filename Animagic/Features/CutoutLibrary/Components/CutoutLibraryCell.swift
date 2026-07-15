@@ -11,6 +11,7 @@ struct CutoutLibraryCell: View {
     let cutoutAsset: CutoutAsset
     let allCutouts: [CutoutAsset]
     let onRemove: () -> Void
+    let onClassificationOverride: (String?) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -26,9 +27,11 @@ struct CutoutLibraryCell: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            if let classification = cutoutAsset.doodleClassification {
+            if let label = cutoutAsset.resolvedDoodleLabel {
                 Label(
-                    "\(classification.label.capitalized) \(classification.confidence, format: .percent.precision(.fractionLength(0)))",
+                    cutoutAsset.doodleOverrideLabel == nil && cutoutAsset.doodleClassification != nil
+                        ? "\(label.capitalized) \(cutoutAsset.doodleClassification!.confidence, format: .percent.precision(.fractionLength(0)))"
+                        : "\(label.capitalized) (manual)",
                     systemImage: "wand.and.stars"
                 )
                 .font(.caption)
@@ -38,6 +41,17 @@ struct CutoutLibraryCell: View {
                     .font(.caption)
                     .foregroundStyle(.orange)
             }
+
+            Menu {
+                Button("Use AI Suggestion") { onClassificationOverride(nil) }
+                ForEach(DoodleSpecies.all, id: \.self) { label in
+                    Button(label.capitalized) { onClassificationOverride(label) }
+                }
+            } label: {
+                Label("Change animal", systemImage: "slider.horizontal.3")
+                    .font(.caption)
+            }
+            .buttonStyle(.bordered)
 
             HStack {
                 NavigationLink {
