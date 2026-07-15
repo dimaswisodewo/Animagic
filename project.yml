@@ -25,28 +25,14 @@ targets:
     sources:
       - path: Animagic
         excludes:
-          - Info.plist
-          - Assets.xcassets/**
-          - Asset/Font/**
-          - Core/ML/Models/**
-          - Features/VirtualRoom/Resources/**
-      - path: Animagic/Core/Rendering/CutoutDeformation.metal
-      - path: Animagic/Assets.xcassets
-        buildPhase: resources
-      - path: Animagic/Asset/Font
-        type: folder
-        buildPhase: resources
-      - path: Animagic/Core/ML/Models/AnimalSpeciesClassifierV4.mlpackage
-        buildPhase: resources
-      - path: Animagic/Features/VirtualRoom/Resources
-        excludes:
-          - AnimalSpeciesClassifierV4.mlpackage/**
-        buildPhase: resources
+          - Configuration/Info.plist
+          - Resources/**
+      - path: Animagic/Resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic
         PRODUCT_NAME: "$(TARGET_NAME)"
-        INFOPLIST_FILE: Animagic/Info.plist
+        INFOPLIST_FILE: Animagic/Configuration/Info.plist
         GENERATE_INFOPLIST_FILE: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor

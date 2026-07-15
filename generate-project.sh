@@ -2,17 +2,17 @@
 # Generate AniMagic.xcodeproj from the checked-in XcodeGen specification.
 #
 # Usage:
-#   ./fixme.sh                         Regenerate the committed Xcode project.
-#   ./fixme.sh --check                 Verify the committed project is current.
-#   ./fixme.sh --spec path/project.yml Use an alternate XcodeGen specification.
-#   ./fixme.sh --help                  Show this help text.
+#   ./Scripts/generate-project.sh                         Regenerate the committed Xcode project.
+#   ./Scripts/generate-project.sh --check                 Verify the committed project is current.
+#   ./Scripts/generate-project.sh --spec path/project.yml Use an alternate XcodeGen specification.
+#   ./Scripts/generate-project.sh --help                  Show this help text.
 #
 # The script exits nonzero when a dependency or input is missing, generation
 # fails, or --check detects that the committed project is stale.
 set -euo pipefail
 
-# Resolve paths from the script location so the command works from any directory.
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve the repository root so the command works from any directory.
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_NAME="AniMagic"
 PROJECT_PATH="$ROOT_DIR/$PROJECT_NAME.xcodeproj"
 DEFAULT_SPEC="${XCODEGEN_SPEC:-project.yml}"
@@ -98,7 +98,7 @@ generate_project() {
 
 if [[ "$MODE" == "check" ]]; then
     [[ -f "$PROJECT_PATH/project.pbxproj" ]] || \
-        fail "$PROJECT_NAME.xcodeproj is missing; run ./fixme.sh first."
+        fail "$PROJECT_NAME.xcodeproj is missing; run ./Scripts/generate-project.sh first."
 
     # Recreate the repository's relative layout outside the repository. XcodeGen
     # embeds path-dependent project entries, so a plain temporary output directory
@@ -118,7 +118,7 @@ if [[ "$MODE" == "check" ]]; then
 
     if ! cmp -s "$GENERATED_PBXPROJ" "$PROJECT_PATH/project.pbxproj"; then
         echo "The committed $PROJECT_NAME.xcodeproj is out of date." >&2
-        echo "Run ./fixme.sh and commit the regenerated project." >&2
+        echo "Run ./Scripts/generate-project.sh and commit the regenerated project." >&2
         exit 1
     fi
 
