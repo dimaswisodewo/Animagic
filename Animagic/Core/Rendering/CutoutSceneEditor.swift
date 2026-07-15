@@ -20,9 +20,11 @@ struct CutoutSceneConfiguration {
 
 enum CutoutPlacementResult: Equatable {
     case placed
+    case loading(String)
     case limitReached(Int)
     case missingAsset
-    case creationFailed
+    case missingModel
+    case creationFailed(String)
 }
 
 @MainActor
@@ -31,6 +33,9 @@ final class CutoutSceneEditor: SceneEditing {
     var selectedCutoutID: CutoutAsset.ID?
     var selectedAnimalArchetype: AnimalArchetype
     var selectedSpawnMode: SpawnMode
+    var selectedContentType: PlacementContentType
+    var selectedModelID: PlaceableUSDZModel.ID?
+    var onPlacementResult: ((CutoutPlacementResult) -> Void)?
 
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? {
         didSet {
@@ -39,12 +44,14 @@ final class CutoutSceneEditor: SceneEditing {
     }
 
     private let entityFactory: CutoutEntityFactory
+    private let modelRepository: USDZModelRepository
     private let registry: SceneObjectRegistry
     private let interactionManager: ObjectInteractionManager
     private var interactionAdapter: ARViewInteractionAdapter?
     private weak var arView: ARView?
     private let configuration: CutoutSceneConfiguration
     private var simulationAccumulator: Float = 0
+    private var isLoadingModel = false
 
     var objectCount: Int { registry.objects.count }
     var maximumObjectCount: Int? { configuration.maximumObjectCount }
@@ -54,7 +61,10 @@ final class CutoutSceneEditor: SceneEditing {
         selectedCutoutID: CutoutAsset.ID?,
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
+        selectedContentType: PlacementContentType = .doodle,
+        selectedModelID: PlaceableUSDZModel.ID? = PlaceableUSDZModel.all.first?.id,
         entityFactory: CutoutEntityFactory? = nil,
+        modelRepository: USDZModelRepository? = nil,
         configuration: CutoutSceneConfiguration? = nil,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil
     ) {
@@ -63,12 +73,16 @@ final class CutoutSceneEditor: SceneEditing {
         self.selectedCutoutID = selectedCutoutID
         self.selectedAnimalArchetype = selectedAnimalArchetype
         self.selectedSpawnMode = selectedSpawnMode
+        self.selectedContentType = selectedContentType
+        self.selectedModelID = selectedModelID
         self.entityFactory = entityFactory ?? CutoutEntityFactory()
+        self.modelRepository = modelRepository ?? USDZModelRepository()
         self.configuration = configuration ?? .augmentedReality
         self.registry = registry
         interactionManager = ObjectInteractionManager(registry: registry)
         self.onSelectionChanged = onSelectionChanged
         interactionManager.onSelectionChanged = onSelectionChanged
+        self.modelRepository.preload()
     }
 
     func attachInteraction(
@@ -173,6 +187,30 @@ final class CutoutSceneEditor: SceneEditing {
            objectCount >= maximumObjectCount {
             return .limitReached(maximumObjectCount)
         }
+
+        switch selectedContentType {
+        case .doodle:
+            return placeCutout(
+                at: transform,
+                cameraTransform: cameraTransform,
+                spawnMode: spawnMode,
+                supportSurfaceNormal: supportSurfaceNormal
+            )
+        case .model:
+            return placeModel(
+                at: transform,
+                cameraTransform: cameraTransform,
+                supportSurfaceNormal: supportSurfaceNormal
+            )
+        }
+    }
+
+    private func placeCutout(
+        at transform: simd_float4x4,
+        cameraTransform: simd_float4x4?,
+        spawnMode: SpawnMode,
+        supportSurfaceNormal: SIMD3<Float>
+    ) -> CutoutPlacementResult {
         let objectID = UUID()
         guard let cutoutAsset = selectedCutoutAsset else {
             return .missingAsset
@@ -184,13 +222,13 @@ final class CutoutSceneEditor: SceneEditing {
                   physicalWidth: configuration.physicalWidthOverride,
                   showsShadow: configuration.showsShadow
               ) else {
-            return .creationFailed
+            return .creationFailed("This doodle could not be created.")
         }
 
         let anchor = AnchorEntity(world: transform)
         anchor.addChild(cutout.root)
         guard let arView else {
-            return .creationFailed
+            return .creationFailed("The scene is no longer available.")
         }
         arView.scene.addAnchor(anchor)
 
@@ -211,6 +249,68 @@ final class CutoutSceneEditor: SceneEditing {
             )
         )
         return .placed
+    }
+
+    private func placeModel(
+        at transform: simd_float4x4,
+        cameraTransform: simd_float4x4?,
+        supportSurfaceNormal: SIMD3<Float>
+    ) -> CutoutPlacementResult {
+        guard !isLoadingModel else {
+            return .loading("Loading model…")
+        }
+        guard let selectedModelID,
+              let model = PlaceableUSDZModel.model(withID: selectedModelID) else {
+            return .missingModel
+        }
+
+        isLoadingModel = true
+        modelRepository.loadClone(of: model) { [weak self] result in
+            guard let self else { return }
+            self.isLoadingModel = false
+            guard let arView = self.arView else {
+                self.onPlacementResult?(.creationFailed("The scene is no longer available."))
+                return
+            }
+            if let maximumObjectCount = self.configuration.maximumObjectCount,
+               self.objectCount >= maximumObjectCount {
+                self.onPlacementResult?(.limitReached(maximumObjectCount))
+                return
+            }
+
+            switch result {
+            case .failure(let error):
+                self.onPlacementResult?(
+                    .creationFailed(error.localizedDescription)
+                )
+            case .success(let loadedEntity):
+                let objectID = UUID()
+                let anchor = AnchorEntity(world: transform)
+                do {
+                    let placedModel = try PlacedUSDZModel(
+                        id: objectID,
+                        anchor: anchor,
+                        model: model,
+                        loadedEntity: loadedEntity,
+                        supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
+                    )
+                    if let cameraTransform {
+                        placedModel.interactionRoot.orientation = simd_quatf(
+                            angle: cameraTransform.yawFacingCamera(from: transform.translation),
+                            axis: [0, 1, 0]
+                        )
+                    }
+                    arView.scene.addAnchor(anchor)
+                    self.registry.register(placedModel)
+                    self.onPlacementResult?(.placed)
+                } catch {
+                    self.onPlacementResult?(
+                        .creationFailed(error.localizedDescription)
+                    )
+                }
+            }
+        }
+        return .loading("Loading \(model.title)…")
     }
 
     private func makeSpawnOrientation(

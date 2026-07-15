@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BADE26E3007F4C700F7AD70 /* Birds.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE26D3007F4C700F7AD70 /* Birds.usdz */; };
+		0BADE2703007F4D500F7AD70 /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE26F3007F4D500F7AD70 /* fishs.usdz */; };
+		0BADE2723007F4D800F7AD70 /* bubbles.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE2713007F4D800F7AD70 /* bubbles.usdz */; };
+		0BADE2743007F4DB00F7AD70 /* tree_1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE2733007F4DB00F7AD70 /* tree_1.usdz */; };
+		0BADE2763007F4DD00F7AD70 /* cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE2753007F4DD00F7AD70 /* cloud.usdz */; };
+		0BADE2783007F4E200F7AD70 /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BADE2773007F4E200F7AD70 /* FallingLeaf.usdz */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
@@ -43,6 +49,7 @@
 		8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */; };
 		94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */; };
 		9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */; };
+		A03D3D7F15A74E66A10B00A1 /* USDZModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13D3D7F15A74E66A10B00A1 /* USDZModelPlacement.swift */; };
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
@@ -76,6 +83,12 @@
 /* Begin PBXFileReference section */
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		0BADE26D3007F4C700F7AD70 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Birds.usdz; sourceTree = "<group>"; };
+		0BADE26F3007F4D500F7AD70 /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = fishs.usdz; sourceTree = "<group>"; };
+		0BADE2713007F4D800F7AD70 /* bubbles.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = bubbles.usdz; sourceTree = "<group>"; };
+		0BADE2733007F4DB00F7AD70 /* tree_1.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = tree_1.usdz; sourceTree = "<group>"; };
+		0BADE2753007F4DD00F7AD70 /* cloud.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = cloud.usdz; sourceTree = "<group>"; };
+		0BADE2773007F4E200F7AD70 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = FallingLeaf.usdz; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -115,6 +128,7 @@
 		9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObjectRegistry.swift; sourceTree = "<group>"; };
 		9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementView.swift; sourceTree = "<group>"; };
 		9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
+		A13D3D7F15A74E66A10B00A1 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
 		A26A0FAF4B1151615789C36C /* InteractionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionModels.swift; sourceTree = "<group>"; };
 		A2F1CE7084EE88134E097B8C /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
@@ -439,6 +453,7 @@
 				DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */,
 				7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */,
 				1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */,
+				A13D3D7F15A74E66A10B00A1 /* USDZModelPlacement.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -455,10 +470,16 @@
 			isa = PBXGroup;
 			children = (
 				6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */,
-				0CD2DE8B958AFA1FBFD38743 /* Land.skybox */,
 				4F33D5C4ECB695106958159D /* StatueRoom.usdz */,
 				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
 				0E732AD75F0B14CC3DC9564D /* Underwater.skybox */,
+				0BADE26D3007F4C700F7AD70 /* Birds.usdz */,
+				0CD2DE8B958AFA1FBFD38743 /* Land.skybox */,
+				0BADE26F3007F4D500F7AD70 /* fishs.usdz */,
+				0BADE2713007F4D800F7AD70 /* bubbles.usdz */,
+				0BADE2733007F4DB00F7AD70 /* tree_1.usdz */,
+				0BADE2753007F4DD00F7AD70 /* cloud.usdz */,
+				0BADE2773007F4E200F7AD70 /* FallingLeaf.usdz */,
 			);
 			path = VirtualRoom;
 			sourceTree = "<group>";
@@ -553,11 +574,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */,
+				0BADE2763007F4DD00F7AD70 /* cloud.usdz in Resources */,
 				11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */,
+				0BADE2783007F4E200F7AD70 /* FallingLeaf.usdz in Resources */,
 				1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */,
+				0BADE2723007F4D800F7AD70 /* bubbles.usdz in Resources */,
+				0BADE2743007F4DB00F7AD70 /* tree_1.usdz in Resources */,
 				D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */,
 				EC19538278E20B32114ABEC7 /* CitrusOrchard.skybox in Resources */,
+				0BADE2703007F4D500F7AD70 /* fishs.usdz in Resources */,
 				7362427944CD9F93F41B9849 /* Land.skybox in Resources */,
+				0BADE26E3007F4C700F7AD70 /* Birds.usdz in Resources */,
 				D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */,
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
 				EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */,
@@ -571,6 +598,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A03D3D7F15A74E66A10B00A1 /* USDZModelPlacement.swift in Sources */,
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,

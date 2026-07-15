@@ -28,17 +28,12 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         self.registry = registry
     }
 
-    var selectedObject: PlacedCutout? {
+    var selectedObject: (any PlacedSceneObject)? {
         selectedObjectID.flatMap(registry.object(withID:))
     }
 
     var selection: PlacedObjectSelection? {
-        selectedObject.map {
-            PlacedObjectSelection(
-                objectID: $0.id,
-                animalArchetype: $0.animalArchetype
-            )
-        }
+        selectedObject?.selection
     }
 
     func handleTap(on hitEntity: Entity?) -> Bool {
@@ -154,7 +149,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
             return
         }
         selectedObject?.setSelected(false)
-        selectedObject?.isAnimationPaused = false
+        selectedObject?.setInteractionPaused(false)
         selectedObjectID = objectID
         selectedObject?.setSelected(true)
         activeManipulations.removeAll()
@@ -163,13 +158,13 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
 
     private func begin(_ manipulation: Manipulation) {
         activeManipulations.insert(manipulation)
-        selectedObject?.isAnimationPaused = true
+        selectedObject?.setInteractionPaused(true)
     }
 
     private func end(_ manipulation: Manipulation) {
         activeManipulations.remove(manipulation)
         if activeManipulations.isEmpty {
-            selectedObject?.isAnimationPaused = false
+            selectedObject?.setInteractionPaused(false)
         }
     }
 
@@ -196,11 +191,6 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
             onSelectionChanged?(nil)
             return
         }
-        onSelectionChanged?(
-            PlacedObjectSelection(
-                objectID: selectedObject.id,
-                animalArchetype: selectedObject.animalArchetype
-            )
-        )
+        onSelectionChanged?(selectedObject.selection)
     }
 }

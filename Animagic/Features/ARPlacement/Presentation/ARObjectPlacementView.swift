@@ -14,6 +14,8 @@ struct ARObjectPlacementView: View {
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedAnimalArchetype = AnimalArchetype.fish
     @State private var selectedSpawnMode = SpawnMode.plane
+    @State private var selectedContentType = PlacementContentType.doodle
+    @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
     @State private var placementStatus: ARPlacementStatus = .searching
@@ -37,6 +39,8 @@ struct ARObjectPlacementView: View {
                 spawnAnimalArchetype: selectedAnimalArchetype,
                 selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
                 selectedSpawnMode: selectedSpawnMode,
+                selectedContentType: selectedContentType,
+                selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
                 placementStatus: $placementStatus,
                 deleteRequestID: deleteRequestID
@@ -44,17 +48,30 @@ struct ARObjectPlacementView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                ARInstructionBanner(spawnMode: selectedSpawnMode, status: placementStatus)
-                SpawnModePicker(selection: $selectedSpawnMode)
-                CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
-                if let selectedAsset = selectedCutoutAsset {
-                    DoodleCorrectionMenu(asset: selectedAsset) { label in
-                        artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                ARInstructionBanner(
+                    contentType: selectedContentType,
+                    spawnMode: selectedSpawnMode,
+                    status: placementStatus
+                )
+                PlacementContentTypePicker(selection: $selectedContentType)
+                if selectedContentType == .doodle {
+                    SpawnModePicker(selection: $selectedSpawnMode)
+                    if cutoutAssets.isEmpty {
+                        EmptyDoodleLibraryMessage()
+                    } else {
+                        CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
                     }
+                    if let selectedAsset = selectedCutoutAsset {
+                        DoodleCorrectionMenu(asset: selectedAsset) { label in
+                            artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                        }
+                    }
+                    AnimalArchetypePicker(selection: archetypeSelection)
+                } else {
+                    USDZModelPicker(selection: $selectedModelID)
                 }
-                AnimalArchetypePicker(selection: archetypeSelection)
-                if placedObjectSelection != nil {
-                    SelectedObjectToolbar {
+                if let placedObjectSelection {
+                    SelectedObjectToolbar(title: placedObjectSelection.title) {
                         deleteRequestID = UUID()
                     }
                 }
@@ -94,12 +111,13 @@ struct ARObjectPlacementView: View {
 
     private var archetypeSelection: Binding<AnimalArchetype> {
         Binding(
-            get: { activeAnimalArchetype },
+            get: { placedObjectSelection?.animalArchetype ?? activeAnimalArchetype },
             set: { archetype in
-                if let selection = placedObjectSelection {
+                if let selection = placedObjectSelection,
+                   selection.animalArchetype != nil {
                     placedObjectSelection = PlacedObjectSelection(
                         objectID: selection.objectID,
-                        animalArchetype: archetype
+                        content: .doodle(archetype)
                     )
                 } else {
                     selectedAnimalArchetype = archetype
