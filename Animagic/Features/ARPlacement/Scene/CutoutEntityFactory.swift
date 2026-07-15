@@ -42,7 +42,8 @@ final class CutoutEntityFactory {
         from asset: CutoutAsset,
         archetype: AnimalArchetype,
         objectID: UUID,
-        physicalWidth: Float? = nil
+        physicalWidth: Float? = nil,
+        showsShadow: Bool = true
     ) throws -> CutoutEntityParts {
         guard let cgImage = asset.image.cgImage else {
             throw CutoutEntityFactoryError.invalidImage
@@ -77,7 +78,7 @@ final class CutoutEntityFactory {
         }
         let frontEntity = ModelEntity(mesh: mesh, materials: [frontMaterial])
         frontEntity.position = [0, height / 2, 0.0005]
-        var shadowComp = GroundingShadowComponent(castsShadow: false)
+        let shadowComp = GroundingShadowComponent(castsShadow: false)
         frontEntity.components.set(shadowComp)
 
         let backEntity = ModelEntity(mesh: mesh, materials: [backMaterial])
@@ -113,7 +114,9 @@ final class CutoutEntityFactory {
 
         let rootEntity = Entity()
         rootEntity.addChild(bodyEntity)
-        let shadowEntity = try? shadowFactory.makeEntity(width: width, height: height)
+        let shadowEntity = showsShadow
+            ? try? shadowFactory.makeEntity(width: width, height: height)
+            : nil
         if let shadowEntity {
             rootEntity.addChild(shadowEntity)
         }

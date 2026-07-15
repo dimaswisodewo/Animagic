@@ -432,6 +432,14 @@ final class RoomCoordinator: NSObject {
     }
 
     private let motionManager = CMMotionManager()
+    private let motionOrientationStore = MotionOrientationStore()
+    private let motionQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.diroudough.animagic.virtual-room-motion"
+        queue.qualityOfService = .userInteractive
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
     private let cameraRig = Entity()
     private let motionRig = Entity()
     private let cameraEntity = Entity()
@@ -493,6 +501,9 @@ final class RoomCoordinator: NSObject {
 
         self.arView = arView
         arView.renderOptions.insert(.disableMotionBlur)
+#if DEBUG
+        arView.debugOptions.insert(.showStatistics)
+#endif
         configureSceneBackground(on: arView)
 
         buildRoomScene(in: arView)
@@ -505,6 +516,7 @@ final class RoomCoordinator: NSObject {
 
     func stop() {
         motionManager.stopDeviceMotionUpdates()
+        motionQueue.cancelAllOperations()
         ambiencePlaybackController?.stop()
         updateSubscription?.cancel()
         updateSubscription = nil
@@ -1204,16 +1216,16 @@ final class RoomCoordinator: NSObject {
         }
 
         motionManager.deviceMotionUpdateInterval = Constants.motionUpdateInterval
-        motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical, to: .main) { [weak self] motion, _ in
+        motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical, to: motionQueue) { [weak self] motion, _ in
             guard let self, let attitude = motion?.attitude else {
                 return
             }
 
             let deviceQuaternion = simd_quatf(attitude.quaternion)
-            self.currentDeviceQuaternion = deviceQuaternion
-            if self.calibrationQuaternion == nil {
-                self.calibrationQuaternion = deviceQuaternion
-            }
+            self.motionOrientationStore.write(
+                quaternion: deviceQuaternion,
+                timestamp: motion?.timestamp ?? 0
+            )
         }
     }
 
@@ -1281,6 +1293,12 @@ final class RoomCoordinator: NSObject {
     }
 
     private func updateCameraOrientation(deltaTime: Float) {
+        if let snapshot = motionOrientationStore.read() {
+            currentDeviceQuaternion = snapshot.quaternion
+            if calibrationQuaternion == nil {
+                calibrationQuaternion = snapshot.quaternion
+            }
+        }
         guard
             let interfaceOrientation = currentInterfaceOrientation(),
             let currentDeviceQuaternion
@@ -1333,7 +1351,7 @@ final class RoomCoordinator: NSObject {
     }
 
     private func calibrateCamera() {
-        calibrationQuaternion = currentDeviceQuaternion
+        calibrationQuaternion = motionOrientationStore.read()?.quaternion ?? currentDeviceQuaternion
         smoothedMotionQuaternion = nil
         cameraRig.orientation = simd_quatf(angle: manualYawOffset, axis: [0, 1, 0])
         motionRig.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])
