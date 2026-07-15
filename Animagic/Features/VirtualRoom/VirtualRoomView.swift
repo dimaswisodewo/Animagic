@@ -1598,7 +1598,9 @@ private extension simd_quatf {
     }
 }
 
+#if DEBUG
 #Preview {
     VirtualRoomView()
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
+#endif

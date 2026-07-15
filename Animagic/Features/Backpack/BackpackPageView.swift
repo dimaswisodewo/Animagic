@@ -108,9 +108,11 @@ struct BackpackPageView: View {
     ]
 }
 
+#if DEBUG
 #Preview {
     BackpackPageView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
+#endif

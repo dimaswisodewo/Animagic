@@ -218,9 +218,11 @@ struct BottomRightGraphic: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ContentView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
+#endif

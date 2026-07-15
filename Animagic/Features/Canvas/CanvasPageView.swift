@@ -125,9 +125,11 @@ private struct DoodleClassificationOverlay: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CanvasPageView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
+#endif
