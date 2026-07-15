@@ -70,6 +70,12 @@ fi
 
 [[ -f "$SPEC_FILE" ]] || fail "XcodeGen spec was not found: $SPEC_FILE"
 
+# A provisioning profile is CMS data embedded by Xcode during signing. It must
+# never be passed to codesign as a nested code object.
+if grep -q 'embedded\.mobileprovision' "$SPEC_FILE"; then
+    fail "The XcodeGen spec attempts to codesign embedded.mobileprovision; remove that command."
+fi
+
 # Installing tools is intentionally left to the developer or CI bootstrap step.
 if ! command -v xcodegen >/dev/null 2>&1; then
     echo "XcodeGen is required but was not found." >&2
