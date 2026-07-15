@@ -10,6 +10,7 @@ struct CanvasTopBarView: View {
     @Binding var isClassifyingDoodle: Bool
     @Binding var hasDrawing: Bool
     @Binding var showEmptyCanvasMessage: Bool
+    @Binding var isDocumentTitleManuallyEdited: Bool
     
     var body: some View {
         HStack(spacing: 16) {
@@ -22,7 +23,7 @@ struct CanvasTopBarView: View {
                 Image(systemName: "pencil")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.black.opacity(0.65))
-                TextField("Name your drawing", text: $documentTitle)
+                TextField("Name your drawing", text: editableTitle)
                     .font(.custom("Belanosima-Regular", size: 22))
                     .foregroundColor(.black)
                     .textInputAutocapitalization(.words)
@@ -67,12 +68,11 @@ struct CanvasTopBarView: View {
                     return
                 }
                 let trimmedTitle = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                let newDrawing = SavedDrawing(
+                let savedDrawing = appState.saveActiveDrawing(
                     name: trimmedTitle,
                     drawing: canvasView.drawing,
-                    isNameManuallyEdited: !trimmedTitle.isEmpty
+                    isNameManuallyEdited: isDocumentTitleManuallyEdited && !trimmedTitle.isEmpty
                 )
-                appState.addSavedDrawing(newDrawing)
                 
                 let image = canvasView.drawing.image(from: bounds, scale: 1.0)
                 isClassifyingDoodle = true
@@ -90,17 +90,19 @@ struct CanvasTopBarView: View {
                         image: image,
                         originalSize: bounds.size,
                         classificationResult: classificationResult,
-                        sourceDrawingID: newDrawing.id
+                        sourceDrawingID: savedDrawing.id
                     )
 
                     await MainActor.run {
                         appState.updateSavedDrawingClassification(
-                            id: newDrawing.id,
+                            id: savedDrawing.id,
                             classification: newCutout.doodleClassification
                         )
-                        appState.addCutout(newCutout)
-                        appState.clearDrawing()
-                        hasDrawing = false
+                        appState.replaceCutout(newCutout, forDrawingID: savedDrawing.id)
+                        if let updatedDrawing = appState.activeDrawing {
+                            documentTitle = updatedDrawing.name
+                            isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
+                        }
                         isClassifyingDoodle = false
                         appState.navigationPath.append(NavigationRoute.arView)
                     }
@@ -110,6 +112,16 @@ struct CanvasTopBarView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
         .background(Color(red: 1.0, green: 0.79, blue: 0.07)) // Yellow #FFC812
+    }
+
+    private var editableTitle: Binding<String> {
+        Binding(
+            get: { documentTitle },
+            set: {
+                documentTitle = $0
+                isDocumentTitleManuallyEdited = true
+            }
+        )
     }
 
     private static func makeCutoutAsset(
