@@ -6,8 +6,8 @@ struct BackpackPageView: View {
     @EnvironmentObject var appState: AppState
     
     // Tab selection state
-    @State private var selectedTab = "All"
-    let tabs = ["All", "Skies", "Underwater", "Land"]
+    @State private var selectedTab: ArtworkCategory?
+    let tabs: [ArtworkCategory?] = [nil, .skies, .underwater, .land]
     
     // Scroll tracking state
     @State private var scrollOffset: CGFloat = 0
@@ -23,10 +23,9 @@ struct BackpackPageView: View {
             filtered = filtered.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
         
-        // Example: if you add categories to drawings later:
-        // if selectedTab != "All" {
-        //     filtered = filtered.filter { $0.category == selectedTab }
-        // }
+        if let selectedTab {
+            filtered = filtered.filter { $0.category == selectedTab }
+        }
         
         return filtered
     }
@@ -49,6 +48,7 @@ struct BackpackPageView: View {
                 
                 // Draw More Button
                 TopBarButton(title: "Draw More!") {
+                    appState.startNewDrawing()
                     appState.navigationPath.append(NavigationRoute.canvas)
                 }
                 
@@ -65,7 +65,7 @@ struct BackpackPageView: View {
             HStack(spacing: 16) {
                 ForEach(tabs, id: \.self) { tab in
                     BackpackTabButton(
-                        title: tab,
+                        title: tab?.title ?? "All",
                         isSelected: selectedTab == tab
                     ) {
                         selectedTab = tab
@@ -97,8 +97,15 @@ struct BackpackPageView: View {
             
             // Grid of drawings
             ZStack(alignment: .trailing) {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                if filteredDrawings.isEmpty {
+                    ContentUnavailableView(
+                        "No Drawings Found",
+                        systemImage: "paintpalette",
+                        description: Text("Try another filter or draw a new animal.")
+                    )
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                         // Display saved drawings
                         ForEach(filteredDrawings) { savedDrawing in
                             Button(action: {
@@ -130,19 +137,20 @@ struct BackpackPageView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black, lineWidth: 3))
                             }
                         }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 24)
-                    .background(GeometryReader { geo -> Color in
-                        DispatchQueue.main.async {
-                            scrollOffset = geo.frame(in: .named("scroll")).minY
-                            contentHeight = geo.size.height
                         }
-                        return Color.clear
-                    })
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 24)
+                        .background(GeometryReader { geo -> Color in
+                            DispatchQueue.main.async {
+                                scrollOffset = geo.frame(in: .named("scroll")).minY
+                                contentHeight = geo.size.height
+                            }
+                            return Color.clear
+                        })
+                    }
+                    .coordinateSpace(name: "scroll")
+                    .scrollIndicators(.hidden)
                 }
-                .coordinateSpace(name: "scroll")
-                .scrollIndicators(.hidden)
                 
                 // Custom Scroll Indicator
                 if contentHeight > 0 {

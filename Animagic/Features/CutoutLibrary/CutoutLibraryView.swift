@@ -12,6 +12,8 @@ struct CutoutLibraryView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var viewModel = CutoutLibraryViewModel()
     @State private var selectedPhotos: [PhotosPickerItem] = []
+    @State private var showClearConfirmation = false
+    @State private var recentlyCleared: [CutoutAsset] = []
 
     private let columns = [
         GridItem(.adaptive(minimum: 140), spacing: 14)
@@ -32,15 +34,41 @@ struct CutoutLibraryView: View {
         .toolbar {
             if !appState.cutoutLibrary.isEmpty {
                 Button("Clear") {
-                    appState.cutoutLibrary.removeAll()
+                    showClearConfirmation = true
                 }
             }
         }
         .onChange(of: selectedPhotos) { _, newValue in
             Task {
                 let newAssets = await viewModel.processImages(from: newValue)
-                appState.cutoutLibrary.append(contentsOf: newAssets)
+                newAssets.forEach(appState.addCutout)
                 selectedPhotos.removeAll()
+            }
+        }
+        .confirmationDialog(
+            "Clear all cutouts?",
+            isPresented: $showClearConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Clear All Cutouts", role: .destructive) {
+                recentlyCleared = appState.clearCutouts()
+            }
+        } message: {
+            Text("This removes every cutout from your library. You can undo immediately.")
+        }
+        .safeAreaInset(edge: .bottom) {
+            if !recentlyCleared.isEmpty {
+                HStack {
+                    Text("Library cleared")
+                    Spacer()
+                    Button("Undo") {
+                        appState.restoreCutouts(recentlyCleared)
+                        recentlyCleared.removeAll()
+                    }
+                }
+                .padding()
+                .background(.thinMaterial, in: Capsule())
+                .padding()
             }
         }
     }
@@ -103,7 +131,10 @@ struct CutoutLibraryView: View {
                             cutoutAsset: cutoutAsset,
                             allCutouts: appState.cutoutLibrary,
                             onRemove: {
-                                appState.cutoutLibrary.removeAll { $0.id == cutoutAsset.id }
+                                appState.removeCutout(cutoutAsset)
+                            },
+                            onClassificationOverride: { label in
+                                appState.updateCutoutOverride(id: cutoutAsset.id, label: label)
                             }
                         )
                     }
@@ -112,4 +143,3 @@ struct CutoutLibraryView: View {
         }
     }
 }
-

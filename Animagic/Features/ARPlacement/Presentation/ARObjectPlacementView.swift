@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ARObjectPlacementView: View {
+    @EnvironmentObject private var appState: AppState
     let cutoutAssets: [CutoutAsset]
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedAnimalArchetype = AnimalArchetype.fish
@@ -44,6 +45,11 @@ struct ARObjectPlacementView: View {
                 ARInstructionBanner(spawnMode: selectedSpawnMode)
                 SpawnModePicker(selection: $selectedSpawnMode)
                 CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
+                if let selectedAsset = selectedCutoutAsset {
+                    DoodleCorrectionMenu(asset: selectedAsset) { label in
+                        appState.updateCutoutOverride(id: selectedAsset.id, label: label)
+                    }
+                }
                 AnimalArchetypePicker(selection: archetypeSelection)
                 if placedObjectSelection != nil {
                     SelectedObjectToolbar {
@@ -64,10 +70,24 @@ struct ARObjectPlacementView: View {
             }
             selectedAnimalArchetype = suggested
         }
+        .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
+            guard placedObjectSelection == nil,
+                  let suggested = Self.suggestedArchetype(for: selectedCutoutAsset) else {
+                return
+            }
+            selectedAnimalArchetype = suggested
+        }
     }
 
     private var activeAnimalArchetype: AnimalArchetype {
         placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype
+    }
+
+    private var selectedCutoutAsset: CutoutAsset? {
+        if let selectedCutoutID {
+            return cutoutAssets.first(where: { $0.id == selectedCutoutID })
+        }
+        return cutoutAssets.first
     }
 
     private var archetypeSelection: Binding<AnimalArchetype> {
@@ -87,12 +107,34 @@ struct ARObjectPlacementView: View {
     }
 
     private static func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
-        guard let classification = asset?.doodleClassification else {
+        guard let asset, let label = asset.resolvedDoodleLabel else {
             return nil
         }
         return AnimalArchetype(
-            doodleLabel: classification.label,
-            confidence: classification.confidence
+            doodleLabel: label,
+            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
         )
+    }
+}
+
+private struct DoodleCorrectionMenu: View {
+    let asset: CutoutAsset
+    let onOverride: (String?) -> Void
+
+    var body: some View {
+        Menu {
+            Button("Use AI Suggestion") { onOverride(nil) }
+            ForEach(DoodleSpecies.all, id: \.self) { label in
+                Button(label.capitalized) { onOverride(label) }
+            }
+        } label: {
+            Label(
+                "Detected: \(asset.resolvedDoodleLabel?.capitalized ?? "Unknown")",
+                systemImage: "wand.and.stars"
+            )
+            .font(.caption)
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
     }
 }

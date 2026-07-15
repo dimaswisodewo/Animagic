@@ -109,7 +109,7 @@ struct ARPageView: View {
                     
                     // Draw More
                     AnimatedARButton(action: {
-                        // Navigate to Canvas (pushing onto the stack)
+                        appState.startNewDrawing()
                         appState.navigationPath.append(NavigationRoute.canvas)
                     }) {
                         Text("Draw More!")
