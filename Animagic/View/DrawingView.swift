@@ -4,14 +4,21 @@ import PencilKit
 struct DrawingView: UIViewRepresentable {
     @Binding var canvasView: PKCanvasView
     var isToolPickerVisible: Bool = true
+    var onDrawingChanged: (Bool) -> Void = { _ in }
     @State var toolPicker = PKToolPicker()
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onDrawingChanged: onDrawingChanged)
+    }
+
     func makeUIView(context: Context) -> PKCanvasView {
-        canvasView.drawingPolicy = .anyInput // Allows finger and Apple Pencil
+        // Keep finger and palm touches from creating strokes while using Apple Pencil.
+        canvasView.allowsFingerDrawing = false
         
         // Make canvas transparent so tracing image shows underneath
         canvasView.isOpaque = false
         canvasView.backgroundColor = .clear
+        canvasView.delegate = context.coordinator
         
         // Show tool picker
         toolPicker.setVisible(isToolPickerVisible, forFirstResponder: canvasView)
@@ -26,6 +33,18 @@ struct DrawingView: UIViewRepresentable {
         toolPicker.setVisible(isToolPickerVisible, forFirstResponder: uiView)
         if isToolPickerVisible && !uiView.isFirstResponder {
             uiView.becomeFirstResponder()
+        }
+    }
+
+    final class Coordinator: NSObject, PKCanvasViewDelegate {
+        private let onDrawingChanged: (Bool) -> Void
+
+        init(onDrawingChanged: @escaping (Bool) -> Void) {
+            self.onDrawingChanged = onDrawingChanged
+        }
+
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            onDrawingChanged(!canvasView.drawing.strokes.isEmpty)
         }
     }
 }

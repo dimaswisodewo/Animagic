@@ -8,6 +8,9 @@ struct CanvasTopBarView: View {
     let canvasView: PKCanvasView
     @Binding var showGuidePopup: Bool
     @Binding var isClassifyingDoodle: Bool
+    @Binding var hasDrawing: Bool
+    @Binding var showEmptyCanvasMessage: Bool
+    @Binding var isDocumentTitleManuallyEdited: Bool
     
     var body: some View {
         HStack(spacing: 16) {
@@ -20,7 +23,7 @@ struct CanvasTopBarView: View {
                 Image(systemName: "pencil")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.black.opacity(0.65))
-                TextField("Name your drawing", text: $documentTitle)
+                TextField("Name your drawing", text: editableTitle)
                     .font(.custom("Belanosima-Regular", size: 22))
                     .foregroundColor(.black)
                     .textInputAutocapitalization(.words)
@@ -53,56 +56,72 @@ struct CanvasTopBarView: View {
             }
             
             // Save Button (Navigates to AR Page)
-            TopBarButton(title: "Save", isDisabled: isClassifyingDoodle) {
+            TopBarButton(title: "Save", isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {
                 guard !isClassifyingDoodle else { return }
+                guard hasDrawing && !canvasView.drawing.strokes.isEmpty else {
+                    showEmptyCanvasMessage = true
+                    return
+                }
+                let bounds = canvasView.drawing.bounds
+                guard !bounds.isEmpty else {
+                    showEmptyCanvasMessage = true
+                    return
+                }
                 let trimmedTitle = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                let newDrawing = SavedDrawing(
+                let savedDrawing = appState.saveActiveDrawing(
                     name: trimmedTitle,
                     drawing: canvasView.drawing,
-                    isNameManuallyEdited: !trimmedTitle.isEmpty
+                    isNameManuallyEdited: isDocumentTitleManuallyEdited && !trimmedTitle.isEmpty
                 )
-                appState.addSavedDrawing(newDrawing)
                 
-                let bounds = canvasView.drawing.bounds
-                if !bounds.isEmpty {
-                    let image = canvasView.drawing.image(from: bounds, scale: 1.0)
-                    isClassifyingDoodle = true
-                    Task.detached(priority: .userInitiated) {
-                        let startedAt = DispatchTime.now().uptimeNanoseconds
-                        let classificationResult = Result {
-                            try DoodleClassificationService().classify(image).get()
-                        }
-                        let elapsed = DispatchTime.now().uptimeNanoseconds - startedAt
-                        let minimumDuration: UInt64 = 1_200_000_000
-                        if elapsed < minimumDuration {
-                            try? await Task.sleep(nanoseconds: minimumDuration - elapsed)
-                        }
-                        let newCutout = Self.makeCutoutAsset(
-                            image: image,
-                            originalSize: bounds.size,
-                            classificationResult: classificationResult,
-                            sourceDrawingID: newDrawing.id
-                        )
-
-                        await MainActor.run {
-                            appState.updateSavedDrawingClassification(
-                                id: newDrawing.id,
-                                classification: newCutout.doodleClassification
-                            )
-                            appState.addCutout(newCutout)
-                            appState.clearDrawing()
-                            isClassifyingDoodle = false
-                            appState.navigationPath.append(NavigationRoute.arView)
-                        }
+                let image = canvasView.drawing.image(from: bounds, scale: 1.0)
+                isClassifyingDoodle = true
+                Task.detached(priority: .userInitiated) {
+                    let startedAt = DispatchTime.now().uptimeNanoseconds
+                    let classificationResult = Result {
+                        try DoodleClassificationService().classify(image).get()
                     }
-                } else {
-                    appState.navigationPath.append(NavigationRoute.arView)
+                    let elapsed = DispatchTime.now().uptimeNanoseconds - startedAt
+                    let minimumDuration: UInt64 = 1_200_000_000
+                    if elapsed < minimumDuration {
+                        try? await Task.sleep(nanoseconds: minimumDuration - elapsed)
+                    }
+                    let newCutout = Self.makeCutoutAsset(
+                        image: image,
+                        originalSize: bounds.size,
+                        classificationResult: classificationResult,
+                        sourceDrawingID: savedDrawing.id
+                    )
+
+                    await MainActor.run {
+                        appState.updateSavedDrawingClassification(
+                            id: savedDrawing.id,
+                            classification: newCutout.doodleClassification
+                        )
+                        appState.replaceCutout(newCutout, forDrawingID: savedDrawing.id)
+                        if let updatedDrawing = appState.activeDrawing {
+                            documentTitle = updatedDrawing.name
+                            isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
+                        }
+                        isClassifyingDoodle = false
+                        appState.navigationPath.append(NavigationRoute.arView)
+                    }
                 }
             }
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
         .background(Color(red: 1.0, green: 0.79, blue: 0.07)) // Yellow #FFC812
+    }
+
+    private var editableTitle: Binding<String> {
+        Binding(
+            get: { documentTitle },
+            set: {
+                documentTitle = $0
+                isDocumentTitleManuallyEdited = true
+            }
+        )
     }
 
     private static func makeCutoutAsset(
@@ -136,6 +155,7 @@ struct CanvasTopBarView: View {
 struct TopBarButton: View {
     let title: String
     var isDisabled = false
+    var isDimmed = false
     let action: () -> Void
     @State private var isPressed = false
     
@@ -165,6 +185,7 @@ struct TopBarButton: View {
                 )
         }
         .scaleEffect(isPressed ? 0.9 : 1.0)
+        .opacity(isDimmed ? 0.55 : 1)
         .disabled(isDisabled)
     }
 }
