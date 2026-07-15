@@ -11,7 +11,7 @@ import SwiftUI
 struct AnimagicApp: App {
     var body: some Scene {
         WindowGroup {
-            MenuView()
+            ContentView()
         }
     }
 }

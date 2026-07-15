@@ -9,6 +9,7 @@ import PhotosUI
 import SwiftUI
 
 struct CutoutLibraryView: View {
+    @EnvironmentObject var appState: AppState
     @StateObject private var viewModel = CutoutLibraryViewModel()
     @State private var selectedPhotos: [PhotosPickerItem] = []
 
@@ -17,30 +18,29 @@ struct CutoutLibraryView: View {
     ]
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    header
-                    imagePicker
-                    processingState
-                    librarySection
-                }
-                .padding()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                header
+                imagePicker
+                processingState
+                librarySection
             }
-            .navigationTitle("Cutout Library")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if viewModel.hasLibraryItems {
-                    Button("Clear") {
-                        viewModel.clearLibrary()
-                    }
+            .padding()
+        }
+        .navigationTitle("Cutout Library")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if !appState.cutoutLibrary.isEmpty {
+                Button("Clear") {
+                    appState.cutoutLibrary.removeAll()
                 }
             }
-            .onChange(of: selectedPhotos) { _, newValue in
-                Task {
-                    await viewModel.addImages(from: newValue)
-                    selectedPhotos.removeAll()
-                }
+        }
+        .onChange(of: selectedPhotos) { _, newValue in
+            Task {
+                let newAssets = await viewModel.processImages(from: newValue)
+                appState.cutoutLibrary.append(contentsOf: newAssets)
+                selectedPhotos.removeAll()
             }
         }
     }
@@ -77,7 +77,7 @@ struct CutoutLibraryView: View {
 
     @ViewBuilder
     private var librarySection: some View {
-        if viewModel.cutoutLibrary.isEmpty {
+        if appState.cutoutLibrary.isEmpty {
             ContentUnavailableView(
                 "No Cutouts Yet",
                 systemImage: "photo.on.rectangle",
@@ -87,7 +87,7 @@ struct CutoutLibraryView: View {
         } else {
             VStack(alignment: .leading, spacing: 16) {
                 NavigationLink {
-                    ARObjectPlacementView(cutoutAssets: viewModel.cutoutLibrary)
+                    ARObjectPlacementView(cutoutAssets: appState.cutoutLibrary)
                 } label: {
                     Label("Open AR Library", systemImage: "arkit")
                         .frame(maxWidth: .infinity)
@@ -98,12 +98,12 @@ struct CutoutLibraryView: View {
                     .font(.headline)
 
                 LazyVGrid(columns: columns, spacing: 14) {
-                    ForEach(viewModel.cutoutLibrary) { cutoutAsset in
+                    ForEach(appState.cutoutLibrary) { cutoutAsset in
                         CutoutLibraryCell(
                             cutoutAsset: cutoutAsset,
-                            allCutouts: viewModel.cutoutLibrary,
+                            allCutouts: appState.cutoutLibrary,
                             onRemove: {
-                                viewModel.removeCutout(cutoutAsset)
+                                appState.cutoutLibrary.removeAll { $0.id == cutoutAsset.id }
                             }
                         )
                     }
