@@ -76,10 +76,13 @@ final class CutoutEntityFactory {
         }
         let frontEntity = ModelEntity(mesh: mesh, materials: [frontMaterial])
         frontEntity.position = [0, height / 2, 0.0005]
+        var shadowComp = GroundingShadowComponent(castsShadow: false)
+        frontEntity.components.set(shadowComp)
 
         let backEntity = ModelEntity(mesh: mesh, materials: [backMaterial])
         backEntity.position = [0, height / 2, -0.0005]
         backEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+        backEntity.components.set(shadowComp)
 
         let bodyEntity = Entity()
         bodyEntity.addChild(frontEntity)

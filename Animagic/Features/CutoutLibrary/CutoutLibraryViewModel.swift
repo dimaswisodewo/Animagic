@@ -1,10 +1,3 @@
-//
-//  CutoutLibraryViewModel.swift
-//  Animagic
-//
-//  Created by Meynabel Dimas Wisodewo on 14/07/26.
-//
-
 import Combine
 import Foundation
 import PhotosUI
@@ -12,7 +5,6 @@ import _PhotosUI_SwiftUI
 
 @MainActor
 final class CutoutLibraryViewModel: ObservableObject {
-    @Published private(set) var cutoutLibrary: [CutoutAsset] = []
     @Published private(set) var isProcessing = false
     @Published private(set) var processedCount = 0
     @Published private(set) var totalSelectionCount = 0
@@ -24,14 +16,10 @@ final class CutoutLibraryViewModel: ObservableObject {
         self.processor = processor ?? VisionForegroundCutoutProcessor()
     }
 
-    var hasLibraryItems: Bool {
-        !cutoutLibrary.isEmpty
-    }
-
-    func addImages(from items: [PhotosPickerItem]) async {
+    func processImages(from items: [PhotosPickerItem]) async -> [CutoutAsset] {
         errorMessage = nil
         guard !items.isEmpty else {
-            return
+            return []
         }
 
         isProcessing = true
@@ -44,6 +32,7 @@ final class CutoutLibraryViewModel: ObservableObject {
         }
 
         var failures = 0
+        var newAssets: [CutoutAsset] = []
         for item in items {
             do {
                 guard let data = try await item.loadTransferable(type: Data.self) else {
@@ -53,7 +42,7 @@ final class CutoutLibraryViewModel: ObservableObject {
                 let cutout = try await Task.detached(priority: .userInitiated) {
                     try await processor.makeCutout(from: data)
                 }.value
-                cutoutLibrary.append(cutout)
+                newAssets.append(cutout)
             } catch is CancellationError {
                 break
             } catch {
@@ -65,14 +54,7 @@ final class CutoutLibraryViewModel: ObservableObject {
         if failures > 0 {
             errorMessage = "\(failures) image\(failures == 1 ? "" : "s") could not be converted into cutout objects."
         }
-    }
-
-    func removeCutout(_ cutout: CutoutAsset) {
-        cutoutLibrary.removeAll { $0.id == cutout.id }
-    }
-
-    func clearLibrary() {
-        cutoutLibrary.removeAll()
-        errorMessage = nil
+        
+        return newAssets
     }
 }

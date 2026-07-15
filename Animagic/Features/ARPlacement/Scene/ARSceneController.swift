@@ -61,6 +61,8 @@ final class ARSceneController: NSObject, SceneEditing {
             configuration,
             options: [.resetTracking, .removeExistingAnchors]
         )
+        arView.renderOptions.insert(.disableGroundingShadows)
+        arView.renderOptions.insert(.disableDepthOfField)
         let adapter = ARViewInteractionAdapter(
             manager: interactionManager,
             surfaceProjector: ARSurfaceProjector()

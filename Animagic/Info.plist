@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Belanosima-Bold.ttf</string>
+		<string>Belanosima-Regular.ttf</string>
+		<string>Belanosima-SemiBold.ttf</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access for AR functionality to place magic drawn animals into the real world.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app requires access to save your magic drawings to your photo library.</string>
+</dict>
+</plist>
