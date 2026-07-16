@@ -10,12 +10,15 @@ import SwiftUI
 
 struct ARObjectPlacementView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.dismiss) private var dismiss
     let cutoutAssets: [CutoutAsset]
     @State private var selectedCutoutID: CutoutAsset.ID?
-    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedAnimalArchetype = AnimalArchetype.generic
     @State private var selectedSpawnMode = SpawnMode.plane
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
+    @State private var retryRequestID: UUID?
+    @State private var sessionStatus: ARSessionStatus = .searching
 
     init(cutoutAssets: [CutoutAsset], initialCutoutID: CutoutAsset.ID? = nil) {
         self.cutoutAssets = cutoutAssets
@@ -24,7 +27,7 @@ struct ARObjectPlacementView: View {
         _selectedAnimalArchetype = State(
             initialValue: Self.suggestedArchetype(
                 for: cutoutAssets.first(where: { $0.id == selectedID })
-            ) ?? .fish
+            ) ?? .generic
         )
     }
 
@@ -37,12 +40,14 @@ struct ARObjectPlacementView: View {
                 selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
                 selectedSpawnMode: selectedSpawnMode,
                 placedObjectSelection: $placedObjectSelection,
-                deleteRequestID: deleteRequestID
+                deleteRequestID: deleteRequestID,
+                retryRequestID: retryRequestID,
+                sessionStatus: $sessionStatus
             )
             .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                ARInstructionBanner(spawnMode: selectedSpawnMode)
+                ARInstructionBanner(status: sessionStatus, spawnMode: selectedSpawnMode)
                 SpawnModePicker(selection: $selectedSpawnMode)
                 CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
                 if let selectedAsset = selectedCutoutAsset {
@@ -58,6 +63,15 @@ struct ARObjectPlacementView: View {
                 }
             }
             .padding()
+
+            if sessionStatus.isBlockingOverlay {
+                ARSessionStatusOverlay(
+                    status: sessionStatus,
+                    onRetry: { retryRequestID = UUID() },
+                    onBack: { dismiss() }
+                )
+                .zIndex(2)
+            }
         }
         .navigationTitle("AR Placement")
         .navigationBarTitleDisplayMode(.inline)

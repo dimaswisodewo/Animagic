@@ -8,20 +8,87 @@
 import SwiftUI
 
 struct ARInstructionBanner: View {
+    let status: ARSessionStatus
     let spawnMode: SpawnMode
 
     var body: some View {
-        VStack(spacing: 8) {
-            Text("Move the device to find a plane")
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: status.systemImageName)
+                .font(.title3)
+                .foregroundStyle(status.tint)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(status.title)
                 .font(.headline)
-            Text(spawnMode.instruction)
-                .font(.subheadline)
+                Text(status == .ready ? spawnMode.instruction : status.message)
+                    .font(.subheadline)
+            }
         }
-        .multilineTextAlignment(.center)
         .padding(12)
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private extension ARSessionStatus {
+    var tint: Color {
+        switch self {
+        case .ready:
+            .green
+        case .noSurface:
+            .orange
+        case .unsupported, .cameraDenied, .failed:
+            .red
+        case .searching, .retrying:
+            .accentColor
+        }
+    }
+}
+
+struct ARSessionStatusOverlay: View {
+    let status: ARSessionStatus
+    let onRetry: () -> Void
+    let onBack: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                Image(systemName: status.systemImageName)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(status.tint)
+
+                VStack(spacing: 6) {
+                    Text(status.title)
+                        .font(.title3.weight(.semibold))
+                    Text(status.message)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                }
+
+                if status == .retrying {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Button("Retry", action: onRetry)
+                        .buttonStyle(.borderedProminent)
+                }
+
+                Button("Back to Canvas", action: onBack)
+                    .buttonStyle(.bordered)
+            }
+            .padding(24)
+            .frame(maxWidth: 340)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .shadow(radius: 16)
+            .padding(24)
+        }
+        .accessibilityElement(children: .contain)
     }
 }
 

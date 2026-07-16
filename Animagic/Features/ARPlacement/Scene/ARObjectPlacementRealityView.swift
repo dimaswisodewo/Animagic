@@ -18,6 +18,8 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     let selectedSpawnMode: SpawnMode
     @Binding var placedObjectSelection: PlacedObjectSelection?
     let deleteRequestID: UUID?
+    let retryRequestID: UUID?
+    @Binding var sessionStatus: ARSessionStatus
 
     func makeCoordinator() -> ARSceneController {
         ARSceneController(
@@ -27,6 +29,9 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
             selectedSpawnMode: selectedSpawnMode,
             onSelectionChanged: { selection in
                 placedObjectSelection = selection
+            },
+            onStatusChanged: { status in
+                sessionStatus = status
             }
         )
     }
@@ -47,6 +52,9 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
         context.coordinator.onSelectionChanged = { selection in
             placedObjectSelection = selection
         }
+        context.coordinator.onStatusChanged = { status in
+            sessionStatus = status
+        }
 
         if let selectedObjectAnimalArchetype,
            context.coordinator.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
@@ -57,6 +65,12 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
            context.coordinator.handledDeleteRequestID != deleteRequestID {
             context.coordinator.handledDeleteRequestID = deleteRequestID
             context.coordinator.deleteSelectedObject()
+        }
+
+        if let retryRequestID,
+           context.coordinator.handledRetryRequestID != retryRequestID {
+            context.coordinator.handledRetryRequestID = retryRequestID
+            context.coordinator.retrySession(on: arView)
         }
     }
 
