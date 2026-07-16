@@ -47,37 +47,115 @@ struct ARObjectPlacementView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            // Floating Top HUD
+            VStack {
                 ARInstructionBanner(
                     contentType: selectedContentType,
                     spawnMode: selectedSpawnMode,
                     status: placementStatus
                 )
-                PlacementContentTypePicker(selection: $selectedContentType)
-                if selectedContentType == .doodle {
-                    SpawnModePicker(selection: $selectedSpawnMode)
-                    if cutoutAssets.isEmpty {
-                        EmptyDoodleLibraryMessage()
-                    } else {
-                        CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
-                    }
-                    if let selectedAsset = selectedCutoutAsset {
-                        DoodleCorrectionMenu(asset: selectedAsset) { label in
-                            artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
-                        }
-                    }
-                    AnimalArchetypePicker(selection: archetypeSelection)
-                } else {
-                    USDZModelPicker(selection: $selectedModelID)
-                }
+                .padding(.top, 10)
+                Spacer()
+            }
+
+            // Bottom Controls Layer
+            VStack(spacing: 12) {
                 if let placedObjectSelection {
                     SelectedObjectToolbar(title: placedObjectSelection.title) {
                         deleteRequestID = UUID()
                     }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
+
+                // Contextual Doodle adjustments capsule
+                if selectedContentType == .doodle && !cutoutAssets.isEmpty {
+                    HStack(spacing: 16) {
+                        // Compact Spawn Mode Toggle
+                        Button {
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
+                                selectedSpawnMode = selectedSpawnMode == .plane ? .cameraRoam : .plane
+                            }
+                        } label: {
+                            Image(systemName: selectedSpawnMode.systemImageName)
+                                .font(.footnote.bold())
+                                .foregroundStyle(Color.accentColor)
+                                .frame(width: 32, height: 32)
+                                .background(Color.accentColor.opacity(0.12))
+                                .clipShape(Circle())
+                        }
+                        
+                        // Compact Archetype Dropdown
+                        Menu {
+                            Picker("Archetype", selection: archetypeSelection) {
+                                ForEach(AnimalArchetype.allCases) { archetype in
+                                    Label(archetype.title, systemImage: archetype.systemImageName).tag(archetype)
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: activeAnimalArchetype.systemImageName)
+                                Text(activeAnimalArchetype.title)
+                            }
+                            .font(.caption.bold())
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.primary.opacity(0.08))
+                            .clipShape(Capsule())
+                        }
+                        
+                        // AI Label override menu
+                        if let selectedAsset = selectedCutoutAsset {
+                            Menu {
+                                Button("Use AI Suggestion") {
+                                    artworkStore.updateCutoutOverride(id: selectedAsset.id, label: nil)
+                                }
+                                ForEach(DoodleSpecies.all, id: \.self) { label in
+                                    Button(label.capitalized) {
+                                        artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                                    }
+                                }
+                            } label: {
+                                Image(systemName: "wand.and.stars")
+                                    .font(.footnote)
+                                    .foregroundStyle(selectedAsset.doodleOverrideLabel != nil ? Color.accentColor : Color.primary)
+                                    .frame(width: 32, height: 32)
+                                    .background(Color.primary.opacity(0.08))
+                                    .clipShape(Circle())
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.1), radius: 4)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                // Core Creation Dock
+                VStack(spacing: 8) {
+                    PlacementContentTypePicker(selection: $selectedContentType)
+                        .padding(.top, 6)
+                    
+                    if selectedContentType == .doodle {
+                        if cutoutAssets.isEmpty {
+                            EmptyDoodleLibraryMessage()
+                        } else {
+                            CutoutPicker(assets: cutoutAssets, selection: $selectedCutoutID)
+                        }
+                    } else {
+                        USDZModelPicker(selection: $selectedModelID)
+                    }
+                }
+                .padding(8)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 22))
+                .shadow(color: .black.opacity(0.15), radius: 10)
             }
             .padding()
         }
+        .animation(.smooth(duration: 0.3), value: selectedContentType)
+        .animation(.smooth(duration: 0.25), value: placedObjectSelection)
         .navigationTitle("AR Placement")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedCutoutID) { _, selectedID in
@@ -134,27 +212,5 @@ struct ARObjectPlacementView: View {
             doodleLabel: label,
             confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
         )
-    }
-}
-
-struct DoodleCorrectionMenu: View {
-    let asset: CutoutAsset
-    let onOverride: (String?) -> Void
-
-    var body: some View {
-        Menu {
-            Button("Use AI Suggestion") { onOverride(nil) }
-            ForEach(DoodleSpecies.all, id: \.self) { label in
-                Button(label.capitalized) { onOverride(label) }
-            }
-        } label: {
-            Label(
-                "Detected: \(asset.resolvedDoodleLabel?.capitalized ?? "Unknown")",
-                systemImage: "wand.and.stars"
-            )
-            .font(.caption)
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.bordered)
     }
 }
