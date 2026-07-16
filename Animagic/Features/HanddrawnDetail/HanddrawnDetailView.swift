@@ -89,9 +89,11 @@ struct HanddrawnDetailView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     HanddrawnDetailView(drawingID: UUID())
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
+#endif

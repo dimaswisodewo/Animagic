@@ -26,7 +26,9 @@ struct BackpackHeader: View {
             HStack(spacing: 12) {
                 TopBarIconButton(icon: "chevron.left", action: onBack)
                 Text("My Backpack")
-                    .font(.custom("Belanosima-SemiBold", size: 32))
+                    .font(.custom("Belanosima-SemiBold", size: 32, relativeTo: .title))
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
                     .foregroundStyle(.black)
             }
             Spacer()
@@ -41,30 +43,59 @@ struct BackpackHeader: View {
 struct BackpackFilterBar: View {
     @Binding var selectedCategory: ArtworkCategory?
     @Binding var searchText: String
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     private let categories: [ArtworkCategory?] = [nil, .skies, .underwater, .land]
 
     var body: some View {
-        HStack(spacing: 16) {
-            ForEach(categories, id: \.self) { category in
-                BackpackTabButton(
-                    title: category?.title ?? "All",
-                    isSelected: selectedCategory == category
-                ) {
-                    selectedCategory = category
-                }
+        Group {
+            if sizeClass == .compact {
+                compactLayout
+            } else {
+                regularLayout
             }
-            Spacer()
-            searchField
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 16)
     }
 
+    /// Single-row layout for regular (wide) size classes.
+    private var regularLayout: some View {
+        HStack(spacing: 16) {
+            tabButtons
+            Spacer()
+            searchField
+        }
+    }
+
+    /// Stacked layout for compact (narrow) size classes — scrollable tabs above search.
+    private var compactLayout: some View {
+        VStack(spacing: 12) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    tabButtons
+                }
+            }
+            searchField
+        }
+    }
+
+    @ViewBuilder
+    private var tabButtons: some View {
+        ForEach(categories, id: \.self) { category in
+            BackpackTabButton(
+                title: category?.title ?? "All",
+                isSelected: selectedCategory == category
+            ) {
+                selectedCategory = category
+            }
+        }
+    }
+
     private var searchField: some View {
         HStack {
             TextField("Search.....", text: $searchText)
-                .font(.custom("Belanosima-Regular", size: 18))
+                .font(.custom("Belanosima-Regular", size: 18, relativeTo: .body))
                 .foregroundStyle(.black)
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 20, weight: .bold))
@@ -75,7 +106,7 @@ struct BackpackFilterBar: View {
         .background(.white)
         .clipShape(Capsule())
         .overlay(Capsule().stroke(.black, lineWidth: 3))
-        .frame(width: 300)
+        .frame(minWidth: 120, maxWidth: 300)
     }
 }
 
@@ -87,7 +118,7 @@ struct BackpackDrawingCard: View {
             if drawing.drawing.bounds.isEmpty {
                 Spacer()
                 Text("Empty Drawing")
-                    .font(.custom("Belanosima-Regular", size: 16))
+                    .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
                     .foregroundStyle(.gray)
                 Spacer()
             } else {
@@ -97,7 +128,9 @@ struct BackpackDrawingCard: View {
                     .padding(16)
             }
             Text(drawing.name.isEmpty ? "Untitled" : drawing.name)
-                .font(.custom("Belanosima-Bold", size: 20))
+                .font(.custom("Belanosima-Bold", size: 20, relativeTo: .headline))
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
                 .foregroundStyle(.black)
                 .padding(.bottom, 12)
         }
@@ -162,7 +195,9 @@ private struct BackpackTabButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Belanosima-Bold", size: 20))
+                .font(.custom("Belanosima-Bold", size: 20, relativeTo: .headline))
+                .minimumScaleFactor(0.75)
+                .lineLimit(1)
                 .foregroundStyle(isSelected ? .white : .black)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 8)

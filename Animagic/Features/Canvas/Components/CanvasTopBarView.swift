@@ -140,7 +140,9 @@ struct TopBarButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Belanosima-SemiBold", size: 20))
+                .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
+                .minimumScaleFactor(0.75)
+                .lineLimit(1)
                 .foregroundColor(.black)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
