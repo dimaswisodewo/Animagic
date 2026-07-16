@@ -27,7 +27,7 @@ struct VirtualRoomView: View {
     @State private var placementMessage: String?
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             RealityRoomView(
                 calibrationRequest: calibrationRequest,
                 interactionMode: interactionMode,
@@ -44,46 +44,78 @@ struct VirtualRoomView: View {
                 placementMessage: $placementMessage,
                 deleteRequestID: deleteRequestID
             )
-                .ignoresSafeArea()
+            .ignoresSafeArea()
 
             CinematicOverlay()
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            VStack(spacing: 12) {
-                HStack(alignment: .top, spacing: 12) {
-                    Picker("Interaction mode", selection: $interactionMode) {
+            // Header UI (Top overlays)
+            VStack {
+                HStack(alignment: .top) {
+                    calibrationButton
+                    
+                    Spacer()
+                    
+                    // Floating Mode Pill (Explore vs Edit)
+                    HStack(spacing: 0) {
                         ForEach(VirtualRoomInteractionMode.allCases) { mode in
-                            Label(mode.title, systemImage: mode.systemImageName).tag(mode)
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                                    interactionMode = mode
+                                }
+                            } label: {
+                                Label(mode.title, systemImage: mode.systemImageName)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(interactionMode == mode ? Color.accentColor : Color.clear)
+                                    .foregroundStyle(interactionMode == mode ? .white : .primary)
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 280)
+                    .padding(3)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.12), radius: 6)
 
                     Spacer()
 
                     skyboxMenu
-                    calibrationButton
+                }
+                .padding()
+                
+                // Floating Contextual Instructions
+                if interactionMode == .edit {
+                    ARInstructionBanner(
+                        contentType: selectedContentType,
+                        spawnMode: selectedSpawnMode,
+                        status: editPlacementStatus
+                    )
+                    .padding(.top, 4)
                 }
 
                 if let skyboxErrorMessage {
                     Text(skyboxErrorMessage)
-                        .font(.caption)
+                        .font(.caption.bold())
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
+                        .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(.red.opacity(0.82))
+                        .background(.red.opacity(0.85))
                         .clipShape(Capsule())
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.top, 4)
                 }
 
                 Spacer()
-
-                if interactionMode == .edit {
-                    editControls
-                }
             }
-            .padding()
+
+            // Bottom Edit Dock Layer
+            if interactionMode == .edit {
+                editControls
+                    .padding()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         .onAppear {
             synchronizeCutoutSelection()
@@ -111,15 +143,24 @@ struct VirtualRoomView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
+    private var editPlacementStatus: ARPlacementStatus {
+        if skyboxLoadState == .loading {
+            return .loading("Loading Environment")
+        }
+        return .ready
+    }
+
     private var calibrationButton: some View {
         Button {
             calibrationRequest += 1
         } label: {
-            Image(systemName: "scope")
-                .font(.system(size: 18, weight: .semibold))
-                .frame(width: 44, height: 44)
+            Image(systemName: "location.fill.viewfinder")
+                .font(.system(size: 16, weight: .bold))
+                .frame(width: 36, height: 36)
+                .background(.ultraThinMaterial)
+                .clipShape(Circle())
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.plain)
         .accessibilityLabel("Calibrate")
     }
 
@@ -138,52 +179,124 @@ struct VirtualRoomView: View {
                 }
             }
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 if skyboxLoadState == .loading {
                     ProgressView()
+                        .scaleEffect(0.7)
+                        .frame(width: 16, height: 16)
                 } else {
                     Image(systemName: skyboxLoadState.isFailure ? "exclamationmark.triangle" : "globe")
+                        .font(.system(size: 14))
                 }
                 Text(selectedSkybox.title)
+                    .font(.caption.bold())
             }
-            .frame(minHeight: 44)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.plain)
         .accessibilityLabel("Choose skybox")
     }
 
     @ViewBuilder
     private var editControls: some View {
         VStack(spacing: 12) {
-            VirtualRoomInstructionBanner(
-                contentType: selectedContentType,
-                spawnMode: selectedSpawnMode,
-                hasCutouts: !artworkStore.cutoutLibrary.isEmpty,
-                placementMessage: placementMessage
-            )
-            PlacementContentTypePicker(selection: $selectedContentType)
-            if selectedContentType == .model {
-                USDZModelPicker(selection: $selectedModelID)
-            } else {
-                SpawnModePicker(selection: $selectedSpawnMode)
-                if artworkStore.cutoutLibrary.isEmpty {
-                    EmptyDoodleLibraryMessage()
-                } else {
-                    CutoutPicker(assets: artworkStore.cutoutLibrary, selection: $selectedCutoutID)
-                    if let selectedCutoutAsset {
-                        DoodleCorrectionMenu(asset: selectedCutoutAsset) { label in
-                            artworkStore.updateCutoutOverride(id: selectedCutoutAsset.id, label: label)
-                        }
-                    }
-                    AnimalArchetypePicker(selection: archetypeSelection)
-                }
-            }
             if let placedObjectSelection {
                 SelectedObjectToolbar(title: placedObjectSelection.title) {
                     deleteRequestID = UUID()
                 }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
+
+            // Contextual adjustments for doodles
+            if selectedContentType == .doodle && !artworkStore.cutoutLibrary.isEmpty {
+                HStack(spacing: 16) {
+                    // Compact Spawn Mode
+                    Button {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
+                            selectedSpawnMode = selectedSpawnMode == .plane ? .cameraRoam : .plane
+                        }
+                    } label: {
+                        Image(systemName: selectedSpawnMode.systemImageName)
+                            .font(.footnote.bold())
+                            .foregroundStyle(Color.accentColor)
+                            .frame(width: 32, height: 32)
+                            .background(Color.accentColor.opacity(0.12))
+                            .clipShape(Circle())
+                    }
+                    
+                    // Archetype Menu Picker
+                    Menu {
+                        Picker("Archetype", selection: archetypeSelection) {
+                            ForEach(AnimalArchetype.allCases) { archetype in
+                                Label(archetype.title, systemImage: archetype.systemImageName).tag(archetype)
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: selectedAnimalArchetype.systemImageName)
+                            Text(selectedAnimalArchetype.title)
+                        }
+                        .font(.caption.bold())
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.primary.opacity(0.08))
+                        .clipShape(Capsule())
+                    }
+                    
+                    // AI correction label menu
+                    if let selectedAsset = selectedCutoutAsset {
+                        Menu {
+                            Button("Use AI Suggestion") {
+                                artworkStore.updateCutoutOverride(id: selectedAsset.id, label: nil)
+                            }
+                            ForEach(DoodleSpecies.all, id: \.self) { label in
+                                Button(label.capitalized) {
+                                    artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "wand.and.stars")
+                                .font(.footnote)
+                                .foregroundStyle(selectedAsset.doodleOverrideLabel != nil ? Color.accentColor : Color.primary)
+                                .frame(width: 32, height: 32)
+                                .background(Color.primary.opacity(0.08))
+                                .clipShape(Circle())
+                        }
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.1), radius: 4)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            // Edit Creation Dock
+            VStack(spacing: 8) {
+                PlacementContentTypePicker(selection: $selectedContentType)
+                    .padding(.top, 6)
+                
+                if selectedContentType == .doodle {
+                    if artworkStore.cutoutLibrary.isEmpty {
+                        EmptyDoodleLibraryMessage()
+                    } else {
+                        CutoutPicker(assets: artworkStore.cutoutLibrary, selection: $selectedCutoutID)
+                    }
+                } else {
+                    USDZModelPicker(selection: $selectedModelID)
+                }
+            }
+            .padding(8)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .shadow(color: .black.opacity(0.15), radius: 10)
         }
+        .animation(.smooth(duration: 0.3), value: selectedContentType)
+        .animation(.smooth(duration: 0.25), value: placedObjectSelection)
     }
 
     private var selectedCutoutAsset: CutoutAsset? {
