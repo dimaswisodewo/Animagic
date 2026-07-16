@@ -1,0 +1,13 @@
+#
+# Wavefront material file
+# Created in RealityCapture
+# Engine version v1.0.3.10403
+#
+
+newmtl seashell.18K.TEX
+Ka 1 1 1
+Kd 1 1 1
+d 1
+Ns 0
+illum 1
+map_Kd seashell.18K.TEX_u1_v1_diffuse.png

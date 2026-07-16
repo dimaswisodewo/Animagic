@@ -17,6 +17,74 @@
 		23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */; };
 		238238874722D44037214247 /* Birds.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 14A60964229B227465EE8AD4 /* Birds.usdz */; };
 		26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */; };
+		28B48D683008C97800EC0E93 /* Old_ship 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D253008C97800EC0E93 /* Old_ship 2.usdz */; };
+		28B48D693008C97800EC0E93 /* REDALGAE34.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D483008C97800EC0E93 /* REDALGAE34.png */; };
+		28B48D6A3008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */; };
+		28B48D6B3008C97800EC0E93 /* REDALGAE33.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D473008C97800EC0E93 /* REDALGAE33.png */; };
+		28B48D6C3008C97800EC0E93 /* REDALGAE3.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D293008C97800EC0E93 /* REDALGAE3.png */; };
+		28B48D6D3008C97800EC0E93 /* REDALGAE2.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D283008C97800EC0E93 /* REDALGAE2.png */; };
+		28B48D6E3008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */; };
+		28B48D6F3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */; };
+		28B48D703008C97800EC0E93 /* seashell.18K.TEX_baseColor.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */; };
+		28B48D713008C97800EC0E93 /* REDALGAE23.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3D3008C97800EC0E93 /* REDALGAE23.png */; };
+		28B48D723008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */; };
+		28B48D733008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */; };
+		28B48D743008C97800EC0E93 /* REDALGAE27.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D413008C97800EC0E93 /* REDALGAE27.png */; };
+		28B48D753008C97800EC0E93 /* REDALGAE26.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D403008C97800EC0E93 /* REDALGAE26.png */; };
+		28B48D763008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */; };
+		28B48D773008C97800EC0E93 /* REDALGAE32.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D463008C97800EC0E93 /* REDALGAE32.png */; };
+		28B48D783008C97800EC0E93 /* REDALGAE22.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3C3008C97800EC0E93 /* REDALGAE22.png */; };
+		28B48D793008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */; };
+		28B48D7A3008C97800EC0E93 /* scene.bin in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D573008C97800EC0E93 /* scene.bin */; };
+		28B48D7B3008C97800EC0E93 /* REDALGAE29.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D433008C97800EC0E93 /* REDALGAE29.png */; };
+		28B48D7C3008C97800EC0E93 /* REDALGAE14.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D343008C97800EC0E93 /* REDALGAE14.png */; };
+		28B48D7D3008C97800EC0E93 /* scene.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D583008C97800EC0E93 /* scene.gltf */; };
+		28B48D7E3008C97800EC0E93 /* Textures\Clam_Quad_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */; };
+		28B48D7F3008C97800EC0E93 /* REDALGAE1.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D273008C97800EC0E93 /* REDALGAE1.png */; };
+		28B48D803008C97800EC0E93 /* REDALGAE10.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D303008C97800EC0E93 /* REDALGAE10.png */; };
+		28B48D813008C97800EC0E93 /* REDALGAE15.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D353008C97800EC0E93 /* REDALGAE15.png */; };
+		28B48D823008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */; };
+		28B48D833008C97800EC0E93 /* REDALGAE16.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D363008C97800EC0E93 /* REDALGAE16.png */; };
+		28B48D843008C97800EC0E93 /* REDALGAE31.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D453008C97800EC0E93 /* REDALGAE31.png */; };
+		28B48D853008C97800EC0E93 /* REDALGAE35.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D493008C97800EC0E93 /* REDALGAE35.png */; };
+		28B48D863008C97800EC0E93 /* Corallium_Rubrum 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */; };
+		28B48D873008C97800EC0E93 /* REDALGAE36.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4A3008C97800EC0E93 /* REDALGAE36.png */; };
+		28B48D883008C97800EC0E93 /* REDALGAE28.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D423008C97800EC0E93 /* REDALGAE28.png */; };
+		28B48D893008C97800EC0E93 /* REDALGAE9.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2F3008C97800EC0E93 /* REDALGAE9.png */; };
+		28B48D8A3008C97800EC0E93 /* REDALGAE19.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D393008C97800EC0E93 /* REDALGAE19.png */; };
+		28B48D8B3008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */; };
+		28B48D8C3008C97800EC0E93 /* Oceanfloor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */; };
+		28B48D8D3008C97800EC0E93 /* REDALGAE17.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D373008C97800EC0E93 /* REDALGAE17.png */; };
+		28B48D8E3008C97800EC0E93 /* REDALGAE6.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2C3008C97800EC0E93 /* REDALGAE6.png */; };
+		28B48D8F3008C97800EC0E93 /* REDALGAE18.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D383008C97800EC0E93 /* REDALGAE18.png */; };
+		28B48D903008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */; };
+		28B48D913008C97800EC0E93 /* REDALGAE12.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D323008C97800EC0E93 /* REDALGAE12.png */; };
+		28B48D923008C97800EC0E93 /* REDALGAE37.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4B3008C97800EC0E93 /* REDALGAE37.png */; };
+		28B48D933008C97800EC0E93 /* REDALGAE25.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3F3008C97800EC0E93 /* REDALGAE25.png */; };
+		28B48D943008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */; };
+		28B48D953008C97800EC0E93 /* Textures\Clam_Tris_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */; };
+		28B48D963008C97800EC0E93 /* REDALGAE4.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2A3008C97800EC0E93 /* REDALGAE4.png */; };
+		28B48D973008C97800EC0E93 /* Soft_Coral_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */; };
+		28B48D983008C97800EC0E93 /* Under_The_Sea 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */; };
+		28B48D993008C97800EC0E93 /* REDALGAE24.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3E3008C97800EC0E93 /* REDALGAE24.png */; };
+		28B48D9A3008C97800EC0E93 /* seashell.18K.TEX.obj in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */; };
+		28B48D9B3008C97800EC0E93 /* REDALGAE20.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3A3008C97800EC0E93 /* REDALGAE20.png */; };
+		28B48D9C3008C97800EC0E93 /* REDALGAE5.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2B3008C97800EC0E93 /* REDALGAE5.png */; };
+		28B48D9D3008C97800EC0E93 /* seashell.18K.TEX_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */; };
+		28B48D9E3008C97800EC0E93 /* Fan_Coral_Med 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */; };
+		28B48D9F3008C97800EC0E93 /* seashell.18K.TEX.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */; };
+		28B48DA03008C97800EC0E93 /* REDALGAE7.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2D3008C97800EC0E93 /* REDALGAE7.png */; };
+		28B48DA13008C97800EC0E93 /* REDALGAE11.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D313008C97800EC0E93 /* REDALGAE11.png */; };
+		28B48DA23008C97800EC0E93 /* Coral 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D213008C97800EC0E93 /* Coral 2.usdz */; };
+		28B48DA33008C97800EC0E93 /* Aloe_Plant_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */; };
+		28B48DA43008C97800EC0E93 /* Underwater_Showcase 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */; };
+		28B48DA53008C97800EC0E93 /* REDALGAE21.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3B3008C97800EC0E93 /* REDALGAE21.png */; };
+		28B48DA63008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */; };
+		28B48DA73008C97800EC0E93 /* REDALGAE13.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D333008C97800EC0E93 /* REDALGAE13.png */; };
+		28B48DA83008C97800EC0E93 /* Sunken_Anchor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */; };
+		28B48DA93008C97800EC0E93 /* REDALGAE30.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D443008C97800EC0E93 /* REDALGAE30.png */; };
+		28B48DAA3008C97800EC0E93 /* REDALGAE8.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2E3008C97800EC0E93 /* REDALGAE8.png */; };
+		28B48DAB3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */; };
 		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
 		40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46D74A3ECD9818F1F0D944C1 /* cloud.usdz */; };
@@ -98,6 +166,74 @@
 		2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
+		28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "9_Aplysina_fistularis 2.usdz"; sourceTree = "<group>"; };
+		28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aloe_Plant_Set 2.usdz"; sourceTree = "<group>"; };
+		28B48D213008C97800EC0E93 /* Coral 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coral 2.usdz"; sourceTree = "<group>"; };
+		28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Corallium_Rubrum 2.usdz"; sourceTree = "<group>"; };
+		28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Fan_Coral_Med 2.usdz"; sourceTree = "<group>"; };
+		28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Oceanfloor 2.usdz"; sourceTree = "<group>"; };
+		28B48D253008C97800EC0E93 /* Old_ship 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Old_ship 2.usdz"; sourceTree = "<group>"; };
+		28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Projet_Aaron_-_Plants 2.usdz"; sourceTree = "<group>"; };
+		28B48D273008C97800EC0E93 /* REDALGAE1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE1.png; sourceTree = "<group>"; };
+		28B48D283008C97800EC0E93 /* REDALGAE2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE2.png; sourceTree = "<group>"; };
+		28B48D293008C97800EC0E93 /* REDALGAE3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE3.png; sourceTree = "<group>"; };
+		28B48D2A3008C97800EC0E93 /* REDALGAE4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE4.png; sourceTree = "<group>"; };
+		28B48D2B3008C97800EC0E93 /* REDALGAE5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE5.png; sourceTree = "<group>"; };
+		28B48D2C3008C97800EC0E93 /* REDALGAE6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE6.png; sourceTree = "<group>"; };
+		28B48D2D3008C97800EC0E93 /* REDALGAE7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE7.png; sourceTree = "<group>"; };
+		28B48D2E3008C97800EC0E93 /* REDALGAE8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE8.png; sourceTree = "<group>"; };
+		28B48D2F3008C97800EC0E93 /* REDALGAE9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE9.png; sourceTree = "<group>"; };
+		28B48D303008C97800EC0E93 /* REDALGAE10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE10.png; sourceTree = "<group>"; };
+		28B48D313008C97800EC0E93 /* REDALGAE11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE11.png; sourceTree = "<group>"; };
+		28B48D323008C97800EC0E93 /* REDALGAE12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE12.png; sourceTree = "<group>"; };
+		28B48D333008C97800EC0E93 /* REDALGAE13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE13.png; sourceTree = "<group>"; };
+		28B48D343008C97800EC0E93 /* REDALGAE14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE14.png; sourceTree = "<group>"; };
+		28B48D353008C97800EC0E93 /* REDALGAE15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE15.png; sourceTree = "<group>"; };
+		28B48D363008C97800EC0E93 /* REDALGAE16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE16.png; sourceTree = "<group>"; };
+		28B48D373008C97800EC0E93 /* REDALGAE17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE17.png; sourceTree = "<group>"; };
+		28B48D383008C97800EC0E93 /* REDALGAE18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE18.png; sourceTree = "<group>"; };
+		28B48D393008C97800EC0E93 /* REDALGAE19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE19.png; sourceTree = "<group>"; };
+		28B48D3A3008C97800EC0E93 /* REDALGAE20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE20.png; sourceTree = "<group>"; };
+		28B48D3B3008C97800EC0E93 /* REDALGAE21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE21.png; sourceTree = "<group>"; };
+		28B48D3C3008C97800EC0E93 /* REDALGAE22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE22.png; sourceTree = "<group>"; };
+		28B48D3D3008C97800EC0E93 /* REDALGAE23.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE23.png; sourceTree = "<group>"; };
+		28B48D3E3008C97800EC0E93 /* REDALGAE24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE24.png; sourceTree = "<group>"; };
+		28B48D3F3008C97800EC0E93 /* REDALGAE25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE25.png; sourceTree = "<group>"; };
+		28B48D403008C97800EC0E93 /* REDALGAE26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE26.png; sourceTree = "<group>"; };
+		28B48D413008C97800EC0E93 /* REDALGAE27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE27.png; sourceTree = "<group>"; };
+		28B48D423008C97800EC0E93 /* REDALGAE28.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE28.png; sourceTree = "<group>"; };
+		28B48D433008C97800EC0E93 /* REDALGAE29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE29.png; sourceTree = "<group>"; };
+		28B48D443008C97800EC0E93 /* REDALGAE30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE30.png; sourceTree = "<group>"; };
+		28B48D453008C97800EC0E93 /* REDALGAE31.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE31.png; sourceTree = "<group>"; };
+		28B48D463008C97800EC0E93 /* REDALGAE32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE32.png; sourceTree = "<group>"; };
+		28B48D473008C97800EC0E93 /* REDALGAE33.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE33.png; sourceTree = "<group>"; };
+		28B48D483008C97800EC0E93 /* REDALGAE34.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE34.png; sourceTree = "<group>"; };
+		28B48D493008C97800EC0E93 /* REDALGAE35.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE35.png; sourceTree = "<group>"; };
+		28B48D4A3008C97800EC0E93 /* REDALGAE36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE36.png; sourceTree = "<group>"; };
+		28B48D4B3008C97800EC0E93 /* REDALGAE37.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE37.png; sourceTree = "<group>"; };
+		28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Soft_Coral_Set 2.usdz"; sourceTree = "<group>"; };
+		28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Stylaster_sanguineus 2.usdz"; sourceTree = "<group>"; };
+		28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunken_Anchor 2.usdz"; sourceTree = "<group>"; };
+		28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Under_The_Sea 2.usdz"; sourceTree = "<group>"; };
+		28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Underwater_Lowpoly_Scene 2.usdz"; sourceTree = "<group>"; };
+		28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Underwater_Showcase 2.usdz"; sourceTree = "<group>"; };
+		28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_baseColor.png; sourceTree = "<group>"; };
+		28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_metallicRoughness.png; sourceTree = "<group>"; };
+		28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_normal.png; sourceTree = "<group>"; };
+		28B48D573008C97800EC0E93 /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		28B48D583008C97800EC0E93 /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.mtl; sourceTree = "<group>"; };
+		28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.obj; sourceTree = "<group>"; };
+		28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_diffuse.png; sourceTree = "<group>"; };
+		28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_normal.png; sourceTree = "<group>"; };
+		28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_occlusion.png; sourceTree = "<group>"; };
+		28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */ = {isa = PBXFileReference; lastKnownFileType = file; path = "uploads-files-5014803-Clam 2.blend"; sourceTree = "<group>"; };
+		28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Diffuse.png"; sourceTree = "<group>"; };
+		28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Normal.png"; sourceTree = "<group>"; };
+		28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Roughness.png"; sourceTree = "<group>"; };
+		28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Diffuse.png"; sourceTree = "<group>"; };
+		28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Normal.png"; sourceTree = "<group>"; };
+		28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Roughness.png"; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
 		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
@@ -197,6 +333,95 @@
 				68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */,
 			);
 			path = State;
+			sourceTree = "<group>";
+		};
+		28B48D4C3008C97800EC0E93 /* Red_Algaes 2 */ = {
+			isa = PBXGroup;
+			children = (
+				28B48D273008C97800EC0E93 /* REDALGAE1.png */,
+				28B48D283008C97800EC0E93 /* REDALGAE2.png */,
+				28B48D293008C97800EC0E93 /* REDALGAE3.png */,
+				28B48D2A3008C97800EC0E93 /* REDALGAE4.png */,
+				28B48D2B3008C97800EC0E93 /* REDALGAE5.png */,
+				28B48D2C3008C97800EC0E93 /* REDALGAE6.png */,
+				28B48D2D3008C97800EC0E93 /* REDALGAE7.png */,
+				28B48D2E3008C97800EC0E93 /* REDALGAE8.png */,
+				28B48D2F3008C97800EC0E93 /* REDALGAE9.png */,
+				28B48D303008C97800EC0E93 /* REDALGAE10.png */,
+				28B48D313008C97800EC0E93 /* REDALGAE11.png */,
+				28B48D323008C97800EC0E93 /* REDALGAE12.png */,
+				28B48D333008C97800EC0E93 /* REDALGAE13.png */,
+				28B48D343008C97800EC0E93 /* REDALGAE14.png */,
+				28B48D353008C97800EC0E93 /* REDALGAE15.png */,
+				28B48D363008C97800EC0E93 /* REDALGAE16.png */,
+				28B48D373008C97800EC0E93 /* REDALGAE17.png */,
+				28B48D383008C97800EC0E93 /* REDALGAE18.png */,
+				28B48D393008C97800EC0E93 /* REDALGAE19.png */,
+				28B48D3A3008C97800EC0E93 /* REDALGAE20.png */,
+				28B48D3B3008C97800EC0E93 /* REDALGAE21.png */,
+				28B48D3C3008C97800EC0E93 /* REDALGAE22.png */,
+				28B48D3D3008C97800EC0E93 /* REDALGAE23.png */,
+				28B48D3E3008C97800EC0E93 /* REDALGAE24.png */,
+				28B48D3F3008C97800EC0E93 /* REDALGAE25.png */,
+				28B48D403008C97800EC0E93 /* REDALGAE26.png */,
+				28B48D413008C97800EC0E93 /* REDALGAE27.png */,
+				28B48D423008C97800EC0E93 /* REDALGAE28.png */,
+				28B48D433008C97800EC0E93 /* REDALGAE29.png */,
+				28B48D443008C97800EC0E93 /* REDALGAE30.png */,
+				28B48D453008C97800EC0E93 /* REDALGAE31.png */,
+				28B48D463008C97800EC0E93 /* REDALGAE32.png */,
+				28B48D473008C97800EC0E93 /* REDALGAE33.png */,
+				28B48D483008C97800EC0E93 /* REDALGAE34.png */,
+				28B48D493008C97800EC0E93 /* REDALGAE35.png */,
+				28B48D4A3008C97800EC0E93 /* REDALGAE36.png */,
+				28B48D4B3008C97800EC0E93 /* REDALGAE37.png */,
+			);
+			path = "Red_Algaes 2";
+			sourceTree = "<group>";
+		};
+		28B48D563008C97800EC0E93 /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */,
+				28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */,
+				28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */,
+			);
+			path = textures;
+			sourceTree = "<group>";
+		};
+		28B48D593008C97800EC0E93 /* uploads-files-2382239-seashell 2 */ = {
+			isa = PBXGroup;
+			children = (
+				28B48D563008C97800EC0E93 /* textures */,
+				28B48D573008C97800EC0E93 /* scene.bin */,
+				28B48D583008C97800EC0E93 /* scene.gltf */,
+			);
+			path = "uploads-files-2382239-seashell 2";
+			sourceTree = "<group>";
+		};
+		28B48D5F3008C97800EC0E93 /* uploads-files-2382239-seashell_18K_TEX 2 */ = {
+			isa = PBXGroup;
+			children = (
+				28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */,
+				28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */,
+				28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */,
+				28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */,
+				28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */,
+			);
+			path = "uploads-files-2382239-seashell_18K_TEX 2";
+			sourceTree = "<group>";
+		};
+		28B48D673008C97800EC0E93 /* uploads-files-5014803-Textures 2 */ = {
+			isa = PBXGroup;
+			children = (
+				28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */,
+				28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */,
+				28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */,
+				28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */,
+				28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */,
+				28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */,
+			);
+			path = "uploads-files-5014803-Textures 2";
 			sourceTree = "<group>";
 		};
 		3F370872313E0F6F949422A0 /* Animagic */ = {
@@ -478,6 +703,25 @@
 		E41C1D5B0E5FFFA1E7520CB2 /* VirtualRoom */ = {
 			isa = PBXGroup;
 			children = (
+				28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */,
+				28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */,
+				28B48D213008C97800EC0E93 /* Coral 2.usdz */,
+				28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */,
+				28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */,
+				28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */,
+				28B48D253008C97800EC0E93 /* Old_ship 2.usdz */,
+				28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */,
+				28B48D4C3008C97800EC0E93 /* Red_Algaes 2 */,
+				28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */,
+				28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */,
+				28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */,
+				28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */,
+				28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */,
+				28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */,
+				28B48D593008C97800EC0E93 /* uploads-files-2382239-seashell 2 */,
+				28B48D5F3008C97800EC0E93 /* uploads-files-2382239-seashell_18K_TEX 2 */,
+				28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */,
+				28B48D673008C97800EC0E93 /* uploads-files-5014803-Textures 2 */,
 				14A60964229B227465EE8AD4 /* Birds.usdz */,
 				9AE036FFA5A33C658370D38B /* bubbles.usdz */,
 				6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */,
@@ -597,6 +841,74 @@
 				40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */,
 				42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */,
 				881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */,
+				28B48D683008C97800EC0E93 /* Old_ship 2.usdz in Resources */,
+				28B48D693008C97800EC0E93 /* REDALGAE34.png in Resources */,
+				28B48D6A3008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz in Resources */,
+				28B48D6B3008C97800EC0E93 /* REDALGAE33.png in Resources */,
+				28B48D6C3008C97800EC0E93 /* REDALGAE3.png in Resources */,
+				28B48D6D3008C97800EC0E93 /* REDALGAE2.png in Resources */,
+				28B48D6E3008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png in Resources */,
+				28B48D6F3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz in Resources */,
+				28B48D703008C97800EC0E93 /* seashell.18K.TEX_baseColor.png in Resources */,
+				28B48D713008C97800EC0E93 /* REDALGAE23.png in Resources */,
+				28B48D723008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png in Resources */,
+				28B48D733008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png in Resources */,
+				28B48D743008C97800EC0E93 /* REDALGAE27.png in Resources */,
+				28B48D753008C97800EC0E93 /* REDALGAE26.png in Resources */,
+				28B48D763008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz in Resources */,
+				28B48D773008C97800EC0E93 /* REDALGAE32.png in Resources */,
+				28B48D783008C97800EC0E93 /* REDALGAE22.png in Resources */,
+				28B48D793008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png in Resources */,
+				28B48D7A3008C97800EC0E93 /* scene.bin in Resources */,
+				28B48D7B3008C97800EC0E93 /* REDALGAE29.png in Resources */,
+				28B48D7C3008C97800EC0E93 /* REDALGAE14.png in Resources */,
+				28B48D7D3008C97800EC0E93 /* scene.gltf in Resources */,
+				28B48D7E3008C97800EC0E93 /* Textures\Clam_Quad_Normal.png in Resources */,
+				28B48D7F3008C97800EC0E93 /* REDALGAE1.png in Resources */,
+				28B48D803008C97800EC0E93 /* REDALGAE10.png in Resources */,
+				28B48D813008C97800EC0E93 /* REDALGAE15.png in Resources */,
+				28B48D823008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend in Resources */,
+				28B48D833008C97800EC0E93 /* REDALGAE16.png in Resources */,
+				28B48D843008C97800EC0E93 /* REDALGAE31.png in Resources */,
+				28B48D853008C97800EC0E93 /* REDALGAE35.png in Resources */,
+				28B48D863008C97800EC0E93 /* Corallium_Rubrum 2.usdz in Resources */,
+				28B48D873008C97800EC0E93 /* REDALGAE36.png in Resources */,
+				28B48D883008C97800EC0E93 /* REDALGAE28.png in Resources */,
+				28B48D893008C97800EC0E93 /* REDALGAE9.png in Resources */,
+				28B48D8A3008C97800EC0E93 /* REDALGAE19.png in Resources */,
+				28B48D8B3008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png in Resources */,
+				28B48D8C3008C97800EC0E93 /* Oceanfloor 2.usdz in Resources */,
+				28B48D8D3008C97800EC0E93 /* REDALGAE17.png in Resources */,
+				28B48D8E3008C97800EC0E93 /* REDALGAE6.png in Resources */,
+				28B48D8F3008C97800EC0E93 /* REDALGAE18.png in Resources */,
+				28B48D903008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png in Resources */,
+				28B48D913008C97800EC0E93 /* REDALGAE12.png in Resources */,
+				28B48D923008C97800EC0E93 /* REDALGAE37.png in Resources */,
+				28B48D933008C97800EC0E93 /* REDALGAE25.png in Resources */,
+				28B48D943008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz in Resources */,
+				28B48D953008C97800EC0E93 /* Textures\Clam_Tris_Normal.png in Resources */,
+				28B48D963008C97800EC0E93 /* REDALGAE4.png in Resources */,
+				28B48D973008C97800EC0E93 /* Soft_Coral_Set 2.usdz in Resources */,
+				28B48D983008C97800EC0E93 /* Under_The_Sea 2.usdz in Resources */,
+				28B48D993008C97800EC0E93 /* REDALGAE24.png in Resources */,
+				28B48D9A3008C97800EC0E93 /* seashell.18K.TEX.obj in Resources */,
+				28B48D9B3008C97800EC0E93 /* REDALGAE20.png in Resources */,
+				28B48D9C3008C97800EC0E93 /* REDALGAE5.png in Resources */,
+				28B48D9D3008C97800EC0E93 /* seashell.18K.TEX_normal.png in Resources */,
+				28B48D9E3008C97800EC0E93 /* Fan_Coral_Med 2.usdz in Resources */,
+				28B48D9F3008C97800EC0E93 /* seashell.18K.TEX.mtl in Resources */,
+				28B48DA03008C97800EC0E93 /* REDALGAE7.png in Resources */,
+				28B48DA13008C97800EC0E93 /* REDALGAE11.png in Resources */,
+				28B48DA23008C97800EC0E93 /* Coral 2.usdz in Resources */,
+				28B48DA33008C97800EC0E93 /* Aloe_Plant_Set 2.usdz in Resources */,
+				28B48DA43008C97800EC0E93 /* Underwater_Showcase 2.usdz in Resources */,
+				28B48DA53008C97800EC0E93 /* REDALGAE21.png in Resources */,
+				28B48DA63008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */,
+				28B48DA73008C97800EC0E93 /* REDALGAE13.png in Resources */,
+				28B48DA83008C97800EC0E93 /* Sunken_Anchor 2.usdz in Resources */,
+				28B48DA93008C97800EC0E93 /* REDALGAE30.png in Resources */,
+				28B48DAA3008C97800EC0E93 /* REDALGAE8.png in Resources */,
+				28B48DAB3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

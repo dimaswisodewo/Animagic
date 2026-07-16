@@ -22,3 +22,6 @@ Pods/
 *.dSYM
 *.log
 docs/
+
+# Large files
+Animagic/Resources/VirtualRoom/Underwater_Showcase 2.usdz
