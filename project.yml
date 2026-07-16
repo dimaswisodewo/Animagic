@@ -34,6 +34,9 @@ targets:
         PRODUCT_NAME: "$(TARGET_NAME)"
         INFOPLIST_FILE: Animagic/Configuration/Info.plist
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "This app requires camera access for AR functionality to place magic drawn animals into the real world."
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "This app requires access to save your magic drawings to your photo library."
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_STYLE: Automatic
