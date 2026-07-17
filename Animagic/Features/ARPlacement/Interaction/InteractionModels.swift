@@ -56,6 +56,11 @@ struct SurfaceProjection {
     let normal: SIMD3<Float>
 }
 
+enum PencilMovementMechanic {
+    case selectionFirst
+    case directDragAndGather
+}
+
 extension CollisionGroup {
     static let interactable = CollisionGroup(rawValue: 1 << 10)
 }
@@ -68,7 +73,10 @@ protocol ObjectInteractionManaging: AnyObject {
 
     func handleTap(on hitEntity: Entity?) -> Bool
     func beginTranslation(on hitEntity: Entity?) -> Bool
+    func beginGuidedTranslation() -> Bool
+    func beginPreciseTranslation(on hitEntity: Entity?) -> Bool
     func moveSelected(to projection: SurfaceProjection)
+    func moveSelectedPrecisely(to projection: SurfaceProjection)
     func endTranslation()
     func beginScale(on hitEntity: Entity?) -> Bool
     func scaleSelected(by factor: Float)
@@ -129,7 +137,6 @@ extension PlacedSceneObject {
 @MainActor
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
-    var hoverTargetPosition: SIMD3<Float>? { get set }
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype)
     func deleteSelectedObject()
 }

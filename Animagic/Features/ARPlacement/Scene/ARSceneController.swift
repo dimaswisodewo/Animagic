@@ -44,10 +44,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         get { sceneEditor.selectedModelID }
         set { sceneEditor.selectedModelID = newValue }
     }
-    var hoverTargetPosition: SIMD3<Float>? {
-        get { sceneEditor.hoverTargetPosition }
-        set { sceneEditor.hoverTargetPosition = newValue }
-    }
     private var displayLink: CADisplayLink?
     private var lastFrameTimestamp: CFTimeInterval?
     private let sceneEditor: CutoutSceneEditor
@@ -63,11 +59,10 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
     
     var isInteractionMode: Bool = false {
         didSet {
-            penPanGesture?.isEnabled = isInteractionMode
+            sceneEditor.isPencilInteractionEnabled = isInteractionMode
         }
     }
     var onInteractionModeChanged: ((Bool) -> Void)?
-    private weak var penPanGesture: UILongPressGestureRecognizer?
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -124,13 +119,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
             guard !self.isInteractionMode else { return }
             self.handleEmptyTap(at: point, in: arView)
         }
-        
-        let penPanGesture = UILongPressGestureRecognizer(target: self, action: #selector(handlePenPan(_:)))
-        penPanGesture.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
-        penPanGesture.minimumPressDuration = 0
-        penPanGesture.isEnabled = isInteractionMode
-        arView.addGestureRecognizer(penPanGesture)
-        self.penPanGesture = penPanGesture
         
         let pencilInteraction = UIPencilInteraction()
         pencilInteraction.delegate = self
@@ -278,25 +266,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         sceneEditor.deleteSelectedObject()
     }
     
-    @objc private func handlePenPan(_ recognizer: UILongPressGestureRecognizer) {
-        guard isInteractionMode, let arView = recognizer.view as? ARView else { return }
-        
-        if recognizer.state == .ended || recognizer.state == .cancelled {
-            hoverTargetPosition = nil
-            return
-        }
-        
-        if recognizer.state == .began {
-            sceneEditor.triggerLoveAnimation()
-        }
-        
-        let location = recognizer.location(in: arView)
-        
-        if let result = raycast(from: location, in: arView, allowing: .estimatedPlane) ??
-                        raycast(from: location, in: arView, allowing: .existingPlaneGeometry) {
-            hoverTargetPosition = result.worldTransform.translation
-        }
-    }
 }
 
 // MARK: - UIPencilInteractionDelegate

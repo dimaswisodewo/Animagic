@@ -13,17 +13,18 @@ import UIKit
 protocol SurfaceProjecting {
     func project(
         _ point: CGPoint,
+        in arView: ARView
+    ) -> SurfaceProjection?
+
+    func project(
+        _ point: CGPoint,
         in arView: ARView,
         for object: any PlacedSceneObject
     ) -> SurfaceProjection?
 }
 
 struct ARSurfaceProjector: SurfaceProjecting {
-    func project(
-        _ point: CGPoint,
-        in arView: ARView,
-        for object: any PlacedSceneObject
-    ) -> SurfaceProjection? {
+    func project(_ point: CGPoint, in arView: ARView) -> SurfaceProjection? {
         let existing = arView.raycast(
             from: point,
             allowing: .existingPlaneGeometry,
@@ -46,6 +47,14 @@ struct ARSurfaceProjector: SurfaceProjecting {
                 result.worldTransform.columns.1.z
             ])
         )
+    }
+
+    func project(
+        _ point: CGPoint,
+        in arView: ARView,
+        for object: any PlacedSceneObject
+    ) -> SurfaceProjection? {
+        project(point, in: arView)
     }
 }
 
