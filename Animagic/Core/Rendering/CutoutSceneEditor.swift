@@ -42,6 +42,8 @@ final class CutoutSceneEditor: SceneEditing {
             interactionManager.onSelectionChanged = onSelectionChanged
         }
     }
+    
+    var hoverTargetPosition: SIMD3<Float>?
 
     private let entityFactory: CutoutEntityFactory
     private let modelRepository: USDZModelRepository
@@ -146,6 +148,33 @@ final class CutoutSceneEditor: SceneEditing {
 
     func update(deltaTime: Float) {
         guard !registry.isEmpty else { return }
+        
+        // Handle swarming behavior towards hover target
+        if let target = hoverTargetPosition {
+            registry.forEach { object in
+                let currentPos = object.anchor.position
+                let offset = target - currentPos
+                let dist = simd_length(offset)
+                
+                if dist > 0.01 {
+                    // Exponential smoothing for position (feels like a spring)
+                    let blendPos = 1 - exp(-3.0 * deltaTime)
+                    object.anchor.position += offset * blendPos
+                    
+                    // Only rotate if far enough to avoid jitter
+                    if dist > 0.05 {
+                        let targetYaw = atan2(offset.x, offset.z)
+                        let blendRot = 1 - exp(-8.0 * deltaTime)
+                        object.interactionRoot.orientation = simd_slerp(
+                            object.interactionRoot.orientation,
+                            simd_quatf(angle: targetYaw, axis: [0, 1, 0]),
+                            blendRot
+                        )
+                    }
+                }
+            }
+        }
+        
         guard let simulationInterval = configuration.simulationInterval else {
             registry.forEach { $0.update(deltaTime: deltaTime) }
             return
@@ -167,6 +196,10 @@ final class CutoutSceneEditor: SceneEditing {
 
     func deleteSelectedObject() {
         interactionManager.deleteSelected()
+    }
+    
+    func triggerLoveAnimation() {
+        registry.forEach { $0.showLove() }
     }
 
     private var selectedCutoutAsset: CutoutAsset? {

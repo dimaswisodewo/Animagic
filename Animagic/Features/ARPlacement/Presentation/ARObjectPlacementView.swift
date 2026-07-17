@@ -19,6 +19,7 @@ struct ARObjectPlacementView: View {
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
     @State private var placementStatus: ARPlacementStatus = .searching
+    @State private var isInteractionMode: Bool = false
 
     init(cutoutAssets: [CutoutAsset], initialCutoutID: CutoutAsset.ID? = nil) {
         self.cutoutAssets = cutoutAssets
@@ -43,23 +44,55 @@ struct ARObjectPlacementView: View {
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
                 placementStatus: $placementStatus,
+                isInteractionMode: $isInteractionMode,
                 deleteRequestID: deleteRequestID
             )
             .ignoresSafeArea()
 
             // Floating Top HUD
             VStack {
-                ARInstructionBanner(
-                    contentType: selectedContentType,
-                    spawnMode: selectedSpawnMode,
-                    status: placementStatus
-                )
+                // Floating Mode Pill (Creation vs Interaction)
+                HStack(spacing: 0) {
+                    let modes: [(title: String, systemImage: String, value: Bool)] = [
+                        ("Creation", "wand.and.stars", false),
+                        ("Interaction", "hand.draw", true)
+                    ]
+                    ForEach(modes, id: \.title) { mode in
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                                isInteractionMode = mode.value
+                            }
+                        } label: {
+                            Label(mode.title, systemImage: mode.systemImage)
+                                .font(.system(size: 11, weight: .bold))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(isInteractionMode == mode.value ? Color.accentColor : Color.clear)
+                                .foregroundStyle(isInteractionMode == mode.value ? .white : .primary)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(3)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.12), radius: 6)
                 .padding(.top, 10)
+                
+                if !isInteractionMode {
+                    ARInstructionBanner(
+                        contentType: selectedContentType,
+                        spawnMode: selectedSpawnMode,
+                        status: placementStatus
+                    )
+                    .padding(.top, 10)
+                }
                 Spacer()
             }
 
             // Bottom Controls Layer
-            VStack(spacing: 12) {
+            if !isInteractionMode {
+                VStack(spacing: 12) {
                 if let placedObjectSelection {
                     SelectedObjectToolbar(title: placedObjectSelection.title) {
                         deleteRequestID = UUID()
@@ -151,8 +184,9 @@ struct ARObjectPlacementView: View {
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 22))
                 .shadow(color: .black.opacity(0.15), radius: 10)
+                }
+                .padding()
             }
-            .padding()
         }
         .animation(.smooth(duration: 0.3), value: selectedContentType)
         .animation(.smooth(duration: 0.25), value: placedObjectSelection)

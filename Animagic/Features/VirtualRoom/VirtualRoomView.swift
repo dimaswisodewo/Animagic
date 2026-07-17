@@ -42,7 +42,12 @@ struct VirtualRoomView: View {
                 placedObjectSelection: $placedObjectSelection,
                 skyboxLoadState: $skyboxLoadState,
                 placementMessage: $placementMessage,
-                deleteRequestID: deleteRequestID
+                deleteRequestID: deleteRequestID,
+                onInteractionModeChanged: { mode in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                        interactionMode = mode
+                    }
+                }
             )
             .ignoresSafeArea()
 

@@ -20,10 +20,11 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
     @Binding var placementStatus: ARPlacementStatus
+    @Binding var isInteractionMode: Bool
     let deleteRequestID: UUID?
 
     func makeCoordinator() -> ARSceneController {
-        ARSceneController(
+        let controller = ARSceneController(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: spawnAnimalArchetype,
@@ -43,8 +44,19 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
                         placementStatus = status
                     }
                 }
+            },
+            onInteractionModeChanged: { isActive in
+                Task { @MainActor in
+                    if isInteractionMode != isActive {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                            isInteractionMode = isActive
+                        }
+                    }
+                }
             }
         )
+        controller.isInteractionMode = isInteractionMode
+        return controller
     }
 
     func makeUIView(context: Context) -> ARView {
@@ -88,6 +100,10 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
                     placementStatus = status
                 }
             }
+        }
+        
+        if context.coordinator.isInteractionMode != isInteractionMode {
+            context.coordinator.isInteractionMode = isInteractionMode
         }
 
         if let selectedObjectAnimalArchetype,

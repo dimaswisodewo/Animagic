@@ -93,17 +93,43 @@ protocol PlacedSceneObject: AnyObject {
     func setSelected(_ isSelected: Bool)
     func setInteractionPaused(_ isPaused: Bool)
     func setAnimalArchetype(_ archetype: AnimalArchetype)
+    func showLove()
 }
 
 extension PlacedSceneObject {
     func update(deltaTime: Float) {}
     func setInteractionPaused(_ isPaused: Bool) {}
     func setAnimalArchetype(_ archetype: AnimalArchetype) {}
+    
+    func showLove() {
+        // Use a standard unicode heart glyph which is guaranteed to generate a 3D path mesh,
+        // unlike emojis which often fail in MeshResource.generateText.
+        let mesh = MeshResource.generateText("♥", extrusionDepth: 0.01, font: .systemFont(ofSize: 0.2))
+        let material = SimpleMaterial(color: .systemPink, isMetallic: false)
+        let heart = ModelEntity(mesh: mesh, materials: [material])
+        
+        // Center the text horizontally (Text mesh originates at bottom-left)
+        let bounds = heart.visualBounds(relativeTo: nil)
+        heart.position = [-(bounds.extents.x / 2.0), 0.4, 0] // Centered above object
+        
+        interactionRoot.addChild(heart)
+        
+        var transform = heart.transform
+        transform.translation.y += 0.3
+        transform.scale = [1.2, 1.2, 1.2]
+        
+        heart.move(to: transform, relativeTo: heart.parent, duration: 1.0, timingFunction: .easeOut)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            heart.removeFromParent()
+        }
+    }
 }
 
 @MainActor
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
+    var hoverTargetPosition: SIMD3<Float>? { get set }
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype)
     func deleteSelectedObject()
 }

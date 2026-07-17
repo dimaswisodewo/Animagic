@@ -10,10 +10,23 @@ import RealityKit
 enum VirtualRoomInteractionMode: String, CaseIterable, Identifiable {
     case explore
     case edit
+    case interact
 
     var id: String { rawValue }
-    var title: String { rawValue.capitalized }
-    var systemImageName: String { self == .explore ? "figure.walk" : "wand.and.stars" }
+    var title: String {
+        switch self {
+        case .explore: return "Explore"
+        case .edit: return "Creation"
+        case .interact: return "Interaction"
+        }
+    }
+    var systemImageName: String {
+        switch self {
+        case .explore: return "figure.walk"
+        case .edit: return "wand.and.stars"
+        case .interact: return "hand.draw"
+        }
+    }
 }
 
 enum VirtualRoomSkybox: String, CaseIterable, Identifiable {

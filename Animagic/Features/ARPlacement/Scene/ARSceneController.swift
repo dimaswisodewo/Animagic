@@ -44,6 +44,10 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         get { sceneEditor.selectedModelID }
         set { sceneEditor.selectedModelID = newValue }
     }
+    var hoverTargetPosition: SIMD3<Float>? {
+        get { sceneEditor.hoverTargetPosition }
+        set { sceneEditor.hoverTargetPosition = newValue }
+    }
     private var displayLink: CADisplayLink?
     private var lastFrameTimestamp: CFTimeInterval?
     private let sceneEditor: CutoutSceneEditor
@@ -56,6 +60,14 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
             sceneEditor.onSelectionChanged = onSelectionChanged
         }
     }
+    
+    var isInteractionMode: Bool = false {
+        didSet {
+            penPanGesture?.isEnabled = isInteractionMode
+        }
+    }
+    var onInteractionModeChanged: ((Bool) -> Void)?
+    private weak var penPanGesture: UILongPressGestureRecognizer?
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -66,8 +78,10 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         selectedModelID: PlaceableUSDZModel.ID?,
         entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
-        onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
+        onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
+        onInteractionModeChanged: ((Bool) -> Void)? = nil
     ) {
+        self.onInteractionModeChanged = onInteractionModeChanged
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
@@ -106,11 +120,22 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
             to: arView,
             surfaceProjector: ARSurfaceProjector()
         ) { [weak self, weak arView] point in
-            guard let self, let arView else {
-                return
-            }
+            guard let self, let arView else { return }
+            guard !self.isInteractionMode else { return }
             self.handleEmptyTap(at: point, in: arView)
         }
+        
+        let penPanGesture = UILongPressGestureRecognizer(target: self, action: #selector(handlePenPan(_:)))
+        penPanGesture.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+        penPanGesture.minimumPressDuration = 0
+        penPanGesture.isEnabled = isInteractionMode
+        arView.addGestureRecognizer(penPanGesture)
+        self.penPanGesture = penPanGesture
+        
+        let pencilInteraction = UIPencilInteraction()
+        pencilInteraction.delegate = self
+        arView.addInteraction(pencilInteraction)
+        
         startAnimationLoop(in: arView)
         updateStatus(.searching)
     }
@@ -251,6 +276,39 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
 
     func deleteSelectedObject() {
         sceneEditor.deleteSelectedObject()
+    }
+    
+    @objc private func handlePenPan(_ recognizer: UILongPressGestureRecognizer) {
+        guard isInteractionMode, let arView = recognizer.view as? ARView else { return }
+        
+        if recognizer.state == .ended || recognizer.state == .cancelled {
+            hoverTargetPosition = nil
+            return
+        }
+        
+        if recognizer.state == .began {
+            sceneEditor.triggerLoveAnimation()
+        }
+        
+        let location = recognizer.location(in: arView)
+        
+        if let result = raycast(from: location, in: arView, allowing: .estimatedPlane) ??
+                        raycast(from: location, in: arView, allowing: .existingPlaneGeometry) {
+            hoverTargetPosition = result.worldTransform.translation
+        }
+    }
+}
+
+// MARK: - UIPencilInteractionDelegate
+
+extension ARSceneController: UIPencilInteractionDelegate {
+    func pencilInteraction(_ interaction: UIPencilInteraction, didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze) {
+        guard squeeze.phase == .ended else { return }
+        onInteractionModeChanged?(!isInteractionMode)
+    }
+    
+    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
+        // Fallback or secondary tap handling can go here if needed.
     }
 }
 

@@ -85,6 +85,14 @@ struct DrawingView: UIViewRepresentable {
             onDrawingChanged(!canvasView.drawing.strokes.isEmpty)
         }
         
+        func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
+            hoverPreviewLayer?.isHidden = true
+        }
+        
+        func canvasViewDidEndUsingTool(_ canvasView: PKCanvasView) {
+            hoverPreviewLayer?.isHidden = true
+        }
+        
         @objc func hover(_ recognizer: UIHoverGestureRecognizer) {
             let location = recognizer.location(in: recognizer.view)
             lastHoverLocation = location
@@ -125,8 +133,10 @@ struct DrawingView: UIViewRepresentable {
                 
             case .ended, .cancelled:
                 guard let startTime = hoverStrokeStartTime, let baseline = baselineDrawing else { return }
+                
                 let path = PKStrokePath(controlPoints: currentHoverPoints, creationDate: startTime)
                 let stroke = PKStroke(ink: ink, path: path)
+                
                 var finalDrawing = baseline
                 finalDrawing.strokes.append(stroke)
                 canvas.drawing = finalDrawing

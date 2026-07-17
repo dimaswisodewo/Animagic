@@ -23,6 +23,7 @@ struct RealityRoomView: UIViewRepresentable {
     @Binding var skyboxLoadState: SkyboxLoadState
     @Binding var placementMessage: String?
     let deleteRequestID: UUID?
+    var onInteractionModeChanged: ((VirtualRoomInteractionMode) -> Void)?
 
     func makeCoordinator() -> RoomCoordinator {
         RoomCoordinator(
@@ -34,7 +35,8 @@ struct RealityRoomView: UIViewRepresentable {
             selectedModelID: selectedModelID,
             onSelectionChanged: updateSelection,
             onSkyboxLoadStateChanged: updateSkyboxLoadState,
-            onPlacementMessageChanged: updatePlacementMessage
+            onPlacementMessageChanged: updatePlacementMessage,
+            onInteractionModeChanged: onInteractionModeChanged
         )
     }
 

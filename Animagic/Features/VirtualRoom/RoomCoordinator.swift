@@ -86,6 +86,8 @@ final class RoomCoordinator: NSObject {
     private var handledDeleteRequestID: UUID?
     private var onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)?
     private var onPlacementMessageChanged: ((String?) -> Void)?
+    private var onInteractionModeChanged: ((VirtualRoomInteractionMode) -> Void)?
+    private weak var penPanGesture: UILongPressGestureRecognizer?
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -96,10 +98,12 @@ final class RoomCoordinator: NSObject {
         selectedModelID: PlaceableUSDZModel.ID?,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)? = nil,
-        onPlacementMessageChanged: ((String?) -> Void)? = nil
+        onPlacementMessageChanged: ((String?) -> Void)? = nil,
+        onInteractionModeChanged: ((VirtualRoomInteractionMode) -> Void)? = nil
     ) {
         self.onSkyboxLoadStateChanged = onSkyboxLoadStateChanged
         self.onPlacementMessageChanged = onPlacementMessageChanged
+        self.onInteractionModeChanged = onInteractionModeChanged
         cutoutEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
@@ -757,12 +761,23 @@ final class RoomCoordinator: NSObject {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         panGesture.minimumNumberOfTouches = 1
         panGesture.maximumNumberOfTouches = 1
+        
+        let penPanGesture = UILongPressGestureRecognizer(target: self, action: #selector(handlePenPan(_:)))
+        penPanGesture.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+        penPanGesture.minimumPressDuration = 0
+        penPanGesture.isEnabled = false
 
         tapGesture.require(toFail: panGesture)
         arView.addGestureRecognizer(tapGesture)
         arView.addGestureRecognizer(panGesture)
+        arView.addGestureRecognizer(penPanGesture)
         roomTapGesture = tapGesture
         roomPanGesture = panGesture
+        self.penPanGesture = penPanGesture
+        
+        let pencilInteraction = UIPencilInteraction()
+        pencilInteraction.delegate = self
+        arView.addInteraction(pencilInteraction)
     }
 
     private func setInteractionMode(_ mode: VirtualRoomInteractionMode) {
@@ -775,8 +790,9 @@ final class RoomCoordinator: NSObject {
         let isExploring = mode == .explore
         roomTapGesture?.isEnabled = isExploring
         roomPanGesture?.isEnabled = isExploring
+        penPanGesture?.isEnabled = (mode == .interact)
 
-        if isExploring {
+        if isExploring || mode == .interact {
             cutoutEditor.detachInteraction()
         } else {
             releaseHeldEntityIfNeeded()
@@ -908,6 +924,29 @@ final class RoomCoordinator: NSObject {
             Constants.cameraHeight,
             clamped(floorHitPosition.z, min: -Constants.movementLimit, max: Constants.movementLimit)
         ]
+    }
+    
+    @objc private func handlePenPan(_ recognizer: UILongPressGestureRecognizer) {
+        guard interactionMode == .interact, let arView else { return }
+        
+        if recognizer.state == .ended || recognizer.state == .cancelled {
+            cutoutEditor.hoverTargetPosition = nil
+            return
+        }
+        
+        if recognizer.state == .began {
+            cutoutEditor.triggerLoveAnimation()
+        }
+        
+        let point = recognizer.location(in: arView)
+        let projector = NonARPlaneProjector(
+            planeTransform: floorPlaneTransform,
+            horizontalBounds: -Constants.movementLimit...Constants.movementLimit
+        )
+        
+        if let projection = projector.project(point, in: arView) {
+            cutoutEditor.hoverTargetPosition = projection.position
+        }
     }
 
     // MARK: - Frame Updates
@@ -1189,5 +1228,21 @@ fileprivate extension simd_quatf {
             iz: Float(quaternion.z),
             r: Float(quaternion.w)
         )
+    }
+}
+
+// MARK: - UIPencilInteractionDelegate
+
+extension RoomCoordinator: UIPencilInteractionDelegate {
+    func pencilInteraction(_ interaction: UIPencilInteraction, didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze) {
+        guard squeeze.phase == .ended else { return }
+        let newMode: VirtualRoomInteractionMode = (interactionMode == .interact) ? .explore : .interact
+        onInteractionModeChanged?(newMode)
+    }
+    
+    // Fallback for earlier versions if needed, though Squeeze is iOS 17.5+
+    func pencilInteractionDidTap(_ interaction: UIPencilInteraction) {
+        // We only use squeeze if possible, but if a tap triggers this we can ignore or toggle as well
+        // We'll leave the primary toggle to `didReceiveSqueeze` for Apple Pencil Pro
     }
 }

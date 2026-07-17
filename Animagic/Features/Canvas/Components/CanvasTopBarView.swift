@@ -5,6 +5,7 @@ struct CanvasTopBarView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
+    @Environment(\.undoManager) private var undoManager
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
@@ -44,14 +45,6 @@ struct CanvasTopBarView: View {
                 withAnimation {
                     showGuidePopup = true
                 }
-            }
-            
-            TopBarIconButton(icon: "arrow.uturn.backward") {
-                canvasView.undoManager?.undo()
-            }
-            
-            TopBarIconButton(icon: "arrow.uturn.forward") {
-                canvasView.undoManager?.redo()
             }
             
             TopBarButton(title: isHoverModeEnabled ? "Hover: On" : "Hover: Off") {
