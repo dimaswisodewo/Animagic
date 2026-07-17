@@ -1036,7 +1036,8 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     private var recognizers: [UIGestureRecognizer] = []
     private var activeManipulations: Set<Manipulation> = []
     private var dragPlaneTransform: simd_float4x4?
-    private var lockedDragY: Float?
+    private var initialDragObjectPosition: SIMD3<Float>?
+    private var initialDragTouchPosition: SIMD3<Float>?
     private var initialScale: SIMD3<Float> = .one
     private var initialOrientation = simd_quatf()
     private var didReachLowerScaleBound = false
@@ -1068,8 +1069,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         recognizers.forEach(arView.removeGestureRecognizer)
         recognizers.removeAll()
         activeManipulations.removeAll()
-        dragPlaneTransform = nil
-        lockedDragY = nil
+        resetDragState()
         controller?.setSelectionIndicatorDragging(false)
         controller?.selectedObject?.setInteractionPaused(false)
         self.arView = nil
@@ -1111,7 +1111,12 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
             guard accepted,
                   let selectedObject = controller.selectedObject,
                   let planeTransform = controller.dragPlaneTransform(),
-                  let projectedPosition = arView.unproject(
+                  let initialTouchPosition = arView.unproject(
+                    initialPoint,
+                    ontoPlane: planeTransform,
+                    relativeToCamera: false
+                  ),
+                  let currentTouchPosition = arView.unproject(
                     point,
                     ontoPlane: planeTransform,
                     relativeToCamera: false
@@ -1119,11 +1124,17 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 cancel(recognizer)
                 return
             }
-            let lockedY = selectedObject.interactionRoot.position(relativeTo: nil).y
+            let initialObjectPosition = selectedObject.interactionRoot.position(relativeTo: nil)
             dragPlaneTransform = planeTransform
-            lockedDragY = lockedY
+            initialDragObjectPosition = initialObjectPosition
+            initialDragTouchPosition = initialTouchPosition
+            let dragDelta = currentTouchPosition - initialTouchPosition
             selectedObject.interactionRoot.setPosition(
-                [projectedPosition.x, lockedY, projectedPosition.z],
+                [
+                    initialObjectPosition.x + dragDelta.x,
+                    initialObjectPosition.y,
+                    initialObjectPosition.z + dragDelta.z
+                ],
                 relativeTo: nil
             )
             begin(.translation)
@@ -1133,20 +1144,25 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
             guard activeManipulations.contains(.translation),
                   let selectedObject = controller.selectedObject,
                   let dragPlaneTransform,
-                  let lockedDragY,
-                  let projectedPosition = arView.unproject(
+                  let initialDragObjectPosition,
+                  let initialDragTouchPosition,
+                  let currentTouchPosition = arView.unproject(
                     point,
                     ontoPlane: dragPlaneTransform,
                     relativeToCamera: false
                   ) else { return }
+            let dragDelta = currentTouchPosition - initialDragTouchPosition
             selectedObject.interactionRoot.setPosition(
-                [projectedPosition.x, lockedDragY, projectedPosition.z],
+                [
+                    initialDragObjectPosition.x + dragDelta.x,
+                    initialDragObjectPosition.y,
+                    initialDragObjectPosition.z + dragDelta.z
+                ],
                 relativeTo: nil
             )
         case .ended, .cancelled, .failed:
             end(.translation)
-            dragPlaneTransform = nil
-            lockedDragY = nil
+            resetDragState()
             controller.setSelectionIndicatorDragging(false)
         default:
             break
@@ -1237,6 +1253,12 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     private func cancel(_ recognizer: UIGestureRecognizer) {
         recognizer.isEnabled = false
         recognizer.isEnabled = true
+    }
+
+    private func resetDragState() {
+        dragPlaneTransform = nil
+        initialDragObjectPosition = nil
+        initialDragTouchPosition = nil
     }
 
     func gestureRecognizer(
