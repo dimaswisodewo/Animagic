@@ -336,16 +336,45 @@ struct NewARStatusPill: View {
     }
 
     var body: some View {
+        NewARStatusPillContent(
+            title: content.title,
+            detail: content.detail,
+            icon: content.icon,
+            color: content.color
+        )
+    }
+}
+
+struct NewARSessionStatusPill: View {
+    let status: ARSessionStatus
+
+    var body: some View {
+        NewARStatusPillContent(
+            title: status.title,
+            detail: status.message,
+            icon: status.systemImageName,
+            color: status.tint
+        )
+    }
+}
+
+private struct NewARStatusPillContent: View {
+    let title: String
+    let detail: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: content.icon)
+            Image(systemName: icon)
                 .font(.headline)
-                .foregroundStyle(content.color)
+                .foregroundStyle(color)
                 .frame(width: 28, height: 28)
 
             VStack(alignment: .leading, spacing: 1) {
-                Text(content.title)
+                Text(title)
                     .font(.caption.bold())
-                Text(content.detail)
+                Text(detail)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

@@ -19,11 +19,11 @@
 		26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */; };
 		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
-		4E7A1B2C3D4E5F60718293A4 /* ARSessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */; };
 		40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46D74A3ECD9818F1F0D944C1 /* cloud.usdz */; };
 		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
+		4E7A1B2C3D4E5F60718293A4 /* ARSessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */; };
 		52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */; };
@@ -106,7 +106,6 @@
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
 		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
-		C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSessionStatus.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -146,6 +145,7 @@
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
+		C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSessionStatus.swift; sourceTree = "<group>"; };
 		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		D8131A446EE341BA3133E93A /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = fishs.usdz; sourceTree = "<group>"; };
@@ -689,7 +689,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -793,7 +793,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;

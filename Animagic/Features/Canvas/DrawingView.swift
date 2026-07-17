@@ -30,7 +30,7 @@ struct DrawingView: UIViewRepresentable {
     }
 
     private func configure(_ canvasView: PKCanvasView, coordinator: Coordinator) {
-        canvasView.drawingPolicy = .pencilOnly
+        canvasView.drawingPolicy = .default
         canvasView.isOpaque = false
         canvasView.backgroundColor = .clear
         canvasView.delegate = coordinator

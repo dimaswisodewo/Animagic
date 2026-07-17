@@ -52,6 +52,7 @@ final class CutoutSceneEditor: SceneEditing {
     private let configuration: CutoutSceneConfiguration
     private var simulationAccumulator: Float = 0
     private var isLoadingModel = false
+    private var placementGeneration = UUID()
 
     var objectCount: Int { registry.objects.count }
     var maximumObjectCount: Int? { configuration.maximumObjectCount }
@@ -188,6 +189,17 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.clearSelection()
     }
 
+    func removeAllObjects() {
+        placementGeneration = UUID()
+        isLoadingModel = false
+        interactionManager.clearSelection()
+        registry.forEach { object in
+            arView?.scene.removeAnchor(object.anchor)
+        }
+        registry.removeAll()
+        simulationAccumulator = 0
+    }
+
     private var selectedCutoutAsset: CutoutAsset? {
         if let selectedCutoutID,
            let selectedAsset = cutoutAssets.first(where: { $0.id == selectedCutoutID }) {
@@ -284,8 +296,10 @@ final class CutoutSceneEditor: SceneEditing {
         }
 
         isLoadingModel = true
+        let generation = placementGeneration
         modelRepository.loadClone(of: model) { [weak self] result in
             guard let self else { return }
+            guard generation == self.placementGeneration else { return }
             self.isLoadingModel = false
             guard let arView = self.arView else {
                 self.onPlacementResult?(.creationFailed("The scene is no longer available."))

@@ -60,11 +60,11 @@ enum ARSessionStatus: Equatable {
     var message: String {
         switch self {
         case .searching:
-            "Move the device slowly to find a horizontal or vertical plane."
+            "Move the device slowly to find a floor or table."
         case .ready:
-            "Tap a surface to bring your doodle to life."
+            "Aim the reticle, then tap Place."
         case .noSurface:
-            "Try pointing at a floor, table, or wall."
+            "Try pointing at a floor or table."
         case .unsupported:
             "This device doesn’t support the AR experience."
         case .cameraDenied:
