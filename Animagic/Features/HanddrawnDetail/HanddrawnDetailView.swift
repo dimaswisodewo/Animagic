@@ -12,6 +12,9 @@ struct HanddrawnDetailView: View {
     @State private var showShareSheet = false
     @State private var showSaveSuccess = false
     @State private var photoLibrarySaver: PhotoLibrarySaver?
+    @State private var classificationCoordinator = DoodleClassificationCoordinator()
+    @State private var classificationError: String?
+    @State private var failedCutoutID: UUID?
 
     private var drawing: SavedDrawing {
         artworkStore.drawing(id: drawingID)
@@ -19,16 +22,26 @@ struct HanddrawnDetailView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HanddrawnDetailHeader(
-                title: drawing.name.isEmpty ? "Untitled" : drawing.name,
-                onBack: dismiss.callAsFunction,
-                onOpenAR: classifyAndOpenAR,
-                onShare: { showShareSheet = true },
-                onSave: saveToGallery,
-                onDelete: { showDeleteConfirmation = true }
-            )
-            HanddrawnArtworkView(drawing: drawing.drawing)
+        ZStack {
+            VStack(spacing: 0) {
+                HanddrawnDetailHeader(
+                    title: drawing.name.isEmpty ? "Untitled" : drawing.name,
+                    onBack: dismiss.callAsFunction,
+                    onOpenAR: classifyAndOpenAR,
+                    onShare: { showShareSheet = true },
+                    onSave: saveToGallery,
+                    onDelete: { showDeleteConfirmation = true }
+                )
+                if let classificationError, !classificationCoordinator.isRunning {
+                    classificationRecoveryBanner(message: classificationError)
+                }
+                HanddrawnArtworkView(drawing: drawing.drawing)
+            }
+
+            if classificationCoordinator.isRunning {
+                detailClassificationOverlay
+                    .zIndex(2)
+            }
         }
         .navigationBarHidden(true)
         .alert("Delete Drawing", isPresented: $showDeleteConfirmation) {
@@ -43,6 +56,10 @@ struct HanddrawnDetailView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareSheet(activityItems: [renderedImage ?? UIImage()])
         }
+        .onAppear(perform: loadClassificationRecovery)
+        .onDisappear {
+            classificationCoordinator.cancel()
+        }
     }
 
     private var renderedImage: UIImage? {
@@ -51,25 +68,86 @@ struct HanddrawnDetailView: View {
     }
 
     private func classifyAndOpenAR() {
-        guard let image = renderedImage else { return }
-        let drawing = drawing
+        guard !classificationCoordinator.isRunning,
+              !drawing.drawing.strokes.isEmpty,
+              !drawing.drawing.bounds.isEmpty else { return }
 
-        Task.detached(priority: .userInitiated) {
-            let cutout = ClassifiedCutoutFactory().makeCutout(
-                from: image,
-                originalSize: image.size,
-                sourceDrawingID: drawing.id
-            )
-            await MainActor.run {
-                artworkStore.persistClassifiedCutout(
-                    cutout,
-                    forDrawingID: drawing.id,
-                    replacingExistingCutouts: false
-                ) { _ in
-                    router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
+        classificationError = nil
+        failedCutoutID = nil
+        classificationCoordinator.start(
+            drawing: drawing.drawing,
+            sourceDrawingID: drawing.id
+        ) { cutout in
+            artworkStore.persistClassifiedCutout(
+                cutout,
+                forDrawingID: drawing.id,
+                replacingExistingCutouts: true
+            ) { _ in
+                if let error = cutout.doodleClassificationError {
+                    failedCutoutID = cutout.id
+                    classificationError = error
+                } else {
+                    router.push(.arView(initialCutoutID: cutout.id))
                 }
             }
         }
+    }
+
+    private func loadClassificationRecovery() {
+        guard let cutout = artworkStore.cutout(forDrawingID: drawingID),
+              let error = cutout.doodleClassificationError else { return }
+        failedCutoutID = cutout.id
+        classificationError = error
+    }
+
+    private func retryClassification() {
+        classifyAndOpenAR()
+    }
+
+    private func openGenericAR() {
+        guard let failedCutoutID else { return }
+        classificationError = nil
+        router.push(.arView(initialCutoutID: failedCutoutID))
+    }
+
+    private func classificationRecoveryBanner(message: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("AI classification needs another try", systemImage: "exclamationmark.triangle.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            HStack {
+                Button("Retry AI", action: retryClassification)
+                    .buttonStyle(.borderedProminent)
+                Button("Use Generic in AR", action: openGenericAR)
+                    .buttonStyle(.bordered)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.thinMaterial)
+    }
+
+    private var detailClassificationOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.34).ignoresSafeArea()
+            VStack(spacing: 12) {
+                ProgressView()
+                    .controlSize(.large)
+                Text("AniMagic is recognizing your doodle…")
+                    .font(.headline)
+                Text("Preparing it for AR")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(28)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24))
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("AniMagic is recognizing your doodle")
     }
 
     private func saveToGallery() {

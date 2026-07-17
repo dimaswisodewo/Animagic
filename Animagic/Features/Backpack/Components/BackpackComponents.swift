@@ -112,6 +112,7 @@ struct BackpackFilterBar: View {
 
 struct BackpackDrawingCard: View {
     let drawing: SavedDrawing
+    let classificationError: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -133,6 +134,12 @@ struct BackpackDrawingCard: View {
                 .lineLimit(1)
                 .foregroundStyle(.black)
                 .padding(.bottom, 12)
+            if classificationError != nil {
+                Label("AI retry available", systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.orange)
+                    .padding(.bottom, 8)
+            }
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)

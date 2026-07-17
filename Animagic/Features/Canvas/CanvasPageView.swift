@@ -5,6 +5,7 @@ struct CanvasPageView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var documentTitle = ""
     @State private var canvasView = PKCanvasView()
@@ -14,6 +15,10 @@ struct CanvasPageView: View {
     @State private var hasDrawing = false
     @State private var showEmptyCanvasMessage = false
     @State private var isDocumentTitleManuallyEdited = false
+    @State private var autosaveTask: Task<Void, Never>?
+    @State private var classificationCoordinator = DoodleClassificationCoordinator()
+    @State private var classificationError: String?
+    @State private var failedCutoutID: UUID?
 
     var body: some View {
         GeometryReader { geometry in
@@ -33,7 +38,30 @@ struct CanvasPageView: View {
             } message: {
                 Text("Draw something first, then let’s bring it to life!")
             }
+            .alert(
+                "AniMagic Couldn’t Recognize This Doodle",
+                isPresented: classificationErrorIsPresented
+            ) {
+                Button("Retry AI") {
+                    saveAndClassify()
+                }
+                Button("Use Generic in AR") {
+                    openGenericAR()
+                }
+                Button("Stay on Canvas", role: .cancel) {}
+            } message: {
+                Text(classificationError ?? "The drawing was saved, but AI classification failed.")
+            }
             .onAppear(perform: loadDrawing)
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .inactive || phase == .background else { return }
+                flushDraft()
+            }
+            .onDisappear {
+                flushDraft()
+                classificationCoordinator.cancel()
+                isClassifyingDoodle = false
+            }
         }
     }
 
@@ -45,8 +73,9 @@ struct CanvasPageView: View {
                 showGuidePopup: $isGuidePresented,
                 isClassifyingDoodle: $isClassifyingDoodle,
                 hasDrawing: $hasDrawing,
-                showEmptyCanvasMessage: $showEmptyCanvasMessage,
-                isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited
+                isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited,
+                onSave: saveAndClassify,
+                onTitleChanged: scheduleDraftAutosave
             )
             drawingArea
         }
@@ -65,7 +94,7 @@ struct CanvasPageView: View {
             DrawingView(
                 canvasView: $canvasView,
                 isToolPickerVisible: !isGuidePresented,
-                onDrawingChanged: { hasDrawing = $0 }
+                onDrawingChanged: { hasDrawing = $0; drawingDidChange() }
             )
         }
     }
@@ -98,6 +127,116 @@ struct CanvasPageView: View {
                 : drawingSession.drawing
         }
         hasDrawing = !canvasView.drawing.strokes.isEmpty
+        if let activeDrawingID = drawingSession.activeDrawingID,
+           let cutout = artworkStore.cutout(forDrawingID: activeDrawingID),
+           let error = cutout.doodleClassificationError {
+            failedCutoutID = cutout.id
+            classificationError = error
+        }
+    }
+
+    private var classificationErrorIsPresented: Binding<Bool> {
+        Binding(
+            get: { classificationError != nil && !isClassifyingDoodle },
+            set: { isPresented in
+                if !isPresented {
+                    classificationError = nil
+                }
+            }
+        )
+    }
+
+    private func drawingDidChange() {
+        drawingSession.drawing = canvasView.drawing
+        scheduleDraftAutosave()
+    }
+
+    private func scheduleDraftAutosave() {
+        autosaveTask?.cancel()
+        guard hasDrawing else { return }
+        autosaveTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            saveDraft()
+        }
+    }
+
+    private func flushDraft() {
+        autosaveTask?.cancel()
+        autosaveTask = nil
+        saveDraft()
+    }
+
+    private func saveDraft() {
+        let drawing = canvasView.drawing
+        guard !drawing.strokes.isEmpty, !drawing.bounds.isEmpty else { return }
+        let title = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        artworkStore.saveActiveDrawing(
+            id: drawingSession.activeDrawingID,
+            name: title,
+            drawing: drawing,
+            isNameManuallyEdited: isDocumentTitleManuallyEdited && !title.isEmpty
+        ) { savedDrawing in
+            drawingSession.activeDrawingID = savedDrawing.id
+            drawingSession.drawing = drawing
+        }
+    }
+
+    private func saveAndClassify() {
+        guard !isClassifyingDoodle else { return }
+        let drawing = canvasView.drawing
+        guard !drawing.strokes.isEmpty, !drawing.bounds.isEmpty else {
+            showEmptyCanvasMessage = true
+            return
+        }
+
+        autosaveTask?.cancel()
+        classificationError = nil
+        failedCutoutID = nil
+        let title = documentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        artworkStore.saveActiveDrawing(
+            id: drawingSession.activeDrawingID,
+            name: title,
+            drawing: drawing,
+            isNameManuallyEdited: isDocumentTitleManuallyEdited && !title.isEmpty
+        ) { savedDrawing in
+            drawingSession.activeDrawingID = savedDrawing.id
+            drawingSession.drawing = drawing
+            startClassification(drawing: drawing, sourceDrawingID: savedDrawing.id)
+        }
+    }
+
+    private func startClassification(drawing: PKDrawing, sourceDrawingID: UUID) {
+        isClassifyingDoodle = true
+        classificationCoordinator.start(
+            drawing: drawing,
+            sourceDrawingID: sourceDrawingID
+        ) { cutout in
+            artworkStore.persistClassifiedCutout(
+                cutout,
+                forDrawingID: sourceDrawingID,
+                replacingExistingCutouts: true,
+                onFailure: {
+                    isClassifyingDoodle = false
+                }
+            ) { updatedDrawing in
+                documentTitle = updatedDrawing.name
+                isDocumentTitleManuallyEdited = updatedDrawing.isNameManuallyEdited
+                isClassifyingDoodle = false
+                if let error = cutout.doodleClassificationError {
+                    failedCutoutID = cutout.id
+                    classificationError = error
+                } else {
+                    router.push(.arView(initialCutoutID: cutout.id))
+                }
+            }
+        }
+    }
+
+    private func openGenericAR() {
+        guard let failedCutoutID else { return }
+        classificationError = nil
+        router.push(.arView(initialCutoutID: failedCutoutID))
     }
 }
 
