@@ -74,7 +74,7 @@ private struct ARRouteView: View {
     let initialCutoutID: UUID?
 
     var body: some View {
-        ARObjectPlacementView(cutoutAssets: artworkStore.cutoutLibrary, initialCutoutID: initialCutoutID)
+        NewARPlacementView(initialCutoutID: initialCutoutID)
     }
 }
 

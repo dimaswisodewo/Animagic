@@ -40,6 +40,7 @@
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
 		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
+		815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */; };
 		8235E49425717B0E8D593972 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F1CE7084EE88134E097B8C /* MenuView.swift */; };
 		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
 		861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */; };
@@ -85,6 +86,7 @@
 
 /* Begin PBXFileReference section */
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
+		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 				6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */,
 				DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */,
 				7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */,
+				07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */,
 				1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */,
 				2BBA987867DEE41501405418 /* USDZModelPlacement.swift */,
 			);
@@ -649,6 +652,7 @@
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
 				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
 				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
+				815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */,
 				5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */,
 				BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */,
 				5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */,

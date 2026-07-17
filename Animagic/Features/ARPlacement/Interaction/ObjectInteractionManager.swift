@@ -45,7 +45,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
             return false
         }
 
-        select(objectID == selectedObjectID ? nil : objectID)
+        select(objectID)
         return true
     }
 
@@ -128,16 +128,28 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         notifySelectionChanged()
     }
 
-    func deleteSelected() {
+    @discardableResult
+    func deleteSelected() -> DeletedSceneObject? {
         guard let selectedObjectID,
               let object = registry.remove(id: selectedObjectID) else {
-            return
+            return nil
         }
         object.anchor.removeFromParent()
         object.setSelected(false)
         self.selectedObjectID = nil
         activeManipulations.removeAll()
         notifySelectionChanged()
+        return DeletedSceneObject(object: object)
+    }
+
+    func restore(_ deletedObject: DeletedSceneObject) {
+        registry.register(deletedObject.object)
+        select(deletedObject.object.id)
+    }
+
+    func selectObject(withID id: UUID) {
+        guard registry.object(withID: id) != nil else { return }
+        select(id)
     }
 
     func clearSelection() {
