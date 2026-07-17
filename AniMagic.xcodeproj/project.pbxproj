@@ -7,157 +7,166 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00512293BAE5FA21B00DD3A0 /* REDALGAE5.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A04185E88D96ABDF86612B2 /* REDALGAE5.png */; };
+		072CEB21C8092412C74C76C0 /* REDALGAE9.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B24128880D7700805821A11 /* REDALGAE9.png */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
+		104309552897E3037C6B2C8C /* scene.bin in Resources */ = {isa = PBXBuildFile; fileRef = 470E1C86948EF79475C3B19A /* scene.bin */; };
+		112A2FF1C00E59F8957C396D /* Fan_Coral_Med 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 416A4DE2B6DF2CD5B37805B6 /* Fan_Coral_Med 2.usdz */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
 		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
+		18EE84FE1EAC6685BEE9984E /* REDALGAE36.png in Resources */ = {isa = PBXBuildFile; fileRef = 48613B2767FCCC80ED53E8EF /* REDALGAE36.png */; };
+		191A890098F5AA2587760E35 /* REDALGAE15.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BD8045BCAD9E1671E963650 /* REDALGAE15.png */; };
 		1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */; };
 		1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */; };
+		1FD0D2107BAE5C263FC12F63 /* REDALGAE18.png in Resources */ = {isa = PBXBuildFile; fileRef = FC013B6E88847644E988DC78 /* REDALGAE18.png */; };
+		2168EEBFC69DEF273A1A66CA /* REDALGAE32.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4C6788B37A0C3D1B3CB0CB /* REDALGAE32.png */; };
 		22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1056000C4958CB23F9F1962F /* Assets.xcassets */; };
 		23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */; };
 		238238874722D44037214247 /* Birds.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 14A60964229B227465EE8AD4 /* Birds.usdz */; };
+		263AF21B296705B584F0CE3B /* ColorPaletteOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DEDEEB9F568D0057BC795A /* ColorPaletteOverlay.swift */; };
 		26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */; };
-		28B48D683008C97800EC0E93 /* Old_ship 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D253008C97800EC0E93 /* Old_ship 2.usdz */; };
-		28B48D693008C97800EC0E93 /* REDALGAE34.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D483008C97800EC0E93 /* REDALGAE34.png */; };
-		28B48D6A3008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */; };
-		28B48D6B3008C97800EC0E93 /* REDALGAE33.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D473008C97800EC0E93 /* REDALGAE33.png */; };
-		28B48D6C3008C97800EC0E93 /* REDALGAE3.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D293008C97800EC0E93 /* REDALGAE3.png */; };
-		28B48D6D3008C97800EC0E93 /* REDALGAE2.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D283008C97800EC0E93 /* REDALGAE2.png */; };
-		28B48D6E3008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */; };
-		28B48D6F3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */; };
-		28B48D703008C97800EC0E93 /* seashell.18K.TEX_baseColor.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */; };
-		28B48D713008C97800EC0E93 /* REDALGAE23.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3D3008C97800EC0E93 /* REDALGAE23.png */; };
-		28B48D723008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */; };
-		28B48D733008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */; };
-		28B48D743008C97800EC0E93 /* REDALGAE27.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D413008C97800EC0E93 /* REDALGAE27.png */; };
-		28B48D753008C97800EC0E93 /* REDALGAE26.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D403008C97800EC0E93 /* REDALGAE26.png */; };
-		28B48D763008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */; };
-		28B48D773008C97800EC0E93 /* REDALGAE32.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D463008C97800EC0E93 /* REDALGAE32.png */; };
-		28B48D783008C97800EC0E93 /* REDALGAE22.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3C3008C97800EC0E93 /* REDALGAE22.png */; };
-		28B48D793008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */; };
-		28B48D7A3008C97800EC0E93 /* scene.bin in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D573008C97800EC0E93 /* scene.bin */; };
-		28B48D7B3008C97800EC0E93 /* REDALGAE29.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D433008C97800EC0E93 /* REDALGAE29.png */; };
-		28B48D7C3008C97800EC0E93 /* REDALGAE14.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D343008C97800EC0E93 /* REDALGAE14.png */; };
-		28B48D7D3008C97800EC0E93 /* scene.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D583008C97800EC0E93 /* scene.gltf */; };
-		28B48D7E3008C97800EC0E93 /* Textures\Clam_Quad_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */; };
-		28B48D7F3008C97800EC0E93 /* REDALGAE1.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D273008C97800EC0E93 /* REDALGAE1.png */; };
-		28B48D803008C97800EC0E93 /* REDALGAE10.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D303008C97800EC0E93 /* REDALGAE10.png */; };
-		28B48D813008C97800EC0E93 /* REDALGAE15.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D353008C97800EC0E93 /* REDALGAE15.png */; };
-		28B48D823008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */; };
-		28B48D833008C97800EC0E93 /* REDALGAE16.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D363008C97800EC0E93 /* REDALGAE16.png */; };
-		28B48D843008C97800EC0E93 /* REDALGAE31.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D453008C97800EC0E93 /* REDALGAE31.png */; };
-		28B48D853008C97800EC0E93 /* REDALGAE35.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D493008C97800EC0E93 /* REDALGAE35.png */; };
-		28B48D863008C97800EC0E93 /* Corallium_Rubrum 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */; };
-		28B48D873008C97800EC0E93 /* REDALGAE36.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4A3008C97800EC0E93 /* REDALGAE36.png */; };
-		28B48D883008C97800EC0E93 /* REDALGAE28.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D423008C97800EC0E93 /* REDALGAE28.png */; };
-		28B48D893008C97800EC0E93 /* REDALGAE9.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2F3008C97800EC0E93 /* REDALGAE9.png */; };
-		28B48D8A3008C97800EC0E93 /* REDALGAE19.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D393008C97800EC0E93 /* REDALGAE19.png */; };
-		28B48D8B3008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */; };
-		28B48D8C3008C97800EC0E93 /* Oceanfloor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */; };
-		28B48D8D3008C97800EC0E93 /* REDALGAE17.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D373008C97800EC0E93 /* REDALGAE17.png */; };
-		28B48D8E3008C97800EC0E93 /* REDALGAE6.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2C3008C97800EC0E93 /* REDALGAE6.png */; };
-		28B48D8F3008C97800EC0E93 /* REDALGAE18.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D383008C97800EC0E93 /* REDALGAE18.png */; };
-		28B48D903008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */; };
-		28B48D913008C97800EC0E93 /* REDALGAE12.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D323008C97800EC0E93 /* REDALGAE12.png */; };
-		28B48D923008C97800EC0E93 /* REDALGAE37.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4B3008C97800EC0E93 /* REDALGAE37.png */; };
-		28B48D933008C97800EC0E93 /* REDALGAE25.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3F3008C97800EC0E93 /* REDALGAE25.png */; };
-		28B48D943008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */; };
-		28B48D953008C97800EC0E93 /* Textures\Clam_Tris_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */; };
-		28B48D963008C97800EC0E93 /* REDALGAE4.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2A3008C97800EC0E93 /* REDALGAE4.png */; };
-		28B48D973008C97800EC0E93 /* Soft_Coral_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */; };
-		28B48D983008C97800EC0E93 /* Under_The_Sea 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */; };
-		28B48D993008C97800EC0E93 /* REDALGAE24.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3E3008C97800EC0E93 /* REDALGAE24.png */; };
-		28B48D9A3008C97800EC0E93 /* seashell.18K.TEX.obj in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */; };
-		28B48D9B3008C97800EC0E93 /* REDALGAE20.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3A3008C97800EC0E93 /* REDALGAE20.png */; };
-		28B48D9C3008C97800EC0E93 /* REDALGAE5.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2B3008C97800EC0E93 /* REDALGAE5.png */; };
-		28B48D9D3008C97800EC0E93 /* seashell.18K.TEX_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */; };
-		28B48D9E3008C97800EC0E93 /* Fan_Coral_Med 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */; };
-		28B48D9F3008C97800EC0E93 /* seashell.18K.TEX.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */; };
-		28B48DA03008C97800EC0E93 /* REDALGAE7.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2D3008C97800EC0E93 /* REDALGAE7.png */; };
-		28B48DA13008C97800EC0E93 /* REDALGAE11.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D313008C97800EC0E93 /* REDALGAE11.png */; };
-		28B48DA23008C97800EC0E93 /* Coral 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D213008C97800EC0E93 /* Coral 2.usdz */; };
-		28B48DA33008C97800EC0E93 /* Aloe_Plant_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */; };
-		28B48DA43008C97800EC0E93 /* Underwater_Showcase 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */; };
-		28B48DA53008C97800EC0E93 /* REDALGAE21.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D3B3008C97800EC0E93 /* REDALGAE21.png */; };
-		28B48DA63008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */; };
-		28B48DA73008C97800EC0E93 /* REDALGAE13.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D333008C97800EC0E93 /* REDALGAE13.png */; };
-		28B48DA83008C97800EC0E93 /* Sunken_Anchor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */; };
-		28B48DA93008C97800EC0E93 /* REDALGAE30.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D443008C97800EC0E93 /* REDALGAE30.png */; };
-		28B48DAA3008C97800EC0E93 /* REDALGAE8.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D2E3008C97800EC0E93 /* REDALGAE8.png */; };
-		28B48DAB3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */; };
+		29B70109EF8A6FDFCD6B22E7 /* REDALGAE30.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B184DF10D83A1948AE37AA2 /* REDALGAE30.png */; };
+		2BA03925417002208EB725B3 /* Soft_Coral_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4F4941D0D39A7AC1F9A3B2A7 /* Soft_Coral_Set 2.usdz */; };
+		2E95606FBE293D63113D07D4 /* seashell.18K.TEX.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 26D9FCC17D01F61DEF187CAC /* seashell.18K.TEX.mtl */; };
 		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
+		38C22C3E14CC5FFDE6239BE9 /* REDALGAE3.png in Resources */ = {isa = PBXBuildFile; fileRef = 09A19066899EFA5DD1CE5E3A /* REDALGAE3.png */; };
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
+		3D5ADD77A08E797EDFE8401D /* Oceanfloor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 33D6787D69E3D803101F8A08 /* Oceanfloor 2.usdz */; };
+		404754030DAFC0FECE551872 /* REDALGAE37.png in Resources */ = {isa = PBXBuildFile; fileRef = 73BC71A270A942C744FF8834 /* REDALGAE37.png */; };
 		40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46D74A3ECD9818F1F0D944C1 /* cloud.usdz */; };
 		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
+		4553D6B8C78D340A4F647423 /* REDALGAE12.png in Resources */ = {isa = PBXBuildFile; fileRef = E5A534C7BAA791757BF905C5 /* REDALGAE12.png */; };
+		47B8EE7D99298E1138E0BDC5 /* REDALGAE10.png in Resources */ = {isa = PBXBuildFile; fileRef = C1F3CDB2DD215C37B10EEAD9 /* REDALGAE10.png */; };
+		48F2956DB899C7A028CF419E /* seashell.18K.TEX_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = ACD0A97A64B1DADE040B054B /* seashell.18K.TEX_normal.png */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
+		4DF4F4267D418147B38A5C34 /* Textures\Clam_Quad_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 54A6D858BAC91C1B6EB2EB3B /* Textures\Clam_Quad_Normal.png */; };
+		51D0DEA06443009261E350F0 /* Projet_Aaron_-_Plants 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D0222654276F477ADB8B7592 /* Projet_Aaron_-_Plants 2.usdz */; };
 		52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */; };
+		52CCF96EFDE254178982876F /* Textures\Clam_Tris_Normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 02AB4360ABFA2F51DF9A7C6E /* Textures\Clam_Tris_Normal.png */; };
 		53D0A252C7C4C216EAD2CA04 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CED9A2C7B028CCDA510DB13 /* ContentView.swift */; };
+		54FCC64E3A6AFE230ECFD378 /* REDALGAE14.png in Resources */ = {isa = PBXBuildFile; fileRef = 714E9CD1A368CA97063AFD9D /* REDALGAE14.png */; };
 		5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */; };
+		59572A6A3B5D6D04EFD6E99E /* REDALGAE23.png in Resources */ = {isa = PBXBuildFile; fileRef = E0BE60D8F8DD9E20DBF06373 /* REDALGAE23.png */; };
 		5B65D23140A6A9FD8616DFD1 /* BackpackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB73231B83858CE30A584E76 /* BackpackPageView.swift */; };
+		5D841C05D9833FD2E534B7D3 /* Sunken_Anchor 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F6EDDB5A95F3D3809552C2C6 /* Sunken_Anchor 2.usdz */; };
 		5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */; };
 		5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */; };
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
+		5F3CE052F74AE32CACEBB67A /* Old_ship 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F002943ABC2D1781DA013B80 /* Old_ship 2.usdz */; };
+		60068F82FC5B07ACD269D506 /* REDALGAE1.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D213A8F2592320C3FCE1F1 /* REDALGAE1.png */; };
+		601F8F42D492FC7CF94AD74B /* REDALGAE25.png in Resources */ = {isa = PBXBuildFile; fileRef = 66AAD6AED18627BC4AF2ADE6 /* REDALGAE25.png */; };
 		60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67231FD4CC90120FA5A8816 /* CustomButton.swift */; };
 		6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */; };
+		6FB333882BBD075B82B4C5B2 /* REDALGAE22.png in Resources */ = {isa = PBXBuildFile; fileRef = 8F875DD5828AFBA0D85D9767 /* REDALGAE22.png */; };
+		70FE4072469132FC1B89706C /* Aloe_Plant_Set 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 43D35FB5965D8F6AE79A5700 /* Aloe_Plant_Set 2.usdz */; };
+		725F1617505ACD8F3430FCC1 /* Textures\Clam_Quad_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B8D62448865F7CF39A6241F /* Textures\Clam_Quad_Diffuse.png */; };
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
 		7362427944CD9F93F41B9849 /* Land.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0CD2DE8B958AFA1FBFD38743 /* Land.skybox */; };
+		7705410F1BD6A1805137B199 /* REDALGAE21.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C654F9284E2633E44EEADB2 /* REDALGAE21.png */; };
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
+		78CBD0D79C8C95C227290A47 /* REDALGAE31.png in Resources */ = {isa = PBXBuildFile; fileRef = 1285306DF1C5ED5C1ED81E1A /* REDALGAE31.png */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
 		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
 		8235E49425717B0E8D593972 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F1CE7084EE88134E097B8C /* MenuView.swift */; };
+		8373627FB5CFC9C3B7D69F03 /* scene.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 9F70BD018C53549F87C60DA4 /* scene.gltf */; };
+		838E46B6D8E878F90A9B044D /* REDALGAE11.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A648CE0A448EE29C7A00A33 /* REDALGAE11.png */; };
 		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
 		861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */; };
 		87681B09FE24242A14664D7E /* CutoutLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */; };
 		881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A7F710F439BF8B2277743917 /* tree_1.usdz */; };
+		8B72C1AA6C75AAFF9246C13B /* REDALGAE20.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AF3ABE7C2C5D758F4C6FC5E /* REDALGAE20.png */; };
 		8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */; };
 		8C3CB096710C0F7ACEFE478F /* CutoutLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */; };
+		8CBC96A41B812B1189FDD22F /* Corallium_Rubrum 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FA0186E5D9947A947B44DCC3 /* Corallium_Rubrum 2.usdz */; };
 		8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */; };
+		9061E00B87B69C0B79FDD82D /* REDALGAE28.png in Resources */ = {isa = PBXBuildFile; fileRef = C42E3120C933153627E9B171 /* REDALGAE28.png */; };
+		91E0F791E855579D91B0ECFF /* Underwater_Lowpoly_Scene 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = CE9A67AC83B932DEEFCAD6C0 /* Underwater_Lowpoly_Scene 2.usdz */; };
 		94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */; };
+		985BA061A5341CCF146D9888 /* 9_Aplysina_fistularis 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2C63C342A910E7B52CF9EB63 /* 9_Aplysina_fistularis 2.usdz */; };
+		9A97E7E348DD758CB4E10FB0 /* REDALGAE16.png in Resources */ = {isa = PBXBuildFile; fileRef = 9772DEB121266D352E4CD0AC /* REDALGAE16.png */; };
 		9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */; };
+		A03512EBFA9DB44DFDB8D64A /* REDALGAE19.png in Resources */ = {isa = PBXBuildFile; fileRef = 82DC79A2F6A5A934C79CC402 /* REDALGAE19.png */; };
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
+		A325CB986747E4815353D0D4 /* REDALGAE8.png in Resources */ = {isa = PBXBuildFile; fileRef = B0A30EB36FD6F28660F44DFF /* REDALGAE8.png */; };
+		A405354C7A44B8A4BBF90BD3 /* Underwater_Showcase 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */; };
+		A724D69030AA2E0E9B42D549 /* REDALGAE26.png in Resources */ = {isa = PBXBuildFile; fileRef = C03666EE74021E23002F12B2 /* REDALGAE26.png */; };
+		A85B8EA1DEA6EF13598AEBC0 /* Textures\Clam_Tris_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = FC400A6DBEF9D3DAAD4BD17F /* Textures\Clam_Tris_Diffuse.png */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
+		B0DFCDD37725339349E8066D /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = F2259DFC348348562F89A520 /* seashell.18K.TEX_u1_v1_diffuse.png */; };
 		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
 		B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */; };
+		B131A1515170F1FA7BBA23BA /* REDALGAE17.png in Resources */ = {isa = PBXBuildFile; fileRef = 88F5A51D3BF2B9A17171FB38 /* REDALGAE17.png */; };
 		B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */; };
+		B44C0384C46180810159308B /* REDALGAE35.png in Resources */ = {isa = PBXBuildFile; fileRef = 76EE75987EE68807CBBC4147 /* REDALGAE35.png */; };
+		B594C3DDB87419FAD969F9DB /* seashell.18K.TEX.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4C3DD595E3B7FBE4F54B857F /* seashell.18K.TEX.obj */; };
 		B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */; };
 		B97D8E02120768278D065C53 /* bubbles.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 9AE036FFA5A33C658370D38B /* bubbles.usdz */; };
 		BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */; };
+		BBB1108AF6E335691CC5CB0C /* REDALGAE27.png in Resources */ = {isa = PBXBuildFile; fileRef = 83AB98D975FC435D49CF9C62 /* REDALGAE27.png */; };
+		BBC6942EC4A88C79AA372A77 /* REDALGAE13.png in Resources */ = {isa = PBXBuildFile; fileRef = C32EE903B0BAFC37E0C5AAF6 /* REDALGAE13.png */; };
+		BC421DF867DC8CD61BCC5970 /* REDALGAE6.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E96A72B73EA1E2490A2EFC8 /* REDALGAE6.png */; };
+		C094D6EF2519DA5BC277B0C8 /* REDALGAE4.png in Resources */ = {isa = PBXBuildFile; fileRef = 1449B21206301EFBCD497D52 /* REDALGAE4.png */; };
+		C17FD86DED815C98E4090144 /* REDALGAE33.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DB41A6E031798EA1938F6C9 /* REDALGAE33.png */; };
 		C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */; };
+		C4E4C69AAD4C3688EB4A6555 /* REDALGAE2.png in Resources */ = {isa = PBXBuildFile; fileRef = EFB476989870A95D247BF767 /* REDALGAE2.png */; };
 		C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */; };
+		C970EF4269CFE98ABB7A5BE9 /* REDALGAE29.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E30A4BB156E5B55F8821AB3 /* REDALGAE29.png */; };
 		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
+		CBD2694FD72C10DB587042AB /* REDALGAE34.png in Resources */ = {isa = PBXBuildFile; fileRef = 1097BE05DCADB25A22F18A96 /* REDALGAE34.png */; };
+		CD195A8564BF80753487F89F /* REDALGAE7.png in Resources */ = {isa = PBXBuildFile; fileRef = BA22ECF08238A714A2C4A6A9 /* REDALGAE7.png */; };
 		D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */; };
 		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
 		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
 		D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */; };
 		D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4F33D5C4ECB695106958159D /* StatueRoom.usdz */; };
 		D6AB40DEEC6444D08179A8D4 /* USDZModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBA987867DEE41501405418 /* USDZModelPlacement.swift */; };
+		D6EF575E54AB3BF6415BE55E /* seashell.18K.TEX_baseColor.png in Resources */ = {isa = PBXBuildFile; fileRef = EC71A6CAF81F17028A7E4FC4 /* seashell.18K.TEX_baseColor.png */; };
+		D782B22B4B1601CF6218B6BF /* uploads-files-5014803-Clam 2.blend in Resources */ = {isa = PBXBuildFile; fileRef = 6DF7A7DFF83BD70BABE31AF7 /* uploads-files-5014803-Clam 2.blend */; };
 		D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */; };
+		D94F802FEC9779B02E744598 /* seashell.18K.TEX_u1_v1_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F9205213B459C8AAB40A0D /* seashell.18K.TEX_u1_v1_normal.png */; };
 		DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */; };
+		DC0F7C7AAAFB8CA7B5F4B84C /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */ = {isa = PBXBuildFile; fileRef = D5BBEC9B24A484181ADC4437 /* seashell.18K.TEX_u1_v1_occlusion.png */; };
 		DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */; };
+		DED7B89992682423B02C9D95 /* Textures\Clam_Tris_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 8706C8013A05FEF06571B34D /* Textures\Clam_Tris_Roughness.png */; };
 		E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */; };
+		E4F92715FA60A469BF1D9E0F /* Textures\Clam_Quad_Roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 94E9A94B45CA5F0AED3450D0 /* Textures\Clam_Quad_Roughness.png */; };
 		EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0E732AD75F0B14CC3DC9564D /* Underwater.skybox */; };
 		EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */; };
+		EB397D6301E1CB497C0C9ED9 /* REDALGAE24.png in Resources */ = {isa = PBXBuildFile; fileRef = AEA41CFA1367DE5E4F82EF49 /* REDALGAE24.png */; };
 		EC19538278E20B32114ABEC7 /* CitrusOrchard.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */; };
 		EC67889AF56BDE8DACB33C4C /* VirtualRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */; };
+		F492AF276CCB148354A224F2 /* Coral 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5D9F5C50EF790E1648D96FDC /* Coral 2.usdz */; };
+		F5EA395D941E094F6CB4A404 /* seashell.18K.TEX_metallicRoughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DBDEBFAB392B2EC4C76D036 /* seashell.18K.TEX_metallicRoughness.png */; };
 		F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */; };
 		F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */; };
+		F7E3B580EF48F48826F12F05 /* Stylaster_sanguineus 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46970E5706DB1EC91D47F764 /* Stylaster_sanguineus 2.usdz */; };
 		FC3FA727CD38D1E3AEE4EA4D /* VisionForegroundCutoutProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */; };
+		FF4D098E2C45F1706CF83781 /* Under_The_Sea 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FFE91E948D71DDED6BB96298 /* Under_The_Sea 2.usdz */; };
 		FF835DCF8EF6498E779F0342 /* BackpackComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */; };
 		FFC7B65E3FBFAFCF239C1861 /* VirtualRoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF6055646F729702EE453A /* VirtualRoomModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
+		02AB4360ABFA2F51DF9A7C6E /* Textures\Clam_Tris_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Normal.png"; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		09A19066899EFA5DD1CE5E3A /* REDALGAE3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE3.png; sourceTree = "<group>"; };
+		0BD8045BCAD9E1671E963650 /* REDALGAE15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE15.png; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
+		0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Underwater_Showcase 2.usdz"; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1097BE05DCADB25A22F18A96 /* REDALGAE34.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE34.png; sourceTree = "<group>"; };
+		1285306DF1C5ED5C1ED81E1A /* REDALGAE31.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE31.png; sourceTree = "<group>"; };
+		1449B21206301EFBCD497D52 /* REDALGAE4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE4.png; sourceTree = "<group>"; };
 		14A60964229B227465EE8AD4 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Birds.usdz; sourceTree = "<group>"; };
+		17F9205213B459C8AAB40A0D /* seashell.18K.TEX_u1_v1_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_normal.png; sourceTree = "<group>"; };
 		1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
 		1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
 		1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDrawing.swift; sourceTree = "<group>"; };
@@ -165,121 +174,103 @@
 		1F0850761218A200FA8B9746 /* ArtworkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkRepository.swift; sourceTree = "<group>"; };
 		2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
+		26D9FCC17D01F61DEF187CAC /* seashell.18K.TEX.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.mtl; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
-		28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "9_Aplysina_fistularis 2.usdz"; sourceTree = "<group>"; };
-		28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aloe_Plant_Set 2.usdz"; sourceTree = "<group>"; };
-		28B48D213008C97800EC0E93 /* Coral 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coral 2.usdz"; sourceTree = "<group>"; };
-		28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Corallium_Rubrum 2.usdz"; sourceTree = "<group>"; };
-		28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Fan_Coral_Med 2.usdz"; sourceTree = "<group>"; };
-		28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Oceanfloor 2.usdz"; sourceTree = "<group>"; };
-		28B48D253008C97800EC0E93 /* Old_ship 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Old_ship 2.usdz"; sourceTree = "<group>"; };
-		28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Projet_Aaron_-_Plants 2.usdz"; sourceTree = "<group>"; };
-		28B48D273008C97800EC0E93 /* REDALGAE1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE1.png; sourceTree = "<group>"; };
-		28B48D283008C97800EC0E93 /* REDALGAE2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE2.png; sourceTree = "<group>"; };
-		28B48D293008C97800EC0E93 /* REDALGAE3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE3.png; sourceTree = "<group>"; };
-		28B48D2A3008C97800EC0E93 /* REDALGAE4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE4.png; sourceTree = "<group>"; };
-		28B48D2B3008C97800EC0E93 /* REDALGAE5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE5.png; sourceTree = "<group>"; };
-		28B48D2C3008C97800EC0E93 /* REDALGAE6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE6.png; sourceTree = "<group>"; };
-		28B48D2D3008C97800EC0E93 /* REDALGAE7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE7.png; sourceTree = "<group>"; };
-		28B48D2E3008C97800EC0E93 /* REDALGAE8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE8.png; sourceTree = "<group>"; };
-		28B48D2F3008C97800EC0E93 /* REDALGAE9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE9.png; sourceTree = "<group>"; };
-		28B48D303008C97800EC0E93 /* REDALGAE10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE10.png; sourceTree = "<group>"; };
-		28B48D313008C97800EC0E93 /* REDALGAE11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE11.png; sourceTree = "<group>"; };
-		28B48D323008C97800EC0E93 /* REDALGAE12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE12.png; sourceTree = "<group>"; };
-		28B48D333008C97800EC0E93 /* REDALGAE13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE13.png; sourceTree = "<group>"; };
-		28B48D343008C97800EC0E93 /* REDALGAE14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE14.png; sourceTree = "<group>"; };
-		28B48D353008C97800EC0E93 /* REDALGAE15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE15.png; sourceTree = "<group>"; };
-		28B48D363008C97800EC0E93 /* REDALGAE16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE16.png; sourceTree = "<group>"; };
-		28B48D373008C97800EC0E93 /* REDALGAE17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE17.png; sourceTree = "<group>"; };
-		28B48D383008C97800EC0E93 /* REDALGAE18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE18.png; sourceTree = "<group>"; };
-		28B48D393008C97800EC0E93 /* REDALGAE19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE19.png; sourceTree = "<group>"; };
-		28B48D3A3008C97800EC0E93 /* REDALGAE20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE20.png; sourceTree = "<group>"; };
-		28B48D3B3008C97800EC0E93 /* REDALGAE21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE21.png; sourceTree = "<group>"; };
-		28B48D3C3008C97800EC0E93 /* REDALGAE22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE22.png; sourceTree = "<group>"; };
-		28B48D3D3008C97800EC0E93 /* REDALGAE23.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE23.png; sourceTree = "<group>"; };
-		28B48D3E3008C97800EC0E93 /* REDALGAE24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE24.png; sourceTree = "<group>"; };
-		28B48D3F3008C97800EC0E93 /* REDALGAE25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE25.png; sourceTree = "<group>"; };
-		28B48D403008C97800EC0E93 /* REDALGAE26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE26.png; sourceTree = "<group>"; };
-		28B48D413008C97800EC0E93 /* REDALGAE27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE27.png; sourceTree = "<group>"; };
-		28B48D423008C97800EC0E93 /* REDALGAE28.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE28.png; sourceTree = "<group>"; };
-		28B48D433008C97800EC0E93 /* REDALGAE29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE29.png; sourceTree = "<group>"; };
-		28B48D443008C97800EC0E93 /* REDALGAE30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE30.png; sourceTree = "<group>"; };
-		28B48D453008C97800EC0E93 /* REDALGAE31.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE31.png; sourceTree = "<group>"; };
-		28B48D463008C97800EC0E93 /* REDALGAE32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE32.png; sourceTree = "<group>"; };
-		28B48D473008C97800EC0E93 /* REDALGAE33.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE33.png; sourceTree = "<group>"; };
-		28B48D483008C97800EC0E93 /* REDALGAE34.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE34.png; sourceTree = "<group>"; };
-		28B48D493008C97800EC0E93 /* REDALGAE35.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE35.png; sourceTree = "<group>"; };
-		28B48D4A3008C97800EC0E93 /* REDALGAE36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE36.png; sourceTree = "<group>"; };
-		28B48D4B3008C97800EC0E93 /* REDALGAE37.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE37.png; sourceTree = "<group>"; };
-		28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Soft_Coral_Set 2.usdz"; sourceTree = "<group>"; };
-		28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Stylaster_sanguineus 2.usdz"; sourceTree = "<group>"; };
-		28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sunken_Anchor 2.usdz"; sourceTree = "<group>"; };
-		28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Under_The_Sea 2.usdz"; sourceTree = "<group>"; };
-		28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Underwater_Lowpoly_Scene 2.usdz"; sourceTree = "<group>"; };
-		28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Underwater_Showcase 2.usdz"; sourceTree = "<group>"; };
-		28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_baseColor.png; sourceTree = "<group>"; };
-		28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_metallicRoughness.png; sourceTree = "<group>"; };
-		28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_normal.png; sourceTree = "<group>"; };
-		28B48D573008C97800EC0E93 /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
-		28B48D583008C97800EC0E93 /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
-		28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.mtl; sourceTree = "<group>"; };
-		28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.obj; sourceTree = "<group>"; };
-		28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_diffuse.png; sourceTree = "<group>"; };
-		28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_normal.png; sourceTree = "<group>"; };
-		28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_occlusion.png; sourceTree = "<group>"; };
-		28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */ = {isa = PBXFileReference; lastKnownFileType = file; path = "uploads-files-5014803-Clam 2.blend"; sourceTree = "<group>"; };
-		28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Diffuse.png"; sourceTree = "<group>"; };
-		28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Normal.png"; sourceTree = "<group>"; };
-		28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Roughness.png"; sourceTree = "<group>"; };
-		28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Diffuse.png"; sourceTree = "<group>"; };
-		28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Normal.png"; sourceTree = "<group>"; };
-		28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Roughness.png"; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
 		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
+		2C63C342A910E7B52CF9EB63 /* 9_Aplysina_fistularis 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "9_Aplysina_fistularis 2.usdz"; sourceTree = "<group>"; };
+		2C654F9284E2633E44EEADB2 /* REDALGAE21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE21.png; sourceTree = "<group>"; };
 		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
+		33D6787D69E3D803101F8A08 /* Oceanfloor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Oceanfloor 2.usdz"; sourceTree = "<group>"; };
 		374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCategory.swift; sourceTree = "<group>"; };
 		3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TokyoSpringAmbience.mp3; sourceTree = "<group>"; };
 		3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPageView.swift; sourceTree = "<group>"; };
+		416A4DE2B6DF2CD5B37805B6 /* Fan_Coral_Med 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Fan_Coral_Med 2.usdz"; sourceTree = "<group>"; };
+		43D35FB5965D8F6AE79A5700 /* Aloe_Plant_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Aloe_Plant_Set 2.usdz"; sourceTree = "<group>"; };
+		46970E5706DB1EC91D47F764 /* Stylaster_sanguineus 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Stylaster_sanguineus 2.usdz"; sourceTree = "<group>"; };
 		46D74A3ECD9818F1F0D944C1 /* cloud.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = cloud.usdz; sourceTree = "<group>"; };
+		470E1C86948EF79475C3B19A /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		48613B2767FCCC80ED53E8EF /* REDALGAE36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE36.png; sourceTree = "<group>"; };
+		48DEDEEB9F568D0057BC795A /* ColorPaletteOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteOverlay.swift; sourceTree = "<group>"; };
 		497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacedCutout.swift; sourceTree = "<group>"; };
+		4B8D62448865F7CF39A6241F /* Textures\Clam_Quad_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Diffuse.png"; sourceTree = "<group>"; };
+		4C3DD595E3B7FBE4F54B857F /* seashell.18K.TEX.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = seashell.18K.TEX.obj; sourceTree = "<group>"; };
 		4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
+		4C4C6788B37A0C3D1B3CB0CB /* REDALGAE32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE32.png; sourceTree = "<group>"; };
 		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCoordinator.swift; sourceTree = "<group>"; };
+		4DBDEBFAB392B2EC4C76D036 /* seashell.18K.TEX_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_metallicRoughness.png; sourceTree = "<group>"; };
 		4F33D5C4ECB695106958159D /* StatueRoom.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = StatueRoom.usdz; sourceTree = "<group>"; };
+		4F4941D0D39A7AC1F9A3B2A7 /* Soft_Coral_Set 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Soft_Coral_Set 2.usdz"; sourceTree = "<group>"; };
+		54A6D858BAC91C1B6EB2EB3B /* Textures\Clam_Quad_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Normal.png"; sourceTree = "<group>"; };
 		572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
 		5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
+		5D9F5C50EF790E1648D96FDC /* Coral 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Coral 2.usdz"; sourceTree = "<group>"; };
+		5DB41A6E031798EA1938F6C9 /* REDALGAE33.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE33.png; sourceTree = "<group>"; };
+		63D213A8F2592320C3FCE1F1 /* REDALGAE1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE1.png; sourceTree = "<group>"; };
+		66AAD6AED18627BC4AF2ADE6 /* REDALGAE25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE25.png; sourceTree = "<group>"; };
 		68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
+		6A04185E88D96ABDF86612B2 /* REDALGAE5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE5.png; sourceTree = "<group>"; };
 		6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = CitrusOrchard.skybox; sourceTree = "<group>"; };
+		6B184DF10D83A1948AE37AA2 /* REDALGAE30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE30.png; sourceTree = "<group>"; };
 		6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityRoomView.swift; sourceTree = "<group>"; };
 		6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotionConfiguration.swift; sourceTree = "<group>"; };
 		6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementRealityView.swift; sourceTree = "<group>"; };
+		6DF7A7DFF83BD70BABE31AF7 /* uploads-files-5014803-Clam 2.blend */ = {isa = PBXFileReference; lastKnownFileType = file; path = "uploads-files-5014803-Clam 2.blend"; sourceTree = "<group>"; };
+		6E96A72B73EA1E2490A2EFC8 /* REDALGAE6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE6.png; sourceTree = "<group>"; };
 		6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutAsset.swift; sourceTree = "<group>"; };
+		714E9CD1A368CA97063AFD9D /* REDALGAE14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE14.png; sourceTree = "<group>"; };
 		739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewInteractionAdapter.swift; sourceTree = "<group>"; };
+		73BC71A270A942C744FF8834 /* REDALGAE37.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE37.png; sourceTree = "<group>"; };
+		76EE75987EE68807CBBC4147 /* REDALGAE35.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE35.png; sourceTree = "<group>"; };
+		7AF3ABE7C2C5D758F4C6FC5E /* REDALGAE20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE20.png; sourceTree = "<group>"; };
+		7B24128880D7700805821A11 /* REDALGAE9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE9.png; sourceTree = "<group>"; };
 		7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutEntityFactory.swift; sourceTree = "<group>"; };
+		82DC79A2F6A5A934C79CC402 /* REDALGAE19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE19.png; sourceTree = "<group>"; };
+		83AB98D975FC435D49CF9C62 /* REDALGAE27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE27.png; sourceTree = "<group>"; };
 		84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkPersistence.swift; sourceTree = "<group>"; };
+		8706C8013A05FEF06571B34D /* Textures\Clam_Tris_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Roughness.png"; sourceTree = "<group>"; };
+		88F5A51D3BF2B9A17171FB38 /* REDALGAE17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE17.png; sourceTree = "<group>"; };
+		8A648CE0A448EE29C7A00A33 /* REDALGAE11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE11.png; sourceTree = "<group>"; };
+		8E30A4BB156E5B55F8821AB3 /* REDALGAE29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE29.png; sourceTree = "<group>"; };
 		8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomView.swift; sourceTree = "<group>"; };
+		8F875DD5828AFBA0D85D9767 /* REDALGAE22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE22.png; sourceTree = "<group>"; };
+		94E9A94B45CA5F0AED3450D0 /* Textures\Clam_Quad_Roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Quad_Roughness.png"; sourceTree = "<group>"; };
+		9772DEB121266D352E4CD0AC /* REDALGAE16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE16.png; sourceTree = "<group>"; };
 		9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObjectRegistry.swift; sourceTree = "<group>"; };
 		9AE036FFA5A33C658370D38B /* bubbles.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = bubbles.usdz; sourceTree = "<group>"; };
 		9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementView.swift; sourceTree = "<group>"; };
 		9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
+		9F70BD018C53549F87C60DA4 /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
 		A26A0FAF4B1151615789C36C /* InteractionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionModels.swift; sourceTree = "<group>"; };
 		A2F1CE7084EE88134E097B8C /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		A7F710F439BF8B2277743917 /* tree_1.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = tree_1.usdz; sourceTree = "<group>"; };
 		AAEF6055646F729702EE453A /* VirtualRoomModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomModels.swift; sourceTree = "<group>"; };
 		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
+		ACD0A97A64B1DADE040B054B /* seashell.18K.TEX_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_normal.png; sourceTree = "<group>"; };
+		AEA41CFA1367DE5E4F82EF49 /* REDALGAE24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE24.png; sourceTree = "<group>"; };
 		AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicApp.swift; sourceTree = "<group>"; };
 		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
+		B0A30EB36FD6F28660F44DFF /* REDALGAE8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE8.png; sourceTree = "<group>"; };
 		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
+		BA22ECF08238A714A2C4A6A9 /* REDALGAE7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE7.png; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
+		C03666EE74021E23002F12B2 /* REDALGAE26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE26.png; sourceTree = "<group>"; };
+		C1F3CDB2DD215C37B10EEAD9 /* REDALGAE10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE10.png; sourceTree = "<group>"; };
+		C32EE903B0BAFC37E0C5AAF6 /* REDALGAE13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE13.png; sourceTree = "<group>"; };
+		C42E3120C933153627E9B171 /* REDALGAE28.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE28.png; sourceTree = "<group>"; };
 		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		CE9A67AC83B932DEEFCAD6C0 /* Underwater_Lowpoly_Scene 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Underwater_Lowpoly_Scene 2.usdz"; sourceTree = "<group>"; };
+		D0222654276F477ADB8B7592 /* Projet_Aaron_-_Plants 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Projet_Aaron_-_Plants 2.usdz"; sourceTree = "<group>"; };
+		D5BBEC9B24A484181ADC4437 /* seashell.18K.TEX_u1_v1_occlusion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_occlusion.png; sourceTree = "<group>"; };
 		D8131A446EE341BA3133E93A /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = fishs.usdz; sourceTree = "<group>"; };
 		DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneController.swift; sourceTree = "<group>"; };
 		DB73231B83858CE30A584E76 /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
@@ -287,14 +278,25 @@
 		DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRoute+Modifier.swift"; sourceTree = "<group>"; };
 		DED0B6AC60C494DD24513C40 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
 		DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
+		E0BE60D8F8DD9E20DBF06373 /* REDALGAE23.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE23.png; sourceTree = "<group>"; };
+		E5A534C7BAA791757BF905C5 /* REDALGAE12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE12.png; sourceTree = "<group>"; };
 		E67231FD4CC90120FA5A8816 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		EC71A6CAF81F17028A7E4FC4 /* seashell.18K.TEX_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_baseColor.png; sourceTree = "<group>"; };
 		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
 		EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
+		EFB476989870A95D247BF767 /* REDALGAE2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE2.png; sourceTree = "<group>"; };
+		F002943ABC2D1781DA013B80 /* Old_ship 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Old_ship 2.usdz"; sourceTree = "<group>"; };
+		F2259DFC348348562F89A520 /* seashell.18K.TEX_u1_v1_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = seashell.18K.TEX_u1_v1_diffuse.png; sourceTree = "<group>"; };
 		F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionOrientationStore.swift; sourceTree = "<group>"; };
 		F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutSceneEditor.swift; sourceTree = "<group>"; };
+		F6EDDB5A95F3D3809552C2C6 /* Sunken_Anchor 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Sunken_Anchor 2.usdz"; sourceTree = "<group>"; };
 		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
 		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
+		FA0186E5D9947A947B44DCC3 /* Corallium_Rubrum 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Corallium_Rubrum 2.usdz"; sourceTree = "<group>"; };
 		FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderingExtensions.swift; sourceTree = "<group>"; };
+		FC013B6E88847644E988DC78 /* REDALGAE18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE18.png; sourceTree = "<group>"; };
+		FC400A6DBEF9D3DAAD4BD17F /* Textures\Clam_Tris_Diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Textures\\Clam_Tris_Diffuse.png"; sourceTree = "<group>"; };
+		FFE91E948D71DDED6BB96298 /* Under_The_Sea 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Under_The_Sea 2.usdz"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -327,6 +329,50 @@
 			path = Canvas;
 			sourceTree = "<group>";
 		};
+		15A5421E38029D45CB33C372 /* Red_Algaes 2 */ = {
+			isa = PBXGroup;
+			children = (
+				63D213A8F2592320C3FCE1F1 /* REDALGAE1.png */,
+				EFB476989870A95D247BF767 /* REDALGAE2.png */,
+				09A19066899EFA5DD1CE5E3A /* REDALGAE3.png */,
+				1449B21206301EFBCD497D52 /* REDALGAE4.png */,
+				6A04185E88D96ABDF86612B2 /* REDALGAE5.png */,
+				6E96A72B73EA1E2490A2EFC8 /* REDALGAE6.png */,
+				BA22ECF08238A714A2C4A6A9 /* REDALGAE7.png */,
+				B0A30EB36FD6F28660F44DFF /* REDALGAE8.png */,
+				7B24128880D7700805821A11 /* REDALGAE9.png */,
+				C1F3CDB2DD215C37B10EEAD9 /* REDALGAE10.png */,
+				8A648CE0A448EE29C7A00A33 /* REDALGAE11.png */,
+				E5A534C7BAA791757BF905C5 /* REDALGAE12.png */,
+				C32EE903B0BAFC37E0C5AAF6 /* REDALGAE13.png */,
+				714E9CD1A368CA97063AFD9D /* REDALGAE14.png */,
+				0BD8045BCAD9E1671E963650 /* REDALGAE15.png */,
+				9772DEB121266D352E4CD0AC /* REDALGAE16.png */,
+				88F5A51D3BF2B9A17171FB38 /* REDALGAE17.png */,
+				FC013B6E88847644E988DC78 /* REDALGAE18.png */,
+				82DC79A2F6A5A934C79CC402 /* REDALGAE19.png */,
+				7AF3ABE7C2C5D758F4C6FC5E /* REDALGAE20.png */,
+				2C654F9284E2633E44EEADB2 /* REDALGAE21.png */,
+				8F875DD5828AFBA0D85D9767 /* REDALGAE22.png */,
+				E0BE60D8F8DD9E20DBF06373 /* REDALGAE23.png */,
+				AEA41CFA1367DE5E4F82EF49 /* REDALGAE24.png */,
+				66AAD6AED18627BC4AF2ADE6 /* REDALGAE25.png */,
+				C03666EE74021E23002F12B2 /* REDALGAE26.png */,
+				83AB98D975FC435D49CF9C62 /* REDALGAE27.png */,
+				C42E3120C933153627E9B171 /* REDALGAE28.png */,
+				8E30A4BB156E5B55F8821AB3 /* REDALGAE29.png */,
+				6B184DF10D83A1948AE37AA2 /* REDALGAE30.png */,
+				1285306DF1C5ED5C1ED81E1A /* REDALGAE31.png */,
+				4C4C6788B37A0C3D1B3CB0CB /* REDALGAE32.png */,
+				5DB41A6E031798EA1938F6C9 /* REDALGAE33.png */,
+				1097BE05DCADB25A22F18A96 /* REDALGAE34.png */,
+				76EE75987EE68807CBBC4147 /* REDALGAE35.png */,
+				48613B2767FCCC80ED53E8EF /* REDALGAE36.png */,
+				73BC71A270A942C744FF8834 /* REDALGAE37.png */,
+			);
+			path = "Red_Algaes 2";
+			sourceTree = "<group>";
+		};
 		1B830F6172C8A48BE893FB52 /* State */ = {
 			isa = PBXGroup;
 			children = (
@@ -335,93 +381,14 @@
 			path = State;
 			sourceTree = "<group>";
 		};
-		28B48D4C3008C97800EC0E93 /* Red_Algaes 2 */ = {
+		33977D26703350F342CA6152 /* textures */ = {
 			isa = PBXGroup;
 			children = (
-				28B48D273008C97800EC0E93 /* REDALGAE1.png */,
-				28B48D283008C97800EC0E93 /* REDALGAE2.png */,
-				28B48D293008C97800EC0E93 /* REDALGAE3.png */,
-				28B48D2A3008C97800EC0E93 /* REDALGAE4.png */,
-				28B48D2B3008C97800EC0E93 /* REDALGAE5.png */,
-				28B48D2C3008C97800EC0E93 /* REDALGAE6.png */,
-				28B48D2D3008C97800EC0E93 /* REDALGAE7.png */,
-				28B48D2E3008C97800EC0E93 /* REDALGAE8.png */,
-				28B48D2F3008C97800EC0E93 /* REDALGAE9.png */,
-				28B48D303008C97800EC0E93 /* REDALGAE10.png */,
-				28B48D313008C97800EC0E93 /* REDALGAE11.png */,
-				28B48D323008C97800EC0E93 /* REDALGAE12.png */,
-				28B48D333008C97800EC0E93 /* REDALGAE13.png */,
-				28B48D343008C97800EC0E93 /* REDALGAE14.png */,
-				28B48D353008C97800EC0E93 /* REDALGAE15.png */,
-				28B48D363008C97800EC0E93 /* REDALGAE16.png */,
-				28B48D373008C97800EC0E93 /* REDALGAE17.png */,
-				28B48D383008C97800EC0E93 /* REDALGAE18.png */,
-				28B48D393008C97800EC0E93 /* REDALGAE19.png */,
-				28B48D3A3008C97800EC0E93 /* REDALGAE20.png */,
-				28B48D3B3008C97800EC0E93 /* REDALGAE21.png */,
-				28B48D3C3008C97800EC0E93 /* REDALGAE22.png */,
-				28B48D3D3008C97800EC0E93 /* REDALGAE23.png */,
-				28B48D3E3008C97800EC0E93 /* REDALGAE24.png */,
-				28B48D3F3008C97800EC0E93 /* REDALGAE25.png */,
-				28B48D403008C97800EC0E93 /* REDALGAE26.png */,
-				28B48D413008C97800EC0E93 /* REDALGAE27.png */,
-				28B48D423008C97800EC0E93 /* REDALGAE28.png */,
-				28B48D433008C97800EC0E93 /* REDALGAE29.png */,
-				28B48D443008C97800EC0E93 /* REDALGAE30.png */,
-				28B48D453008C97800EC0E93 /* REDALGAE31.png */,
-				28B48D463008C97800EC0E93 /* REDALGAE32.png */,
-				28B48D473008C97800EC0E93 /* REDALGAE33.png */,
-				28B48D483008C97800EC0E93 /* REDALGAE34.png */,
-				28B48D493008C97800EC0E93 /* REDALGAE35.png */,
-				28B48D4A3008C97800EC0E93 /* REDALGAE36.png */,
-				28B48D4B3008C97800EC0E93 /* REDALGAE37.png */,
-			);
-			path = "Red_Algaes 2";
-			sourceTree = "<group>";
-		};
-		28B48D563008C97800EC0E93 /* textures */ = {
-			isa = PBXGroup;
-			children = (
-				28B48D533008C97800EC0E93 /* seashell.18K.TEX_baseColor.png */,
-				28B48D543008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png */,
-				28B48D553008C97800EC0E93 /* seashell.18K.TEX_normal.png */,
+				EC71A6CAF81F17028A7E4FC4 /* seashell.18K.TEX_baseColor.png */,
+				4DBDEBFAB392B2EC4C76D036 /* seashell.18K.TEX_metallicRoughness.png */,
+				ACD0A97A64B1DADE040B054B /* seashell.18K.TEX_normal.png */,
 			);
 			path = textures;
-			sourceTree = "<group>";
-		};
-		28B48D593008C97800EC0E93 /* uploads-files-2382239-seashell 2 */ = {
-			isa = PBXGroup;
-			children = (
-				28B48D563008C97800EC0E93 /* textures */,
-				28B48D573008C97800EC0E93 /* scene.bin */,
-				28B48D583008C97800EC0E93 /* scene.gltf */,
-			);
-			path = "uploads-files-2382239-seashell 2";
-			sourceTree = "<group>";
-		};
-		28B48D5F3008C97800EC0E93 /* uploads-files-2382239-seashell_18K_TEX 2 */ = {
-			isa = PBXGroup;
-			children = (
-				28B48D5A3008C97800EC0E93 /* seashell.18K.TEX.mtl */,
-				28B48D5B3008C97800EC0E93 /* seashell.18K.TEX.obj */,
-				28B48D5C3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png */,
-				28B48D5D3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png */,
-				28B48D5E3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png */,
-			);
-			path = "uploads-files-2382239-seashell_18K_TEX 2";
-			sourceTree = "<group>";
-		};
-		28B48D673008C97800EC0E93 /* uploads-files-5014803-Textures 2 */ = {
-			isa = PBXGroup;
-			children = (
-				28B48D613008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png */,
-				28B48D623008C97800EC0E93 /* Textures\Clam_Quad_Normal.png */,
-				28B48D633008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png */,
-				28B48D643008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png */,
-				28B48D653008C97800EC0E93 /* Textures\Clam_Tris_Normal.png */,
-				28B48D663008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png */,
-			);
-			path = "uploads-files-5014803-Textures 2";
 			sourceTree = "<group>";
 		};
 		3F370872313E0F6F949422A0 /* Animagic */ = {
@@ -434,6 +401,18 @@
 				653C6E6605EFE50843DF98FC /* Shared */,
 			);
 			path = Animagic;
+			sourceTree = "<group>";
+		};
+		40D1A3BE589D332590C302F4 /* uploads-files-2382239-seashell_18K_TEX 2 */ = {
+			isa = PBXGroup;
+			children = (
+				F2259DFC348348562F89A520 /* seashell.18K.TEX_u1_v1_diffuse.png */,
+				17F9205213B459C8AAB40A0D /* seashell.18K.TEX_u1_v1_normal.png */,
+				D5BBEC9B24A484181ADC4437 /* seashell.18K.TEX_u1_v1_occlusion.png */,
+				26D9FCC17D01F61DEF187CAC /* seashell.18K.TEX.mtl */,
+				4C3DD595E3B7FBE4F54B857F /* seashell.18K.TEX.obj */,
+			);
+			path = "uploads-files-2382239-seashell_18K_TEX 2";
 			sourceTree = "<group>";
 		};
 		425BC06F4BE4BE184FF07CE2 /* ARPlacement */ = {
@@ -453,6 +432,16 @@
 				9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		5EBAD1DA123D8F63A910E401 /* uploads-files-2382239-seashell 2 */ = {
+			isa = PBXGroup;
+			children = (
+				470E1C86948EF79475C3B19A /* scene.bin */,
+				9F70BD018C53549F87C60DA4 /* scene.gltf */,
+				33977D26703350F342CA6152 /* textures */,
+			);
+			path = "uploads-files-2382239-seashell 2";
 			sourceTree = "<group>";
 		};
 		6051DEF4E13484984B7629BF /* Home */ = {
@@ -515,6 +504,7 @@
 			isa = PBXGroup;
 			children = (
 				5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */,
+				48DEDEEB9F568D0057BC795A /* ColorPaletteOverlay.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -626,6 +616,19 @@
 			path = Interaction;
 			sourceTree = "<group>";
 		};
+		B8FE18FF419C36F5DCD76F0B /* uploads-files-5014803-Textures 2 */ = {
+			isa = PBXGroup;
+			children = (
+				4B8D62448865F7CF39A6241F /* Textures\Clam_Quad_Diffuse.png */,
+				54A6D858BAC91C1B6EB2EB3B /* Textures\Clam_Quad_Normal.png */,
+				94E9A94B45CA5F0AED3450D0 /* Textures\Clam_Quad_Roughness.png */,
+				FC400A6DBEF9D3DAAD4BD17F /* Textures\Clam_Tris_Diffuse.png */,
+				02AB4360ABFA2F51DF9A7C6E /* Textures\Clam_Tris_Normal.png */,
+				8706C8013A05FEF06571B34D /* Textures\Clam_Tris_Roughness.png */,
+			);
+			path = "uploads-files-5014803-Textures 2";
+			sourceTree = "<group>";
+		};
 		C6262D8B1DCDACFD0B4E779A /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -703,36 +706,36 @@
 		E41C1D5B0E5FFFA1E7520CB2 /* VirtualRoom */ = {
 			isa = PBXGroup;
 			children = (
-				28B48D1F3008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz */,
-				28B48D203008C97800EC0E93 /* Aloe_Plant_Set 2.usdz */,
-				28B48D213008C97800EC0E93 /* Coral 2.usdz */,
-				28B48D223008C97800EC0E93 /* Corallium_Rubrum 2.usdz */,
-				28B48D233008C97800EC0E93 /* Fan_Coral_Med 2.usdz */,
-				28B48D243008C97800EC0E93 /* Oceanfloor 2.usdz */,
-				28B48D253008C97800EC0E93 /* Old_ship 2.usdz */,
-				28B48D263008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz */,
-				28B48D4C3008C97800EC0E93 /* Red_Algaes 2 */,
-				28B48D4D3008C97800EC0E93 /* Soft_Coral_Set 2.usdz */,
-				28B48D4E3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz */,
-				28B48D4F3008C97800EC0E93 /* Sunken_Anchor 2.usdz */,
-				28B48D503008C97800EC0E93 /* Under_The_Sea 2.usdz */,
-				28B48D513008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz */,
-				28B48D523008C97800EC0E93 /* Underwater_Showcase 2.usdz */,
-				28B48D593008C97800EC0E93 /* uploads-files-2382239-seashell 2 */,
-				28B48D5F3008C97800EC0E93 /* uploads-files-2382239-seashell_18K_TEX 2 */,
-				28B48D603008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend */,
-				28B48D673008C97800EC0E93 /* uploads-files-5014803-Textures 2 */,
+				2C63C342A910E7B52CF9EB63 /* 9_Aplysina_fistularis 2.usdz */,
+				43D35FB5965D8F6AE79A5700 /* Aloe_Plant_Set 2.usdz */,
 				14A60964229B227465EE8AD4 /* Birds.usdz */,
 				9AE036FFA5A33C658370D38B /* bubbles.usdz */,
 				6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */,
 				46D74A3ECD9818F1F0D944C1 /* cloud.usdz */,
+				5D9F5C50EF790E1648D96FDC /* Coral 2.usdz */,
+				FA0186E5D9947A947B44DCC3 /* Corallium_Rubrum 2.usdz */,
 				AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */,
+				416A4DE2B6DF2CD5B37805B6 /* Fan_Coral_Med 2.usdz */,
 				D8131A446EE341BA3133E93A /* fishs.usdz */,
 				0CD2DE8B958AFA1FBFD38743 /* Land.skybox */,
+				33D6787D69E3D803101F8A08 /* Oceanfloor 2.usdz */,
+				F002943ABC2D1781DA013B80 /* Old_ship 2.usdz */,
+				D0222654276F477ADB8B7592 /* Projet_Aaron_-_Plants 2.usdz */,
+				4F4941D0D39A7AC1F9A3B2A7 /* Soft_Coral_Set 2.usdz */,
 				4F33D5C4ECB695106958159D /* StatueRoom.usdz */,
+				46970E5706DB1EC91D47F764 /* Stylaster_sanguineus 2.usdz */,
+				F6EDDB5A95F3D3809552C2C6 /* Sunken_Anchor 2.usdz */,
 				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
 				A7F710F439BF8B2277743917 /* tree_1.usdz */,
+				FFE91E948D71DDED6BB96298 /* Under_The_Sea 2.usdz */,
+				CE9A67AC83B932DEEFCAD6C0 /* Underwater_Lowpoly_Scene 2.usdz */,
+				0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */,
 				0E732AD75F0B14CC3DC9564D /* Underwater.skybox */,
+				6DF7A7DFF83BD70BABE31AF7 /* uploads-files-5014803-Clam 2.blend */,
+				15A5421E38029D45CB33C372 /* Red_Algaes 2 */,
+				5EBAD1DA123D8F63A910E401 /* uploads-files-2382239-seashell 2 */,
+				40D1A3BE589D332590C302F4 /* uploads-files-2382239-seashell_18K_TEX 2 */,
+				B8FE18FF419C36F5DCD76F0B /* uploads-files-5014803-Textures 2 */,
 			);
 			path = VirtualRoom;
 			sourceTree = "<group>";
@@ -826,89 +829,89 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				985BA061A5341CCF146D9888 /* 9_Aplysina_fistularis 2.usdz in Resources */,
+				70FE4072469132FC1B89706C /* Aloe_Plant_Set 2.usdz in Resources */,
 				22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */,
 				11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */,
 				1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */,
 				D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */,
 				238238874722D44037214247 /* Birds.usdz in Resources */,
 				EC19538278E20B32114ABEC7 /* CitrusOrchard.skybox in Resources */,
+				F492AF276CCB148354A224F2 /* Coral 2.usdz in Resources */,
+				8CBC96A41B812B1189FDD22F /* Corallium_Rubrum 2.usdz in Resources */,
 				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
+				112A2FF1C00E59F8957C396D /* Fan_Coral_Med 2.usdz in Resources */,
 				7362427944CD9F93F41B9849 /* Land.skybox in Resources */,
+				3D5ADD77A08E797EDFE8401D /* Oceanfloor 2.usdz in Resources */,
+				5F3CE052F74AE32CACEBB67A /* Old_ship 2.usdz in Resources */,
+				51D0DEA06443009261E350F0 /* Projet_Aaron_-_Plants 2.usdz in Resources */,
+				60068F82FC5B07ACD269D506 /* REDALGAE1.png in Resources */,
+				47B8EE7D99298E1138E0BDC5 /* REDALGAE10.png in Resources */,
+				838E46B6D8E878F90A9B044D /* REDALGAE11.png in Resources */,
+				4553D6B8C78D340A4F647423 /* REDALGAE12.png in Resources */,
+				BBC6942EC4A88C79AA372A77 /* REDALGAE13.png in Resources */,
+				54FCC64E3A6AFE230ECFD378 /* REDALGAE14.png in Resources */,
+				191A890098F5AA2587760E35 /* REDALGAE15.png in Resources */,
+				9A97E7E348DD758CB4E10FB0 /* REDALGAE16.png in Resources */,
+				B131A1515170F1FA7BBA23BA /* REDALGAE17.png in Resources */,
+				1FD0D2107BAE5C263FC12F63 /* REDALGAE18.png in Resources */,
+				A03512EBFA9DB44DFDB8D64A /* REDALGAE19.png in Resources */,
+				C4E4C69AAD4C3688EB4A6555 /* REDALGAE2.png in Resources */,
+				8B72C1AA6C75AAFF9246C13B /* REDALGAE20.png in Resources */,
+				7705410F1BD6A1805137B199 /* REDALGAE21.png in Resources */,
+				6FB333882BBD075B82B4C5B2 /* REDALGAE22.png in Resources */,
+				59572A6A3B5D6D04EFD6E99E /* REDALGAE23.png in Resources */,
+				EB397D6301E1CB497C0C9ED9 /* REDALGAE24.png in Resources */,
+				601F8F42D492FC7CF94AD74B /* REDALGAE25.png in Resources */,
+				A724D69030AA2E0E9B42D549 /* REDALGAE26.png in Resources */,
+				BBB1108AF6E335691CC5CB0C /* REDALGAE27.png in Resources */,
+				9061E00B87B69C0B79FDD82D /* REDALGAE28.png in Resources */,
+				C970EF4269CFE98ABB7A5BE9 /* REDALGAE29.png in Resources */,
+				38C22C3E14CC5FFDE6239BE9 /* REDALGAE3.png in Resources */,
+				29B70109EF8A6FDFCD6B22E7 /* REDALGAE30.png in Resources */,
+				78CBD0D79C8C95C227290A47 /* REDALGAE31.png in Resources */,
+				2168EEBFC69DEF273A1A66CA /* REDALGAE32.png in Resources */,
+				C17FD86DED815C98E4090144 /* REDALGAE33.png in Resources */,
+				CBD2694FD72C10DB587042AB /* REDALGAE34.png in Resources */,
+				B44C0384C46180810159308B /* REDALGAE35.png in Resources */,
+				18EE84FE1EAC6685BEE9984E /* REDALGAE36.png in Resources */,
+				404754030DAFC0FECE551872 /* REDALGAE37.png in Resources */,
+				C094D6EF2519DA5BC277B0C8 /* REDALGAE4.png in Resources */,
+				00512293BAE5FA21B00DD3A0 /* REDALGAE5.png in Resources */,
+				BC421DF867DC8CD61BCC5970 /* REDALGAE6.png in Resources */,
+				CD195A8564BF80753487F89F /* REDALGAE7.png in Resources */,
+				A325CB986747E4815353D0D4 /* REDALGAE8.png in Resources */,
+				072CEB21C8092412C74C76C0 /* REDALGAE9.png in Resources */,
+				2BA03925417002208EB725B3 /* Soft_Coral_Set 2.usdz in Resources */,
 				D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */,
+				F7E3B580EF48F48826F12F05 /* Stylaster_sanguineus 2.usdz in Resources */,
+				5D841C05D9833FD2E534B7D3 /* Sunken_Anchor 2.usdz in Resources */,
+				725F1617505ACD8F3430FCC1 /* Textures\Clam_Quad_Diffuse.png in Resources */,
+				4DF4F4267D418147B38A5C34 /* Textures\Clam_Quad_Normal.png in Resources */,
+				E4F92715FA60A469BF1D9E0F /* Textures\Clam_Quad_Roughness.png in Resources */,
+				A85B8EA1DEA6EF13598AEBC0 /* Textures\Clam_Tris_Diffuse.png in Resources */,
+				52CCF96EFDE254178982876F /* Textures\Clam_Tris_Normal.png in Resources */,
+				DED7B89992682423B02C9D95 /* Textures\Clam_Tris_Roughness.png in Resources */,
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
+				FF4D098E2C45F1706CF83781 /* Under_The_Sea 2.usdz in Resources */,
 				EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */,
+				91E0F791E855579D91B0ECFF /* Underwater_Lowpoly_Scene 2.usdz in Resources */,
+				A405354C7A44B8A4BBF90BD3 /* Underwater_Showcase 2.usdz in Resources */,
 				B97D8E02120768278D065C53 /* bubbles.usdz in Resources */,
 				40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */,
 				42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */,
+				104309552897E3037C6B2C8C /* scene.bin in Resources */,
+				8373627FB5CFC9C3B7D69F03 /* scene.gltf in Resources */,
+				2E95606FBE293D63113D07D4 /* seashell.18K.TEX.mtl in Resources */,
+				B594C3DDB87419FAD969F9DB /* seashell.18K.TEX.obj in Resources */,
+				D6EF575E54AB3BF6415BE55E /* seashell.18K.TEX_baseColor.png in Resources */,
+				F5EA395D941E094F6CB4A404 /* seashell.18K.TEX_metallicRoughness.png in Resources */,
+				48F2956DB899C7A028CF419E /* seashell.18K.TEX_normal.png in Resources */,
+				B0DFCDD37725339349E8066D /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */,
+				D94F802FEC9779B02E744598 /* seashell.18K.TEX_u1_v1_normal.png in Resources */,
+				DC0F7C7AAAFB8CA7B5F4B84C /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */,
 				881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */,
-				28B48D683008C97800EC0E93 /* Old_ship 2.usdz in Resources */,
-				28B48D693008C97800EC0E93 /* REDALGAE34.png in Resources */,
-				28B48D6A3008C97800EC0E93 /* Projet_Aaron_-_Plants 2.usdz in Resources */,
-				28B48D6B3008C97800EC0E93 /* REDALGAE33.png in Resources */,
-				28B48D6C3008C97800EC0E93 /* REDALGAE3.png in Resources */,
-				28B48D6D3008C97800EC0E93 /* REDALGAE2.png in Resources */,
-				28B48D6E3008C97800EC0E93 /* Textures\Clam_Quad_Diffuse.png in Resources */,
-				28B48D6F3008C97800EC0E93 /* Stylaster_sanguineus 2.usdz in Resources */,
-				28B48D703008C97800EC0E93 /* seashell.18K.TEX_baseColor.png in Resources */,
-				28B48D713008C97800EC0E93 /* REDALGAE23.png in Resources */,
-				28B48D723008C97800EC0E93 /* seashell.18K.TEX_metallicRoughness.png in Resources */,
-				28B48D733008C97800EC0E93 /* seashell.18K.TEX_u1_v1_normal.png in Resources */,
-				28B48D743008C97800EC0E93 /* REDALGAE27.png in Resources */,
-				28B48D753008C97800EC0E93 /* REDALGAE26.png in Resources */,
-				28B48D763008C97800EC0E93 /* 9_Aplysina_fistularis 2.usdz in Resources */,
-				28B48D773008C97800EC0E93 /* REDALGAE32.png in Resources */,
-				28B48D783008C97800EC0E93 /* REDALGAE22.png in Resources */,
-				28B48D793008C97800EC0E93 /* Textures\Clam_Quad_Roughness.png in Resources */,
-				28B48D7A3008C97800EC0E93 /* scene.bin in Resources */,
-				28B48D7B3008C97800EC0E93 /* REDALGAE29.png in Resources */,
-				28B48D7C3008C97800EC0E93 /* REDALGAE14.png in Resources */,
-				28B48D7D3008C97800EC0E93 /* scene.gltf in Resources */,
-				28B48D7E3008C97800EC0E93 /* Textures\Clam_Quad_Normal.png in Resources */,
-				28B48D7F3008C97800EC0E93 /* REDALGAE1.png in Resources */,
-				28B48D803008C97800EC0E93 /* REDALGAE10.png in Resources */,
-				28B48D813008C97800EC0E93 /* REDALGAE15.png in Resources */,
-				28B48D823008C97800EC0E93 /* uploads-files-5014803-Clam 2.blend in Resources */,
-				28B48D833008C97800EC0E93 /* REDALGAE16.png in Resources */,
-				28B48D843008C97800EC0E93 /* REDALGAE31.png in Resources */,
-				28B48D853008C97800EC0E93 /* REDALGAE35.png in Resources */,
-				28B48D863008C97800EC0E93 /* Corallium_Rubrum 2.usdz in Resources */,
-				28B48D873008C97800EC0E93 /* REDALGAE36.png in Resources */,
-				28B48D883008C97800EC0E93 /* REDALGAE28.png in Resources */,
-				28B48D893008C97800EC0E93 /* REDALGAE9.png in Resources */,
-				28B48D8A3008C97800EC0E93 /* REDALGAE19.png in Resources */,
-				28B48D8B3008C97800EC0E93 /* Textures\Clam_Tris_Roughness.png in Resources */,
-				28B48D8C3008C97800EC0E93 /* Oceanfloor 2.usdz in Resources */,
-				28B48D8D3008C97800EC0E93 /* REDALGAE17.png in Resources */,
-				28B48D8E3008C97800EC0E93 /* REDALGAE6.png in Resources */,
-				28B48D8F3008C97800EC0E93 /* REDALGAE18.png in Resources */,
-				28B48D903008C97800EC0E93 /* Textures\Clam_Tris_Diffuse.png in Resources */,
-				28B48D913008C97800EC0E93 /* REDALGAE12.png in Resources */,
-				28B48D923008C97800EC0E93 /* REDALGAE37.png in Resources */,
-				28B48D933008C97800EC0E93 /* REDALGAE25.png in Resources */,
-				28B48D943008C97800EC0E93 /* Underwater_Lowpoly_Scene 2.usdz in Resources */,
-				28B48D953008C97800EC0E93 /* Textures\Clam_Tris_Normal.png in Resources */,
-				28B48D963008C97800EC0E93 /* REDALGAE4.png in Resources */,
-				28B48D973008C97800EC0E93 /* Soft_Coral_Set 2.usdz in Resources */,
-				28B48D983008C97800EC0E93 /* Under_The_Sea 2.usdz in Resources */,
-				28B48D993008C97800EC0E93 /* REDALGAE24.png in Resources */,
-				28B48D9A3008C97800EC0E93 /* seashell.18K.TEX.obj in Resources */,
-				28B48D9B3008C97800EC0E93 /* REDALGAE20.png in Resources */,
-				28B48D9C3008C97800EC0E93 /* REDALGAE5.png in Resources */,
-				28B48D9D3008C97800EC0E93 /* seashell.18K.TEX_normal.png in Resources */,
-				28B48D9E3008C97800EC0E93 /* Fan_Coral_Med 2.usdz in Resources */,
-				28B48D9F3008C97800EC0E93 /* seashell.18K.TEX.mtl in Resources */,
-				28B48DA03008C97800EC0E93 /* REDALGAE7.png in Resources */,
-				28B48DA13008C97800EC0E93 /* REDALGAE11.png in Resources */,
-				28B48DA23008C97800EC0E93 /* Coral 2.usdz in Resources */,
-				28B48DA33008C97800EC0E93 /* Aloe_Plant_Set 2.usdz in Resources */,
-				28B48DA43008C97800EC0E93 /* Underwater_Showcase 2.usdz in Resources */,
-				28B48DA53008C97800EC0E93 /* REDALGAE21.png in Resources */,
-				28B48DA63008C97800EC0E93 /* seashell.18K.TEX_u1_v1_occlusion.png in Resources */,
-				28B48DA73008C97800EC0E93 /* REDALGAE13.png in Resources */,
-				28B48DA83008C97800EC0E93 /* Sunken_Anchor 2.usdz in Resources */,
-				28B48DA93008C97800EC0E93 /* REDALGAE30.png in Resources */,
-				28B48DAA3008C97800EC0E93 /* REDALGAE8.png in Resources */,
-				28B48DAB3008C97800EC0E93 /* seashell.18K.TEX_u1_v1_diffuse.png in Resources */,
+				D782B22B4B1601CF6218B6BF /* uploads-files-5014803-Clam 2.blend in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -939,6 +942,7 @@
 				8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */,
 				729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */,
 				DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */,
+				263AF21B296705B584F0CE3B /* ColorPaletteOverlay.swift in Sources */,
 				53D0A252C7C4C216EAD2CA04 /* ContentView.swift in Sources */,
 				60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */,
 				8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */,
@@ -993,7 +997,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = GQS6FW2LLL;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1097,7 +1101,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = GQS6FW2LLL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;

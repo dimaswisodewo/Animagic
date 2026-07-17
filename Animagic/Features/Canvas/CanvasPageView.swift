@@ -14,6 +14,9 @@ struct CanvasPageView: View {
     @State private var hasDrawing = false
     @State private var showEmptyCanvasMessage = false
     @State private var isDocumentTitleManuallyEdited = false
+    
+    @State private var showColorPalette = false
+    @State private var isHoverModeEnabled = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -23,6 +26,27 @@ struct CanvasPageView: View {
                 if isClassifyingDoodle {
                     DoodleClassificationOverlay()
                         .zIndex(2)
+                }
+                
+                if showColorPalette {
+                    VStack {
+                        HStack {
+                            ColorPaletteOverlay(isPresented: $showColorPalette, canvasView: $canvasView)
+                                .padding(.top, 90)
+                                .padding(.leading, 24)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .zIndex(3)
+                    // Dismiss if tapped outside
+                    .background(
+                        Color.black.opacity(0.01)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                withAnimation { showColorPalette = false }
+                            }
+                    )
                 }
             }
             .animation(.easeInOut, value: isGuidePresented)
@@ -46,7 +70,8 @@ struct CanvasPageView: View {
                 isClassifyingDoodle: $isClassifyingDoodle,
                 hasDrawing: $hasDrawing,
                 showEmptyCanvasMessage: $showEmptyCanvasMessage,
-                isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited
+                isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited,
+                isHoverModeEnabled: $isHoverModeEnabled
             )
             drawingArea
         }
@@ -65,7 +90,13 @@ struct CanvasPageView: View {
             DrawingView(
                 canvasView: $canvasView,
                 isToolPickerVisible: !isGuidePresented,
-                onDrawingChanged: { hasDrawing = $0 }
+                isHoverModeEnabled: isHoverModeEnabled,
+                onDrawingChanged: { hasDrawing = $0 },
+                onSqueeze: { _ in
+                    withAnimation {
+                        showColorPalette.toggle()
+                    }
+                }
             )
         }
     }

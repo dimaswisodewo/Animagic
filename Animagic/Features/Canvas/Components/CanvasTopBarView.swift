@@ -13,6 +13,7 @@ struct CanvasTopBarView: View {
     @Binding var hasDrawing: Bool
     @Binding var showEmptyCanvasMessage: Bool
     @Binding var isDocumentTitleManuallyEdited: Bool
+    @Binding var isHoverModeEnabled: Bool
     
     var body: some View {
         HStack(spacing: 16) {
@@ -51,6 +52,10 @@ struct CanvasTopBarView: View {
             
             TopBarIconButton(icon: "arrow.uturn.forward") {
                 canvasView.undoManager?.redo()
+            }
+            
+            TopBarButton(title: isHoverModeEnabled ? "Hover: On" : "Hover: Off") {
+                isHoverModeEnabled.toggle()
             }
             
             TopBarButton(title: "Save", isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {
