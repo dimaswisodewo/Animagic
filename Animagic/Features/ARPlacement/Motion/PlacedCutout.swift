@@ -17,7 +17,6 @@ final class PlacedCutout: PlacedSceneObject {
     private let shadowEntity: ModelEntity?
     private let frontEntity: ModelEntity
     private let backEntity: ModelEntity
-    private let selectionIndicator: Entity
     private let spawnMode: SpawnMode
     private let initialYaw: Float
     private let initialRoll: Float
@@ -54,7 +53,6 @@ final class PlacedCutout: PlacedSceneObject {
         shadowEntity = parts.shadow
         frontEntity = parts.front
         backEntity = parts.back
-        selectionIndicator = parts.selectionIndicator
         self.spawnMode = spawnMode
         self.initialYaw = initialYaw
         self.initialRoll = initialRoll
@@ -92,7 +90,7 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     func setSelected(_ isSelected: Bool) {
-        selectionIndicator.isEnabled = isSelected
+        // No-op (handled by 3D gizmo in the controller)
     }
 
     func setInteractionPaused(_ isPaused: Bool) {

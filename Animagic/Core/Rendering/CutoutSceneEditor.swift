@@ -14,7 +14,7 @@ struct CutoutSceneConfiguration {
     var maximumObjectCount: Int?
     var showsShadow: Bool
 
-    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: nil, showsShadow: false)
+    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: 20, showsShadow: false)
     static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: nil, maximumObjectCount: 12, showsShadow: false)
 }
 
@@ -48,7 +48,7 @@ final class CutoutSceneEditor: SceneEditing {
     private let registry: SceneObjectRegistry
     private let interactionManager: ObjectInteractionManager
     private var interactionAdapter: ARViewInteractionAdapter?
-    private weak var arView: ARView?
+    weak var arView: ARView?
     private let configuration: CutoutSceneConfiguration
     private var simulationAccumulator: Float = 0
     private var isLoadingModel = false
@@ -62,7 +62,7 @@ final class CutoutSceneEditor: SceneEditing {
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType = .doodle,
-        selectedModelID: PlaceableUSDZModel.ID? = PlaceableUSDZModel.all.first?.id,
+        selectedModelID: PlaceableUSDZModel.ID? = nil,
         entityFactory: CutoutEntityFactory? = nil,
         modelRepository: USDZModelRepository? = nil,
         configuration: CutoutSceneConfiguration? = nil,
@@ -74,7 +74,7 @@ final class CutoutSceneEditor: SceneEditing {
         self.selectedAnimalArchetype = selectedAnimalArchetype
         self.selectedSpawnMode = selectedSpawnMode
         self.selectedContentType = selectedContentType
-        self.selectedModelID = selectedModelID
+        self.selectedModelID = selectedModelID ?? PlaceableUSDZModel.all.first?.id
         self.entityFactory = entityFactory ?? CutoutEntityFactory()
         self.modelRepository = modelRepository ?? USDZModelRepository()
         self.configuration = configuration ?? .augmentedReality
@@ -161,12 +161,31 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.selection
     }
 
+    var selectedObject: (any PlacedSceneObject)? {
+        interactionManager.selectedObject
+    }
+
+    func handleTap(on entity: Entity?) -> Bool {
+        interactionManager.handleTap(on: entity)
+    }
+
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
         interactionManager.setSelectedAnimalArchetype(archetype)
     }
 
-    func deleteSelectedObject() {
+    @discardableResult
+    func deleteSelectedObject() -> DeletedSceneObject? {
         interactionManager.deleteSelected()
+    }
+
+    func restoreDeletedObject(_ deletedObject: DeletedSceneObject) {
+        guard let arView else { return }
+        arView.scene.addAnchor(deletedObject.object.anchor)
+        interactionManager.restore(deletedObject)
+    }
+
+    func clearSelection() {
+        interactionManager.clearSelection()
     }
 
     private var selectedCutoutAsset: CutoutAsset? {
@@ -236,8 +255,7 @@ final class CutoutSceneEditor: SceneEditing {
             cameraTransform: cameraTransform,
             anchorTransform: transform
         )
-        registry.register(
-            PlacedCutout(
+        let placedCutout = PlacedCutout(
                 id: objectID,
                 anchor: anchor,
                 parts: cutout,
@@ -247,7 +265,8 @@ final class CutoutSceneEditor: SceneEditing {
                 initialRoll: spawnOrientation.roll,
                 supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
             )
-        )
+        registry.register(placedCutout)
+        interactionManager.selectObject(withID: objectID)
         return .placed
     }
 
@@ -302,6 +321,7 @@ final class CutoutSceneEditor: SceneEditing {
                     }
                     arView.scene.addAnchor(anchor)
                     self.registry.register(placedModel)
+                    self.interactionManager.selectObject(withID: objectID)
                     self.onPlacementResult?(.placed)
                 } catch {
                     self.onPlacementResult?(

@@ -15,7 +15,6 @@ struct CutoutEntityParts {
     let shadow: ModelEntity?
     let front: ModelEntity
     let back: ModelEntity
-    let selectionIndicator: Entity
     let physicalSize: SIMD2<Float>
 }
 
@@ -108,10 +107,6 @@ final class CutoutEntityFactory {
         bodyEntity.components.set(InputTargetComponent())
         bodyEntity.components.set(InteractableComponent(objectID: objectID))
 
-        let selectionIndicator = makeSelectionIndicator(width: width, height: height)
-        selectionIndicator.isEnabled = false
-        bodyEntity.addChild(selectionIndicator)
-
         let rootEntity = Entity()
         rootEntity.addChild(bodyEntity)
         let shadowEntity = showsShadow
@@ -127,7 +122,6 @@ final class CutoutEntityFactory {
             shadow: shadowEntity,
             front: frontEntity,
             back: backEntity,
-            selectionIndicator: selectionIndicator,
             physicalSize: [width, height]
         )
     }
@@ -142,39 +136,6 @@ final class CutoutEntityFactory {
         let pair = TexturePair(front: front, back: back)
         textureCache[asset.id] = pair
         return pair
-    }
-
-    private func makeSelectionIndicator(width: Float, height: Float) -> Entity {
-        let container = Entity()
-        let thickness = max(min(width, height) * 0.018, 0.003)
-        var material = UnlitMaterial()
-        material.color = .init(tint: .systemYellow)
-
-        let horizontalMesh = MeshResource.generateBox(
-            width: width + (thickness * 2),
-            height: thickness,
-            depth: thickness
-        )
-        let verticalMesh = MeshResource.generateBox(
-            width: thickness,
-            height: height + (thickness * 2),
-            depth: thickness
-        )
-
-        let top = ModelEntity(mesh: horizontalMesh, materials: [material])
-        top.position = [0, height + thickness / 2, 0.006]
-        let bottom = ModelEntity(mesh: horizontalMesh, materials: [material])
-        bottom.position = [0, -thickness / 2, 0.006]
-        let left = ModelEntity(mesh: verticalMesh, materials: [material])
-        left.position = [-(width / 2) - (thickness / 2), height / 2, 0.006]
-        let right = ModelEntity(mesh: verticalMesh, materials: [material])
-        right.position = [(width / 2) + (thickness / 2), height / 2, 0.006]
-
-        container.addChild(top)
-        container.addChild(bottom)
-        container.addChild(left)
-        container.addChild(right)
-        return container
     }
 }
 

@@ -152,7 +152,6 @@ final class PlacedUSDZModel: PlacedSceneObject {
     var supportSurfaceNormal: SIMD3<Float>
 
     private let catalogID: PlaceableUSDZModel.ID
-    private let selectionIndicator: Entity
     private var animationController: AnimationPlaybackController?
 
     var selection: PlacedObjectSelection {
@@ -202,11 +201,6 @@ final class PlacedUSDZModel: PlacedSceneObject {
         root.components.set(InputTargetComponent())
         root.addChild(loadedEntity)
 
-        let normalizedExtents = extents * scale
-        selectionIndicator = Self.makeSelectionIndicator(size: normalizedExtents)
-        selectionIndicator.isEnabled = false
-        root.addChild(selectionIndicator)
-
         anchor.addChild(root)
         if let animation = loadedEntity.availableAnimations.first {
             animationController = loadedEntity.playAnimation(animation.repeat())
@@ -214,7 +208,7 @@ final class PlacedUSDZModel: PlacedSceneObject {
     }
 
     func setSelected(_ isSelected: Bool) {
-        selectionIndicator.isEnabled = isSelected
+        // No-op (handled by 3D gizmo in the controller)
     }
 
     private static func configureInteractionCollisions(in entity: Entity) {
@@ -223,21 +217,5 @@ final class PlacedUSDZModel: PlacedSceneObject {
             entity.components.set(collision)
         }
         entity.children.forEach(configureInteractionCollisions(in:))
-    }
-
-    private static func makeSelectionIndicator(size: SIMD3<Float>) -> ModelEntity {
-        let width = max(size.x, 0.08)
-        let depth = max(size.z, 0.08)
-        let thickness: Float = 0.012
-        var material = UnlitMaterial()
-        material.color = .init(tint: UIColor.systemBlue.withAlphaComponent(0.72))
-        material.blending = .transparent(opacity: .init(floatLiteral: 0.72))
-        let indicator = ModelEntity(
-            mesh: .generateBox(width: width, height: thickness, depth: depth),
-            materials: [material]
-        )
-        indicator.name = "modelSelectionIndicator"
-        indicator.position = [0, thickness / 2, 0]
-        return indicator
     }
 }

@@ -363,8 +363,17 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         sceneEditor.placedObjectSelection
     }
 
-    func deleteSelectedObject() {
+    @discardableResult
+    func deleteSelectedObject() -> DeletedSceneObject? {
         sceneEditor.deleteSelectedObject()
+    }
+
+    func restoreDeletedObject(_ deletedObject: DeletedSceneObject) {
+        sceneEditor.restoreDeletedObject(deletedObject)
+    }
+
+    func clearSelection() {
+        sceneEditor.clearSelection()
     }
 }
 

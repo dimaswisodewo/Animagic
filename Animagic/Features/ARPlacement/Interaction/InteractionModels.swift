@@ -56,6 +56,16 @@ struct SurfaceProjection {
     let normal: SIMD3<Float>
 }
 
+/// Retains the exact RealityKit object removed from a scene so deletion can be undone.
+@MainActor
+final class DeletedSceneObject {
+    let object: any PlacedSceneObject
+
+    init(object: any PlacedSceneObject) {
+        self.object = object
+    }
+}
+
 extension CollisionGroup {
     static let interactable = CollisionGroup(rawValue: 1 << 10)
 }
@@ -77,7 +87,10 @@ protocol ObjectInteractionManaging: AnyObject {
     func rotateSelected(by angle: Float)
     func endRotation()
     func setSelectedAnimalArchetype(_ archetype: AnimalArchetype)
-    func deleteSelected()
+    @discardableResult
+    func deleteSelected() -> DeletedSceneObject?
+    func restore(_ deletedObject: DeletedSceneObject)
+    func selectObject(withID id: UUID)
     func clearSelection()
 }
 
@@ -105,5 +118,8 @@ extension PlacedSceneObject {
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype)
-    func deleteSelectedObject()
+    @discardableResult
+    func deleteSelectedObject() -> DeletedSceneObject?
+    func restoreDeletedObject(_ deletedObject: DeletedSceneObject)
+    func clearSelection()
 }
