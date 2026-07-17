@@ -48,7 +48,7 @@ final class CutoutSceneEditor: SceneEditing {
     private let registry: SceneObjectRegistry
     private let interactionManager: ObjectInteractionManager
     private var interactionAdapter: ARViewInteractionAdapter?
-    private weak var arView: ARView?
+    weak var arView: ARView?
     private let configuration: CutoutSceneConfiguration
     private var simulationAccumulator: Float = 0
     private var isLoadingModel = false
@@ -62,7 +62,7 @@ final class CutoutSceneEditor: SceneEditing {
         selectedAnimalArchetype: AnimalArchetype,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType = .doodle,
-        selectedModelID: PlaceableUSDZModel.ID? = PlaceableUSDZModel.all.first?.id,
+        selectedModelID: PlaceableUSDZModel.ID? = nil,
         entityFactory: CutoutEntityFactory? = nil,
         modelRepository: USDZModelRepository? = nil,
         configuration: CutoutSceneConfiguration? = nil,
@@ -74,7 +74,7 @@ final class CutoutSceneEditor: SceneEditing {
         self.selectedAnimalArchetype = selectedAnimalArchetype
         self.selectedSpawnMode = selectedSpawnMode
         self.selectedContentType = selectedContentType
-        self.selectedModelID = selectedModelID
+        self.selectedModelID = selectedModelID ?? PlaceableUSDZModel.all.first?.id
         self.entityFactory = entityFactory ?? CutoutEntityFactory()
         self.modelRepository = modelRepository ?? USDZModelRepository()
         self.configuration = configuration ?? .augmentedReality
@@ -159,6 +159,14 @@ final class CutoutSceneEditor: SceneEditing {
 
     var placedObjectSelection: PlacedObjectSelection? {
         interactionManager.selection
+    }
+
+    var selectedObject: (any PlacedSceneObject)? {
+        interactionManager.selectedObject
+    }
+
+    func handleTap(on entity: Entity?) -> Bool {
+        interactionManager.handleTap(on: entity)
     }
 
     func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
