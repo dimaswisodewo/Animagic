@@ -94,7 +94,6 @@
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
 		A325CB986747E4815353D0D4 /* REDALGAE8.png in Resources */ = {isa = PBXBuildFile; fileRef = B0A30EB36FD6F28660F44DFF /* REDALGAE8.png */; };
-		A405354C7A44B8A4BBF90BD3 /* Underwater_Showcase 2.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */; };
 		A724D69030AA2E0E9B42D549 /* REDALGAE26.png in Resources */ = {isa = PBXBuildFile; fileRef = C03666EE74021E23002F12B2 /* REDALGAE26.png */; };
 		A85B8EA1DEA6EF13598AEBC0 /* Textures\Clam_Tris_Diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = FC400A6DBEF9D3DAAD4BD17F /* Textures\Clam_Tris_Diffuse.png */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
@@ -160,7 +159,6 @@
 		0BD8045BCAD9E1671E963650 /* REDALGAE15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE15.png; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
-		0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Underwater_Showcase 2.usdz"; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1097BE05DCADB25A22F18A96 /* REDALGAE34.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE34.png; sourceTree = "<group>"; };
 		1285306DF1C5ED5C1ED81E1A /* REDALGAE31.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = REDALGAE31.png; sourceTree = "<group>"; };
@@ -729,7 +727,6 @@
 				A7F710F439BF8B2277743917 /* tree_1.usdz */,
 				FFE91E948D71DDED6BB96298 /* Under_The_Sea 2.usdz */,
 				CE9A67AC83B932DEEFCAD6C0 /* Underwater_Lowpoly_Scene 2.usdz */,
-				0F74394D8064BF5073511EEB /* Underwater_Showcase 2.usdz */,
 				0E732AD75F0B14CC3DC9564D /* Underwater.skybox */,
 				6DF7A7DFF83BD70BABE31AF7 /* uploads-files-5014803-Clam 2.blend */,
 				15A5421E38029D45CB33C372 /* Red_Algaes 2 */,
@@ -805,7 +802,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */;
+			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -896,7 +893,6 @@
 				FF4D098E2C45F1706CF83781 /* Under_The_Sea 2.usdz in Resources */,
 				EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */,
 				91E0F791E855579D91B0ECFF /* Underwater_Lowpoly_Scene 2.usdz in Resources */,
-				A405354C7A44B8A4BBF90BD3 /* Underwater_Showcase 2.usdz in Resources */,
 				B97D8E02120768278D065C53 /* bubbles.usdz in Resources */,
 				40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */,
 				42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */,
@@ -997,7 +993,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = GQS6FW2LLL;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1101,7 +1097,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = GQS6FW2LLL;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
@@ -1187,7 +1183,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */ = {
+		74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5FD4AB81F197E396C2F4BADB /* Debug */,

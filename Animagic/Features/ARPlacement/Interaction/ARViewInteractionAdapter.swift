@@ -98,6 +98,10 @@ final class ARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 return
             }
             session = .translating
+            if let object = manager.selectedObject,
+               let projection = surfaceProjector.project(point, in: arView, for: object) {
+                manager.moveSelected(to: projection)
+            }
         case .changed:
             guard case .translating = session else {
                 return

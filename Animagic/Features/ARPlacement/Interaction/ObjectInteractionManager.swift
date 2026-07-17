@@ -10,16 +10,34 @@ import RealityKit
 
 @MainActor
 final class ObjectInteractionManager: ObjectInteractionManaging {
+    private enum TranslationMotion {
+        static let activeFrequency: Float = 20
+        static let settlingFrequency: Float = 14
+        static let maximumAcceleration: Float = 90
+        static let maximumSpeed: Float = 8
+        static let positionTolerance: Float = 0.002
+        static let velocityTolerance: Float = 0.01
+    }
+
     private enum Manipulation: Hashable {
         case translation
         case scale
         case rotation
     }
 
+    private struct TranslationState {
+        let objectID: UUID
+        var targetPosition: SIMD3<Float>
+        var velocity = SIMD3<Float>.zero
+        var grabOffset: SIMD3<Float>?
+        var isGestureActive = true
+    }
+
     private let registry: SceneObjectRegistry
     private var activeManipulations: Set<Manipulation> = []
     private var startingScale: SIMD3<Float>?
     private var startingOrientation: simd_quatf?
+    private var translationState: TranslationState?
 
     private(set) var selectedObjectID: UUID?
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)?
@@ -50,23 +68,81 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
     }
 
     func beginTranslation(on hitEntity: Entity?) -> Bool {
-        guard hitBelongsToSelection(hitEntity) else {
+        guard hitBelongsToSelection(hitEntity),
+              let selectedObject else {
             return false
         }
+        translationState = TranslationState(
+            objectID: selectedObject.id,
+            targetPosition: selectedObject.interactionRoot.position(relativeTo: nil)
+        )
         begin(.translation)
         return true
     }
 
     func moveSelected(to projection: SurfaceProjection) {
-        guard let selectedObject else {
+        guard let selectedObject,
+              var translationState,
+              translationState.objectID == selectedObject.id else {
             return
         }
-        selectedObject.interactionRoot.setPosition(projection.position, relativeTo: nil)
+
+        if translationState.grabOffset == nil {
+            translationState.grabOffset =
+                selectedObject.interactionRoot.position(relativeTo: nil) - projection.position
+        }
+        translationState.targetPosition = projection.position + (translationState.grabOffset ?? .zero)
+        self.translationState = translationState
         selectedObject.supportSurfaceNormal = simd_normalize(projection.normal)
     }
 
     func endTranslation() {
+        translationState?.isGestureActive = false
         end(.translation)
+    }
+
+    func update(deltaTime rawDeltaTime: Float) {
+        guard var translationState,
+              let object = registry.object(withID: translationState.objectID) else {
+            self.translationState = nil
+            return
+        }
+
+        let deltaTime = min(max(rawDeltaTime, 0), 1.0 / 30.0)
+        guard deltaTime > 0 else { return }
+
+        let currentPosition = object.interactionRoot.position(relativeTo: nil)
+        let displacement = translationState.targetPosition - currentPosition
+        let frequency = translationState.isGestureActive
+            ? TranslationMotion.activeFrequency
+            : TranslationMotion.settlingFrequency
+        let springAcceleration = displacement * frequency * frequency
+            - translationState.velocity * (2 * frequency)
+        let acceleration = springAcceleration.limited(
+            to: TranslationMotion.maximumAcceleration
+        )
+
+        translationState.velocity += acceleration * deltaTime
+        translationState.velocity = translationState.velocity.limited(
+            to: TranslationMotion.maximumSpeed
+        )
+        object.interactionRoot.setPosition(
+            currentPosition + translationState.velocity * deltaTime,
+            relativeTo: nil
+        )
+
+        let hasSettled = simd_length(displacement) <= TranslationMotion.positionTolerance
+            && simd_length(translationState.velocity) <= TranslationMotion.velocityTolerance
+        if !translationState.isGestureActive, hasSettled {
+            object.interactionRoot.setPosition(translationState.targetPosition, relativeTo: nil)
+            self.translationState = nil
+        } else {
+            self.translationState = translationState
+        }
+    }
+
+    func isMovingByDirectManipulation(_ objectID: UUID) -> Bool {
+        translationState?.objectID == objectID
     }
 
     func beginScale(on hitEntity: Entity?) -> Bool {
@@ -74,6 +150,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
               let selectedObject else {
             return false
         }
+        finishTranslationMotion()
         startingScale = selectedObject.interactionRoot.scale
         begin(.scale)
         return true
@@ -98,6 +175,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
               let selectedObject else {
             return false
         }
+        finishTranslationMotion()
         startingOrientation = selectedObject.interactionRoot.orientation(relativeTo: nil)
         begin(.rotation)
         return true
@@ -133,6 +211,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
               let object = registry.remove(id: selectedObjectID) else {
             return
         }
+        translationState = nil
         object.anchor.removeFromParent()
         object.setSelected(false)
         self.selectedObjectID = nil
@@ -148,6 +227,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         guard objectID != selectedObjectID else {
             return
         }
+        finishTranslationMotion()
         selectedObject?.setSelected(false)
         selectedObject?.setInteractionPaused(false)
         selectedObjectID = objectID
@@ -186,11 +266,29 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         return nil
     }
 
+    private func finishTranslationMotion() {
+        guard let translationState,
+              let object = registry.object(withID: translationState.objectID) else {
+            self.translationState = nil
+            return
+        }
+        object.interactionRoot.setPosition(translationState.targetPosition, relativeTo: nil)
+        self.translationState = nil
+    }
+
     private func notifySelectionChanged() {
         guard let selectedObject else {
             onSelectionChanged?(nil)
             return
         }
         onSelectionChanged?(selectedObject.selection)
+    }
+}
+
+private extension SIMD3 where Scalar == Float {
+    func limited(to maximumLength: Float) -> Self {
+        let length = simd_length(self)
+        guard length > maximumLength, length > 0 else { return self }
+        return self / length * maximumLength
     }
 }

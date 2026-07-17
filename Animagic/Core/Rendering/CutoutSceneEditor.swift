@@ -29,6 +29,21 @@ enum CutoutPlacementResult: Equatable {
 
 @MainActor
 final class CutoutSceneEditor: SceneEditing {
+    private struct GroupMotionProfile {
+        let maximumSpeed: Float
+        let maximumAcceleration: Float
+        let responseRate: Float
+        let turnRate: Float
+        let baseDelay: Float
+    }
+
+    private struct GroupMotionState {
+        var velocity = SIMD3<Float>.zero
+        var formationOffset = SIMD3<Float>.zero
+        var responseDelay: Float = 0
+        var elapsed: Float = 0
+    }
+
     var cutoutAssets: [CutoutAsset]
     var selectedCutoutID: CutoutAsset.ID?
     var selectedAnimalArchetype: AnimalArchetype
@@ -54,6 +69,9 @@ final class CutoutSceneEditor: SceneEditing {
     private let configuration: CutoutSceneConfiguration
     private var simulationAccumulator: Float = 0
     private var isLoadingModel = false
+    private var groupMotionStates: [UUID: GroupMotionState] = [:]
+    private var formationObjectIDs: [UUID] = []
+    private var isGroupMotionActive = false
 
     var objectCount: Int { registry.objects.count }
     var maximumObjectCount: Int? { configuration.maximumObjectCount }
@@ -148,32 +166,10 @@ final class CutoutSceneEditor: SceneEditing {
 
     func update(deltaTime: Float) {
         guard !registry.isEmpty else { return }
-        
-        // Handle swarming behavior towards hover target
-        if let target = hoverTargetPosition {
-            registry.forEach { object in
-                let currentPos = object.anchor.position
-                let offset = target - currentPos
-                let dist = simd_length(offset)
-                
-                if dist > 0.01 {
-                    // Exponential smoothing for position (feels like a spring)
-                    let blendPos = 1 - exp(-3.0 * deltaTime)
-                    object.anchor.position += offset * blendPos
-                    
-                    // Only rotate if far enough to avoid jitter
-                    if dist > 0.05 {
-                        let targetYaw = atan2(offset.x, offset.z)
-                        let blendRot = 1 - exp(-8.0 * deltaTime)
-                        object.interactionRoot.orientation = simd_slerp(
-                            object.interactionRoot.orientation,
-                            simd_quatf(angle: targetYaw, axis: [0, 1, 0]),
-                            blendRot
-                        )
-                    }
-                }
-            }
-        }
+
+        let motionDeltaTime = min(max(deltaTime, 0), 1.0 / 30.0)
+        interactionManager.update(deltaTime: motionDeltaTime)
+        updateGroupMotion(deltaTime: motionDeltaTime)
         
         guard let simulationInterval = configuration.simulationInterval else {
             registry.forEach { $0.update(deltaTime: deltaTime) }
@@ -184,6 +180,272 @@ final class CutoutSceneEditor: SceneEditing {
         let step = min(simulationAccumulator, 1.0 / 15.0)
         simulationAccumulator = 0
         registry.forEach { $0.update(deltaTime: step) }
+    }
+
+    private func updateGroupMotion(deltaTime: Float) {
+        let objects = registry.objects.sorted { $0.id.uuidString < $1.id.uuidString }
+        let objectIDs = objects.map(\.id)
+        let objectIDSet = Set(objectIDs)
+        groupMotionStates = groupMotionStates.filter { objectIDSet.contains($0.key) }
+
+        guard let target = hoverTargetPosition else {
+            isGroupMotionActive = false
+            formationObjectIDs.removeAll()
+            settleGroupMotion(objects: objects, deltaTime: deltaTime)
+            return
+        }
+
+        if !isGroupMotionActive || formationObjectIDs != objectIDs {
+            configureFormation(for: objects)
+            isGroupMotionActive = true
+            formationObjectIDs = objectIDs
+        }
+
+        let positions = Dictionary(uniqueKeysWithValues: objects.map {
+            ($0.id, $0.interactionRoot.position(relativeTo: nil))
+        })
+        let scale = sceneMotionScale
+        let separationRadius = formationSpacing * 0.9
+
+        for object in objects {
+            guard !interactionManager.isMovingByDirectManipulation(object.id),
+                  var state = groupMotionStates[object.id],
+                  let currentPosition = positions[object.id] else {
+                groupMotionStates[object.id]?.velocity = .zero
+                continue
+            }
+
+            state.elapsed += deltaTime
+            guard state.elapsed >= state.responseDelay else {
+                groupMotionStates[object.id] = state
+                continue
+            }
+
+            let profile = motionProfile(for: object)
+            let targetPosition = target + state.formationOffset
+            let displacement = targetPosition - currentPosition
+            let distance = simd_length(displacement)
+            let arrivalRadius = max(formationSpacing * 0.3, 0.045 * scale)
+            let slowdownRadius = max(arrivalRadius * 4.5, profile.maximumSpeed * scale * 0.55)
+            let speedRatio = easedUnit(distance / slowdownRadius)
+            let desiredSpeed = distance <= arrivalRadius * 0.2
+                ? 0
+                : profile.maximumSpeed * scale * speedRatio
+            let desiredVelocity = normalized(displacement) * desiredSpeed
+            var acceleration = (desiredVelocity - state.velocity) * profile.responseRate
+            acceleration += separationAcceleration(
+                for: object.id,
+                at: currentPosition,
+                positions: positions,
+                radius: separationRadius,
+                strength: profile.maximumAcceleration * scale * 0.8
+            )
+            acceleration = limited(
+                acceleration,
+                to: profile.maximumAcceleration * scale
+            )
+
+            state.velocity += acceleration * deltaTime
+            state.velocity = limited(
+                state.velocity,
+                to: profile.maximumSpeed * scale
+            )
+            if distance <= arrivalRadius {
+                state.velocity *= exp(-5.5 * deltaTime)
+            }
+
+            object.interactionRoot.setPosition(
+                currentPosition + state.velocity * deltaTime,
+                relativeTo: nil
+            )
+            updateFacingDirection(
+                of: object,
+                velocity: state.velocity,
+                turnRate: profile.turnRate,
+                deltaTime: deltaTime
+            )
+            groupMotionStates[object.id] = state
+        }
+    }
+
+    private func configureFormation(for objects: [any PlacedSceneObject]) {
+        let goldenAngle = Float.pi * (3 - sqrt(Float(5)))
+        for (index, object) in objects.enumerated() {
+            var state = groupMotionStates[object.id] ?? GroupMotionState()
+            let slot = Float(index)
+            let radius = index == 0 ? 0 : formationSpacing * sqrt(slot)
+            let angle = goldenAngle * slot
+            state.formationOffset = [cos(angle) * radius, 0, sin(angle) * radius]
+            state.responseDelay = motionProfile(for: object).baseDelay
+                + Float(index % 4) * 0.025
+            state.elapsed = 0
+            groupMotionStates[object.id] = state
+        }
+    }
+
+    private func settleGroupMotion(
+        objects: [any PlacedSceneObject],
+        deltaTime: Float
+    ) {
+        for object in objects {
+            guard !interactionManager.isMovingByDirectManipulation(object.id),
+                  var state = groupMotionStates[object.id] else {
+                continue
+            }
+
+            state.velocity *= exp(-9 * deltaTime)
+            if simd_length_squared(state.velocity) < 0.000004 {
+                state.velocity = .zero
+            } else {
+                let currentPosition = object.interactionRoot.position(relativeTo: nil)
+                object.interactionRoot.setPosition(
+                    currentPosition + state.velocity * deltaTime,
+                    relativeTo: nil
+                )
+            }
+            groupMotionStates[object.id] = state
+        }
+    }
+
+    private func separationAcceleration(
+        for objectID: UUID,
+        at position: SIMD3<Float>,
+        positions: [UUID: SIMD3<Float>],
+        radius: Float,
+        strength: Float
+    ) -> SIMD3<Float> {
+        positions.reduce(into: SIMD3<Float>.zero) { result, entry in
+            guard entry.key != objectID else { return }
+            var offset = position - entry.value
+            offset.y = 0
+            let distance = simd_length(offset)
+            guard distance > 0.0001, distance < radius else { return }
+            result += offset / distance * (1 - distance / radius) * strength
+        }
+    }
+
+    private func updateFacingDirection(
+        of object: any PlacedSceneObject,
+        velocity: SIMD3<Float>,
+        turnRate: Float,
+        deltaTime: Float
+    ) {
+        var horizontalVelocity = velocity
+        horizontalVelocity.y = 0
+        guard simd_length_squared(horizontalVelocity) > 0.0001 else { return }
+
+        let targetYaw = atan2(horizontalVelocity.x, horizontalVelocity.z)
+        let blend = 1 - exp(-turnRate * deltaTime)
+        object.interactionRoot.setOrientation(
+            simd_slerp(
+                object.interactionRoot.orientation(relativeTo: nil),
+                simd_quatf(angle: targetYaw, axis: [0, 1, 0]),
+                blend
+            ),
+            relativeTo: nil
+        )
+    }
+
+    private func motionProfile(for object: any PlacedSceneObject) -> GroupMotionProfile {
+        guard case .doodle(let archetype) = object.selection.content else {
+            return GroupMotionProfile(
+                maximumSpeed: 0.72,
+                maximumAcceleration: 2.1,
+                responseRate: 4.8,
+                turnRate: 5,
+                baseDelay: 0.06
+            )
+        }
+
+        return switch archetype {
+        case .fish:
+            GroupMotionProfile(
+                maximumSpeed: 0.95,
+                maximumAcceleration: 2.6,
+                responseRate: 5.5,
+                turnRate: 6,
+                baseDelay: 0.03
+            )
+        case .bird:
+            GroupMotionProfile(
+                maximumSpeed: 1.2,
+                maximumAcceleration: 3.8,
+                responseRate: 6.5,
+                turnRate: 7.5,
+                baseDelay: 0.04
+            )
+        case .butterfly:
+            GroupMotionProfile(
+                maximumSpeed: 0.82,
+                maximumAcceleration: 2.3,
+                responseRate: 5.8,
+                turnRate: 8.5,
+                baseDelay: 0.12
+            )
+        case .cat:
+            GroupMotionProfile(
+                maximumSpeed: 1.05,
+                maximumAcceleration: 4.2,
+                responseRate: 7,
+                turnRate: 9,
+                baseDelay: 0.03
+            )
+        case .cow:
+            GroupMotionProfile(
+                maximumSpeed: 0.55,
+                maximumAcceleration: 1.35,
+                responseRate: 3.8,
+                turnRate: 3.6,
+                baseDelay: 0.12
+            )
+        case .rabbit:
+            GroupMotionProfile(
+                maximumSpeed: 1.25,
+                maximumAcceleration: 5.2,
+                responseRate: 7.5,
+                turnRate: 10,
+                baseDelay: 0.08
+            )
+        case .snake:
+            GroupMotionProfile(
+                maximumSpeed: 0.7,
+                maximumAcceleration: 1.8,
+                responseRate: 4.2,
+                turnRate: 4.5,
+                baseDelay: 0.1
+            )
+        case .crab:
+            GroupMotionProfile(
+                maximumSpeed: 0.62,
+                maximumAcceleration: 2,
+                responseRate: 5,
+                turnRate: 5.5,
+                baseDelay: 0.08
+            )
+        }
+    }
+
+    private var sceneMotionScale: Float {
+        max((configuration.physicalWidthOverride ?? 0.25) / 0.25, 1)
+    }
+
+    private var formationSpacing: Float {
+        max((configuration.physicalWidthOverride ?? 0.24) * 0.9, 0.18)
+    }
+
+    private func normalized(_ vector: SIMD3<Float>) -> SIMD3<Float> {
+        simd_length_squared(vector) > 0.000001 ? simd_normalize(vector) : .zero
+    }
+
+    private func limited(_ vector: SIMD3<Float>, to maximumLength: Float) -> SIMD3<Float> {
+        let length = simd_length(vector)
+        guard length > maximumLength, length > 0 else { return vector }
+        return vector / length * maximumLength
+    }
+
+    private func easedUnit(_ value: Float) -> Float {
+        let clamped = min(max(value, 0), 1)
+        return clamped * clamped * (3 - 2 * clamped)
     }
 
     var placedObjectSelection: PlacedObjectSelection? {
