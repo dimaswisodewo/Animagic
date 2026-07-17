@@ -40,6 +40,7 @@
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
 		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
+		815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */; };
 		8235E49425717B0E8D593972 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F1CE7084EE88134E097B8C /* MenuView.swift */; };
 		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
 		861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */; };
@@ -53,7 +54,6 @@
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
-		B00B00000000000000000002 /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00B00000000000000000001 /* NewARPlacementView.swift */; };
 		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
 		B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */; };
 		B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */; };
@@ -86,6 +86,7 @@
 
 /* Begin PBXFileReference section */
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
+		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
@@ -139,7 +140,6 @@
 		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
 		AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicApp.swift; sourceTree = "<group>"; };
 		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
-		B00B00000000000000000001 /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
@@ -461,9 +461,9 @@
 			isa = PBXGroup;
 			children = (
 				6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */,
-				B00B00000000000000000001 /* NewARPlacementView.swift */,
 				DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */,
 				7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */,
+				07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */,
 				1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */,
 				2BBA987867DEE41501405418 /* USDZModelPlacement.swift */,
 			);
@@ -611,7 +611,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
-				B00B00000000000000000002 /* NewARPlacementView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
@@ -653,6 +652,7 @@
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
 				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
 				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
+				815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */,
 				5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */,
 				BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */,
 				5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */,

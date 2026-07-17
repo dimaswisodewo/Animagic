@@ -14,7 +14,7 @@ struct CutoutSceneConfiguration {
     var maximumObjectCount: Int?
     var showsShadow: Bool
 
-    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: nil, showsShadow: false)
+    static let augmentedReality = Self(physicalWidthOverride: nil, simulationInterval: nil, maximumObjectCount: 20, showsShadow: false)
     static let virtualRoom = Self(physicalWidthOverride: 0.8, simulationInterval: nil, maximumObjectCount: 12, showsShadow: false)
 }
 
@@ -173,8 +173,19 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.setSelectedAnimalArchetype(archetype)
     }
 
-    func deleteSelectedObject() {
+    @discardableResult
+    func deleteSelectedObject() -> DeletedSceneObject? {
         interactionManager.deleteSelected()
+    }
+
+    func restoreDeletedObject(_ deletedObject: DeletedSceneObject) {
+        guard let arView else { return }
+        arView.scene.addAnchor(deletedObject.object.anchor)
+        interactionManager.restore(deletedObject)
+    }
+
+    func clearSelection() {
+        interactionManager.clearSelection()
     }
 
     private var selectedCutoutAsset: CutoutAsset? {
@@ -244,8 +255,7 @@ final class CutoutSceneEditor: SceneEditing {
             cameraTransform: cameraTransform,
             anchorTransform: transform
         )
-        registry.register(
-            PlacedCutout(
+        let placedCutout = PlacedCutout(
                 id: objectID,
                 anchor: anchor,
                 parts: cutout,
@@ -255,7 +265,8 @@ final class CutoutSceneEditor: SceneEditing {
                 initialRoll: spawnOrientation.roll,
                 supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
             )
-        )
+        registry.register(placedCutout)
+        interactionManager.selectObject(withID: objectID)
         return .placed
     }
 
@@ -310,6 +321,7 @@ final class CutoutSceneEditor: SceneEditing {
                     }
                     arView.scene.addAnchor(anchor)
                     self.registry.register(placedModel)
+                    self.interactionManager.selectObject(withID: objectID)
                     self.onPlacementResult?(.placed)
                 } catch {
                     self.onPlacementResult?(
