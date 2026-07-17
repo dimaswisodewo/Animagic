@@ -53,6 +53,7 @@
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
+		B00B00000000000000000002 /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00B00000000000000000001 /* NewARPlacementView.swift */; };
 		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
 		B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */; };
 		B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */; };
@@ -138,6 +139,7 @@
 		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
 		AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicApp.swift; sourceTree = "<group>"; };
 		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
+		B00B00000000000000000001 /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
@@ -459,6 +461,7 @@
 			isa = PBXGroup;
 			children = (
 				6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */,
+				B00B00000000000000000001 /* NewARPlacementView.swift */,
 				DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */,
 				7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */,
 				1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */,
@@ -608,6 +611,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
+				B00B00000000000000000002 /* NewARPlacementView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,

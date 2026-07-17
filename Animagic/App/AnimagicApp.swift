@@ -35,7 +35,7 @@ struct AnimagicApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NewARPlacementView()
                 .environment(router)
                 .environment(drawingSession)
                 .environmentObject(artworkStore)
