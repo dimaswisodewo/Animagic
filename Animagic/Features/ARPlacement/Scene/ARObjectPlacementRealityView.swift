@@ -16,7 +16,10 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     let spawnAnimalArchetype: AnimalArchetype
     let selectedObjectAnimalArchetype: AnimalArchetype?
     let selectedSpawnMode: SpawnMode
+    let selectedContentType: PlacementContentType
+    let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var placementStatus: ARPlacementStatus
     let deleteRequestID: UUID?
     let retryRequestID: UUID?
     @Binding var sessionStatus: ARSessionStatus
@@ -27,11 +30,28 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
             selectedCutoutID: selectedCutoutID,
             selectedAnimalArchetype: spawnAnimalArchetype,
             selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
             onSelectionChanged: { selection in
-                placedObjectSelection = selection
+                Task { @MainActor in
+                    if placedObjectSelection != selection {
+                        placedObjectSelection = selection
+                    }
+                }
+            },
+            onPlacementStatusChanged: { status in
+                Task { @MainActor in
+                    if placementStatus != status {
+                        placementStatus = status
+                    }
+                }
             },
             onStatusChanged: { status in
-                sessionStatus = status
+                Task { @MainActor in
+                    if sessionStatus != status {
+                        sessionStatus = status
+                    }
+                }
             }
         )
     }
@@ -39,6 +59,19 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
         arView.automaticallyConfigureSession = false
+
+        let coaching = ARCoachingOverlayView()
+        coaching.goal = .horizontalPlane
+        coaching.session = arView.session
+        coaching.activatesAutomatically = true
+        coaching.translatesAutoresizingMaskIntoConstraints = false
+        arView.addSubview(coaching)
+        NSLayoutConstraint.activate([
+            coaching.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
+            coaching.trailingAnchor.constraint(equalTo: arView.trailingAnchor),
+            coaching.topAnchor.constraint(equalTo: arView.topAnchor),
+            coaching.bottomAnchor.constraint(equalTo: arView.bottomAnchor)
+        ])
 
         context.coordinator.runSession(on: arView)
         return arView
@@ -49,11 +82,28 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
         context.coordinator.selectedCutoutID = selectedCutoutID
         context.coordinator.selectedAnimalArchetype = spawnAnimalArchetype
         context.coordinator.selectedSpawnMode = selectedSpawnMode
+        context.coordinator.selectedContentType = selectedContentType
+        context.coordinator.selectedModelID = selectedModelID
         context.coordinator.onSelectionChanged = { selection in
-            placedObjectSelection = selection
+            Task { @MainActor in
+                if placedObjectSelection != selection {
+                    placedObjectSelection = selection
+                }
+            }
+        }
+        context.coordinator.onPlacementStatusChanged = { status in
+            Task { @MainActor in
+                if placementStatus != status {
+                    placementStatus = status
+                }
+            }
         }
         context.coordinator.onStatusChanged = { status in
-            sessionStatus = status
+            Task { @MainActor in
+                if sessionStatus != status {
+                    sessionStatus = status
+                }
+            }
         }
 
         if let selectedObjectAnimalArchetype,

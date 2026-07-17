@@ -41,7 +41,9 @@ final class CutoutEntityFactory {
     func makeEntity(
         from asset: CutoutAsset,
         archetype: AnimalArchetype,
-        objectID: UUID
+        objectID: UUID,
+        physicalWidth: Float? = nil,
+        showsShadow: Bool = true
     ) throws -> CutoutEntityParts {
         guard let cgImage = asset.image.cgImage else {
             throw CutoutEntityFactoryError.invalidImage
@@ -49,7 +51,7 @@ final class CutoutEntityFactory {
 
         let imageSize = asset.image.size
         let aspectRatio = Float(max(imageSize.width / max(imageSize.height, 1), 0.01))
-        let width = asset.defaultPhysicalWidth
+        let width = physicalWidth ?? asset.defaultPhysicalWidth
         let height = width / aspectRatio
         let phase = Float.random(in: 0...(2 * Float.pi))
         let textures = try textures(for: asset, cgImage: cgImage)
@@ -76,7 +78,7 @@ final class CutoutEntityFactory {
         }
         let frontEntity = ModelEntity(mesh: mesh, materials: [frontMaterial])
         frontEntity.position = [0, height / 2, 0.0005]
-        var shadowComp = GroundingShadowComponent(castsShadow: false)
+        let shadowComp = GroundingShadowComponent(castsShadow: false)
         frontEntity.components.set(shadowComp)
 
         let backEntity = ModelEntity(mesh: mesh, materials: [backMaterial])
@@ -112,7 +114,9 @@ final class CutoutEntityFactory {
 
         let rootEntity = Entity()
         rootEntity.addChild(bodyEntity)
-        let shadowEntity = try? shadowFactory.makeEntity(width: width, height: height)
+        let shadowEntity = showsShadow
+            ? try? shadowFactory.makeEntity(width: width, height: height)
+            : nil
         if let shadowEntity {
             rootEntity.addChild(shadowEntity)
         }

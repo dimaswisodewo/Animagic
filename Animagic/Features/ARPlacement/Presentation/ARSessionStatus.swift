@@ -2,6 +2,8 @@
 //  ARSessionStatus.swift
 //  Animagic
 //
+//  Created by MorpKnight on 17/07/26.
+//
 
 import Foundation
 
@@ -21,6 +23,19 @@ enum ARSessionStatus: Equatable {
         case .searching, .ready, .noSurface:
             false
         }
+    }
+
+    var allowsRetry: Bool {
+        switch self {
+        case .cameraDenied, .failed:
+            true
+        case .searching, .ready, .noSurface, .unsupported, .retrying:
+            false
+        }
+    }
+
+    var offersSettings: Bool {
+        self == .cameraDenied
     }
 
     var title: String {
@@ -53,7 +68,7 @@ enum ARSessionStatus: Equatable {
         case .unsupported:
             "This device doesn’t support the AR experience."
         case .cameraDenied:
-            "Allow camera access in Settings to place your doodle in AR."
+            "Allow camera access in Settings, then return here and retry AR."
         case .failed:
             "The camera session stopped unexpectedly."
         case .retrying:

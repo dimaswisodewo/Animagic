@@ -20,4 +20,5 @@ Pods/
 *.ipa
 *.dSYM.zip
 *.dSYM
+*.log
 docs/

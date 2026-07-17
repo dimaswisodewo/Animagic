@@ -18,7 +18,7 @@ struct CutoutAsset: Identifiable {
     let doodleOverrideLabel: String?
     let defaultPhysicalWidth: Float = 0.35
 
-    init(
+    nonisolated init(
         id: UUID = UUID(),
         sourceDrawingID: UUID? = nil,
         image: UIImage,

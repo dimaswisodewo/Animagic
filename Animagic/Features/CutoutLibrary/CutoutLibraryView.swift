@@ -9,7 +9,8 @@ import PhotosUI
 import SwiftUI
 
 struct CutoutLibraryView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(NavigationRouter.self) private var router
+    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @StateObject private var viewModel = CutoutLibraryViewModel()
     @State private var selectedPhotos: [PhotosPickerItem] = []
     @State private var showClearConfirmation = false
@@ -32,7 +33,7 @@ struct CutoutLibraryView: View {
         .navigationTitle("Cutout Library")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if !appState.cutoutLibrary.isEmpty {
+            if !artworkStore.cutoutLibrary.isEmpty {
                 Button("Clear") {
                     showClearConfirmation = true
                 }
@@ -41,7 +42,7 @@ struct CutoutLibraryView: View {
         .onChange(of: selectedPhotos) { _, newValue in
             Task {
                 let newAssets = await viewModel.processImages(from: newValue)
-                newAssets.forEach(appState.addCutout)
+                artworkStore.addCutouts(newAssets)
                 selectedPhotos.removeAll()
             }
         }
@@ -51,7 +52,7 @@ struct CutoutLibraryView: View {
             titleVisibility: .visible
         ) {
             Button("Clear All Cutouts", role: .destructive) {
-                recentlyCleared = appState.clearCutouts()
+                artworkStore.clearCutouts { recentlyCleared = $0 }
             }
         } message: {
             Text("This removes every cutout from your library. You can undo immediately.")
@@ -62,7 +63,7 @@ struct CutoutLibraryView: View {
                     Text("Library cleared")
                     Spacer()
                     Button("Undo") {
-                        appState.restoreCutouts(recentlyCleared)
+                        artworkStore.restoreCutouts(recentlyCleared)
                         recentlyCleared.removeAll()
                     }
                 }
@@ -105,7 +106,7 @@ struct CutoutLibraryView: View {
 
     @ViewBuilder
     private var librarySection: some View {
-        if appState.cutoutLibrary.isEmpty {
+        if artworkStore.cutoutLibrary.isEmpty {
             ContentUnavailableView(
                 "No Cutouts Yet",
                 systemImage: "photo.on.rectangle",
@@ -114,8 +115,8 @@ struct CutoutLibraryView: View {
             .frame(maxWidth: .infinity, minHeight: 280)
         } else {
             VStack(alignment: .leading, spacing: 16) {
-                NavigationLink {
-                    ARObjectPlacementView(cutoutAssets: appState.cutoutLibrary)
+                Button {
+                    router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.first?.id))
                 } label: {
                     Label("Open AR Library", systemImage: "arkit")
                         .frame(maxWidth: .infinity)
@@ -126,15 +127,15 @@ struct CutoutLibraryView: View {
                     .font(.headline)
 
                 LazyVGrid(columns: columns, spacing: 14) {
-                    ForEach(appState.cutoutLibrary) { cutoutAsset in
+                    ForEach(artworkStore.cutoutLibrary) { cutoutAsset in
                         CutoutLibraryCell(
                             cutoutAsset: cutoutAsset,
-                            allCutouts: appState.cutoutLibrary,
+                            allCutouts: artworkStore.cutoutLibrary,
                             onRemove: {
-                                appState.removeCutout(cutoutAsset)
+                                artworkStore.removeCutout(cutoutAsset)
                             },
                             onClassificationOverride: { label in
-                                appState.updateCutoutOverride(id: cutoutAsset.id, label: label)
+                                artworkStore.updateCutoutOverride(id: cutoutAsset.id, label: label)
                             }
                         )
                     }

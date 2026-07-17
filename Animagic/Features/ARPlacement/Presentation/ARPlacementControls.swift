@@ -7,27 +7,96 @@
 
 import SwiftUI
 
+/// Sleek floating HUD for contextual placement instructions
 struct ARInstructionBanner: View {
-    let status: ARSessionStatus
+    let contentType: PlacementContentType
     let spawnMode: SpawnMode
+    let status: ARPlacementStatus
+    let sessionStatus: ARSessionStatus?
+
+    init(
+        contentType: PlacementContentType,
+        spawnMode: SpawnMode,
+        status: ARPlacementStatus,
+        sessionStatus: ARSessionStatus? = nil
+    ) {
+        self.contentType = contentType
+        self.spawnMode = spawnMode
+        self.status = status
+        self.sessionStatus = sessionStatus
+    }
+
+    private var title: String {
+        if let sessionStatus {
+            return sessionStatus.title
+        }
+        switch status {
+        case .searching: return "Scanning Surface"
+        case .ready: return "Surface Found"
+        case .loading: return "Loading Model"
+        case .placed: return "Placed"
+        case .limited, .failed: return "Scanning Surface"
+        }
+    }
+
+    private var detail: String {
+        if let sessionStatus {
+            if sessionStatus == .ready {
+                return placementInstruction
+            }
+            return sessionStatus.message
+        }
+        switch status {
+        case .loading(let message), .limited(let message), .failed(let message): return message
+        default: return placementInstruction
+        }
+    }
+
+    private var placementInstruction: String {
+        contentType == .model
+            ? "Tap floor to place"
+            : spawnMode == .plane ? "Tap floor to spawn" : "Tap anywhere to spawn"
+    }
+
+    private var statusIcon: String {
+        if let sessionStatus {
+            return sessionStatus.systemImageName
+        }
+        switch status {
+        case .ready: return "checkmark.circle.fill"
+        case .loading: return "hourglass"
+        case .placed: return "checkmark.circle"
+        default: return "viewfinder"
+        }
+    }
+
+    private var statusTint: Color {
+        if let sessionStatus {
+            return sessionStatus.tint
+        }
+        return status == .ready ? .green : .accentColor
+    }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: status.systemImageName)
-                .font(.title3)
-                .foregroundStyle(status.tint)
+        HStack(spacing: 8) {
+            Image(systemName: statusIcon)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(statusTint)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(status.title)
-                .font(.headline)
-                Text(status == .ready ? spawnMode.instruction : status.message)
-                    .font(.subheadline)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.caption2.bold())
+                    .foregroundStyle(.secondary)
+                Text(detail)
+                    .font(.caption.bold())
+                    .foregroundStyle(.primary)
             }
         }
-        .padding(12)
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 6)
     }
 }
 
@@ -49,6 +118,7 @@ private extension ARSessionStatus {
 struct ARSessionStatusOverlay: View {
     let status: ARSessionStatus
     let onRetry: () -> Void
+    let onOpenSettings: () -> Void
     let onBack: () -> Void
 
     var body: some View {
@@ -73,7 +143,16 @@ struct ARSessionStatusOverlay: View {
                 if status == .retrying {
                     ProgressView()
                         .controlSize(.small)
-                } else {
+                } else if status.offersSettings {
+                    Button("Open Settings", action: onOpenSettings)
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityHint("Allow camera access before returning to AR.")
+
+                    if status.allowsRetry {
+                        Button("Retry", action: onRetry)
+                            .buttonStyle(.bordered)
+                    }
+                } else if status.allowsRetry {
                     Button("Retry", action: onRetry)
                         .buttonStyle(.borderedProminent)
                 }
@@ -92,43 +171,88 @@ struct ARSessionStatusOverlay: View {
     }
 }
 
-struct SpawnModePicker: View {
-    @Binding var selection: SpawnMode
+/// Compact segmented custom control for Content Type switching
+struct PlacementContentTypePicker: View {
+    @Binding var selection: PlacementContentType
 
     var body: some View {
-        HStack(spacing: 10) {
-            ForEach(SpawnMode.allCases) { mode in
+        HStack(spacing: 0) {
+            ForEach(PlacementContentType.allCases) { type in
                 Button {
-                    selection = mode
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selection = type
+                    }
                 } label: {
-                    Label(mode.title, systemImage: mode.systemImageName)
-                        .font(.caption)
+                    Text(type.title)
+                        .font(.caption.bold())
                         .frame(maxWidth: .infinity)
-                        .frame(height: 38)
-                        .foregroundStyle(selection == mode ? Color.accentColor : Color.primary)
-                        .background(Color(.secondarySystemBackground))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selection == mode ? Color.accentColor : Color.clear, lineWidth: 3)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(.vertical, 8)
+                        .background(selection == type ? Color.accentColor : Color.clear)
+                        .foregroundStyle(selection == type ? .white : .primary)
+                        .clipShape(Capsule())
                 }
-                .buttonStyle(.plain)
             }
         }
-        .padding(10)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(2)
+        .background(Color(.systemGroupedBackground).opacity(0.8))
+        .clipShape(Capsule())
+        .frame(maxWidth: 220)
     }
 }
 
+/// Lightweight message when doodle library is empty
+struct EmptyDoodleLibraryMessage: View {
+    var body: some View {
+        Text("No cutouts yet. Open the Canvas to draw!")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity)
+    }
+}
+
+/// Minimalist USDZ 3D Model picker carousel
+struct USDZModelPicker: View {
+    @Binding var selection: PlaceableUSDZModel.ID?
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(PlaceableUSDZModel.all) { model in
+                    Button {
+                        selection = model.id
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: model.systemImageName)
+                                .font(.title3)
+                                .frame(width: 44, height: 44)
+                                .background(selection == model.id ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
+                                .clipShape(Circle())
+                            Text(model.title)
+                                .font(.system(size: 10, weight: .medium))
+                                .lineLimit(1)
+                        }
+                        .foregroundStyle(selection == model.id ? Color.accentColor : Color.primary)
+                        .frame(width: 72)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+        }
+    }
+}
+
+/// Compact cutout (doodle) carousel picker
 struct CutoutPicker: View {
     let assets: [CutoutAsset]
     @Binding var selection: CutoutAsset.ID?
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+            HStack(spacing: 12) {
                 ForEach(assets) { asset in
                     Button {
                         selection = asset.id
@@ -136,79 +260,53 @@ struct CutoutPicker: View {
                         Image(uiImage: asset.image)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 64, height: 64)
-                            .padding(6)
-                            .background(Color(.secondarySystemBackground))
+                            .frame(width: 42, height: 42)
+                            .padding(4)
+                            .background(selection == asset.id ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
                             .overlay {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(selection == asset.id ? Color.accentColor : Color.clear, lineWidth: 3)
+                                Circle()
+                                    .stroke(selection == asset.id ? Color.accentColor : Color.clear, lineWidth: 2)
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(10)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
         }
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-struct AnimalArchetypePicker: View {
-    @Binding var selection: AnimalArchetype
-
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(AnimalArchetype.allCases) { archetype in
-                    Button {
-                        selection = archetype
-                    } label: {
-                        VStack(spacing: 6) {
-                            Image(systemName: archetype.systemImageName)
-                                .font(.headline)
-                            Text(archetype.title)
-                                .font(.caption)
-                                .multilineTextAlignment(.center)
-                        }
-                        .foregroundStyle(selection == archetype ? Color.accentColor : Color.primary)
-                        .frame(width: 110, height: 64)
-                        .background(Color(.secondarySystemBackground))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selection == archetype ? Color.accentColor : Color.clear, lineWidth: 3)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(10)
-        }
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
-
+/// Floating action capsule when an existing placed object is highlighted
 struct SelectedObjectToolbar: View {
+    let title: String
     let onDelete: () -> Void
 
     var body: some View {
-        HStack {
-            Label("Object selected", systemImage: "checkmark.circle.fill")
-                .font(.caption)
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(Color.accentColor)
+                .font(.footnote)
 
-            Spacer()
+            Text(title)
+                .font(.caption.bold())
+
+            Divider()
+                .frame(height: 14)
+                .background(Color.secondary.opacity(0.3))
 
             Button(role: .destructive, action: onDelete) {
-                Label("Delete", systemImage: "trash")
+                Image(systemName: "trash.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.plain)
         }
-        .padding(10)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(Capsule())
+        .shadow(color: .black.opacity(0.15), radius: 6)
     }
 }

@@ -14,7 +14,7 @@ protocol SurfaceProjecting {
     func project(
         _ point: CGPoint,
         in arView: ARView,
-        for object: PlacedCutout
+        for object: any PlacedSceneObject
     ) -> SurfaceProjection?
 }
 
@@ -22,17 +22,17 @@ struct ARSurfaceProjector: SurfaceProjecting {
     func project(
         _ point: CGPoint,
         in arView: ARView,
-        for object: PlacedCutout
+        for object: any PlacedSceneObject
     ) -> SurfaceProjection? {
         let existing = arView.raycast(
             from: point,
             allowing: .existingPlaneGeometry,
-            alignment: .any
+            alignment: .horizontal
         ).first
         let result = existing ?? arView.raycast(
             from: point,
             allowing: .estimatedPlane,
-            alignment: .any
+            alignment: .horizontal
         ).first
 
         guard let result else {
@@ -51,13 +51,14 @@ struct ARSurfaceProjector: SurfaceProjecting {
 
 struct NonARPlaneProjector: SurfaceProjecting {
     let planeTransform: simd_float4x4
+    var horizontalBounds: ClosedRange<Float>? = nil
 
-    func project(
-        _ point: CGPoint,
-        in arView: ARView,
-        for object: PlacedCutout
-    ) -> SurfaceProjection? {
+    func project(_ point: CGPoint, in arView: ARView) -> SurfaceProjection? {
         guard let position = arView.unproject(point, ontoPlane: planeTransform) else {
+            return nil
+        }
+        if let horizontalBounds,
+           (!horizontalBounds.contains(position.x) || !horizontalBounds.contains(position.z)) {
             return nil
         }
         return SurfaceProjection(
@@ -68,5 +69,13 @@ struct NonARPlaneProjector: SurfaceProjecting {
                 planeTransform.columns.2.z
             ])
         )
+    }
+
+    func project(
+        _ point: CGPoint,
+        in arView: ARView,
+        for object: any PlacedSceneObject
+    ) -> SurfaceProjection? {
+        project(point, in: arView)
     }
 }

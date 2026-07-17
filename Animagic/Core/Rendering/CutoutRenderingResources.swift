@@ -10,7 +10,7 @@ import RealityKit
 import UIKit
 
 enum DenseCutoutMesh {
-    static let subdivisions = 32
+    static let subdivisions = 20
 
     static func generate(width: Float, height: Float) throws -> MeshResource {
         let columns = subdivisions + 1
@@ -88,14 +88,10 @@ enum CutoutDeformationMaterial {
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let library = device.makeDefaultLibrary() else {
-            throw CutoutDeformationError.metalLibraryUnavailable
-        }
-
         let texture = try TextureResource(image: image, options: .init(semantic: .color))
         return try make(texture: texture, archetype: archetype, phase: phase, faceDirection: faceDirection)
     }
+
 }
 
 private enum CutoutDeformationError: Error {
