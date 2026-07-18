@@ -35,8 +35,7 @@ void cutoutGeometryModifier(realitykit::geometry_parameters params)
         archetype < 3.5 ? 3.8 :
         archetype < 4.5 ? 2.0 :
         archetype < 5.5 ? 2.7 :
-        archetype < 6.5 ? 3.2 :
-        archetype < 7.5 ? 6.5 : 2.6;
+        archetype < 6.5 ? 3.2 : 6.5;
     float cadence = behavior < 0.5 ? 1.0 :
         behavior < 1.5 ? 1.75 :
         behavior < 2.5 ? 0.55 : 0.18;
@@ -100,14 +99,12 @@ void cutoutGeometryModifier(realitykit::geometry_parameters params)
         offset.y += slither * 0.010 * bodyWeight;
         offset.y += secondary * 0.004 * edgeFalloff;
         offset.z += (slither * 0.014 + secondary * 0.007) * bodyWeight;
-    } else if (archetype < 7.5) {
+    } else {
         float footfall = sin((uv.x * 17.0) + phase);
         float shellWeight = 1.0 - smoothstep(0.15, 1.0, abs(centered.y));
         offset.x += footfall * (1.0 - uv.y) * 0.007 * bodyWeight;
         offset.z += sin(phase * 0.5) * shellWeight * 0.010 * bodyWeight;
         offset.z += sin(phase * 1.7 + centered.x * 2.0) * shellWeight * 0.004 * edgeFalloff;
-    } else {
-        offset.z += breathing * 0.003 * bodyWeight;
     }
 
     offset *= activity;

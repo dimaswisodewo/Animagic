@@ -23,7 +23,7 @@
 		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
-		4E7A1B2C3D4E5F60718293A4 /* ARSessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */; };
+
 		52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */; };
@@ -149,7 +149,7 @@
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
-		C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSessionStatus.swift; sourceTree = "<group>"; };
+
 		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		D8131A446EE341BA3133E93A /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = fishs.usdz; sourceTree = "<group>"; };
@@ -530,7 +530,7 @@
 			children = (
 				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
 				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
-				C3D4E5F60718293A4B5C6D7E /* ARSessionStatus.swift */,
+
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -622,7 +622,7 @@
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
-				4E7A1B2C3D4E5F60718293A4 /* ARSessionStatus.swift in Sources */,
+
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,

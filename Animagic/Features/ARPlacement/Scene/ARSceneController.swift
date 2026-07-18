@@ -6,7 +6,6 @@
 //
 
 import ARKit
-import AVFoundation
 import RealityKit
 import UIKit
 
@@ -48,14 +47,9 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
     private var displayLink: CADisplayLink?
     private var lastFrameTimestamp: CFTimeInterval?
     private let sceneEditor: CutoutSceneEditor
-    private var detectedPlaneIDs: Set<UUID> = []
-    private var statusResetWorkItem: DispatchWorkItem?
     var handledDeleteRequestID: UUID?
-    var handledRetryRequestID: UUID?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
-    private(set) var sessionStatus: ARSessionStatus = .searching
-    var onStatusChanged: ((ARSessionStatus) -> Void)?
 
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? {
         didSet {
@@ -72,8 +66,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         selectedModelID: PlaceableUSDZModel.ID?,
         entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
-        onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
-        onStatusChanged: ((ARSessionStatus) -> Void)? = nil
+        onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
@@ -87,7 +80,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         )
         self.onSelectionChanged = onSelectionChanged
         self.onPlacementStatusChanged = onPlacementStatusChanged
-        self.onStatusChanged = onStatusChanged
         super.init()
         sceneEditor.onSelectionChanged = onSelectionChanged
         sceneEditor.onPlacementResult = { [weak self] result in
@@ -96,32 +88,14 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
     }
 
     func runSession(on arView: ARView) {
-        statusResetWorkItem?.cancel()
-        statusResetWorkItem = nil
-        detectedPlaneIDs.removeAll()
-
         guard ARWorldTrackingConfiguration.isSupported else {
-            publishStatus(.unsupported)
-            return
-        }
-
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .denied, .restricted:
-            publishStatus(.cameraDenied)
-            return
-        case .authorized, .notDetermined:
-            break
-        @unknown default:
-            publishStatus(.cameraDenied)
             return
         }
 
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal, .vertical]
+        configuration.planeDetection = [.horizontal]
         arView.session.delegate = self
         configureSceneOcclusion(on: arView, with: configuration)
-        sceneEditor.detachInteraction(clearSelection: false)
-        publishStatus(.searching)
         arView.session.run(
             configuration,
             options: [.resetTracking, .removeExistingAnchors]
@@ -139,81 +113,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         }
         startAnimationLoop(in: arView)
         updateStatus(.searching)
-    }
-
-    func retrySession(on arView: ARView) {
-        publishStatus(.retrying)
-        stopAnimationLoop()
-        arView.session.pause()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self, weak arView] in
-            guard let self, let arView else { return }
-            self.runSession(on: arView)
-        }
-    }
-
-    private func publishStatus(_ status: ARSessionStatus) {
-        guard sessionStatus != status else { return }
-        sessionStatus = status
-        onStatusChanged?(status)
-    }
-
-    private func updateSurfaceStatus() {
-        publishStatus(detectedPlaneIDs.isEmpty ? .searching : .ready)
-    }
-
-    private func reportNoSurface() {
-        publishStatus(.noSurface)
-        updateStatus(.failed("No surface found. Try pointing at a floor, table, or wall."))
-        statusResetWorkItem?.cancel()
-        let workItem = DispatchWorkItem { [weak self] in
-            guard let self, !self.sessionStatus.isBlockingOverlay else { return }
-            self.updateSurfaceStatus()
-            self.updateStatus(.searching)
-        }
-        statusResetWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5, execute: workItem)
-    }
-
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        let nsError = error as NSError
-        let cameraUnauthorized = nsError.domain == ARErrorDomain && nsError.code == 103
-        if cameraStatus == .denied || cameraStatus == .restricted || cameraUnauthorized {
-            publishStatus(.cameraDenied)
-        } else {
-            publishStatus(.failed)
-        }
-    }
-
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        let planeIDs = anchors.compactMap { anchor in
-            anchor is ARPlaneAnchor ? anchor.identifier : nil
-        }
-        if !planeIDs.isEmpty {
-            detectedPlaneIDs.formUnion(planeIDs)
-            updateSurfaceStatus()
-        }
-    }
-
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-        let planeIDs = anchors.compactMap { anchor in
-            anchor is ARPlaneAnchor ? anchor.identifier : nil
-        }
-        if !planeIDs.isEmpty {
-            detectedPlaneIDs.formUnion(planeIDs)
-            updateSurfaceStatus()
-        }
-    }
-
-    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
-        let planeIDs = anchors.compactMap { anchor in
-            anchor is ARPlaneAnchor ? anchor.identifier : nil
-        }
-        if !planeIDs.isEmpty {
-            detectedPlaneIDs.subtract(planeIDs)
-            updateSurfaceStatus()
-        }
     }
 
     private func configureSceneOcclusion(
@@ -253,7 +152,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         )
 
         guard let result = estimatedPlaneResult else {
-            reportNoSurface()
+            updateStatus(.failed("No horizontal surface found. Try moving to a clearer area."))
             return
         }
 
@@ -277,7 +176,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         arView.raycast(
             from: location,
             allowing: target,
-            alignment: .any
+            alignment: .horizontal
         )
         .first
     }
@@ -312,8 +211,6 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
     }
 
     func stopAnimationLoop() {
-        statusResetWorkItem?.cancel()
-        statusResetWorkItem = nil
         sceneEditor.detachInteraction()
         displayLink?.invalidate()
         displayLink = nil
@@ -333,20 +230,9 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
 
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         switch camera.trackingState {
-        case .normal:
-            updateStatus(.ready)
-            updateSurfaceStatus()
-        case .limited(let reason):
-            updateStatus(.limited(reason.message))
-            if detectedPlaneIDs.isEmpty {
-                publishStatus(.searching)
-            }
-        case .notAvailable:
-            updateStatus(.limited("Camera tracking is unavailable."))
-            publishStatus(.failed)
-        @unknown default:
-            updateStatus(.limited("Camera tracking is unavailable."))
-            publishStatus(.failed)
+        case .normal: updateStatus(.ready)
+        case .limited(let reason): updateStatus(.limited(reason.message))
+        case .notAvailable: updateStatus(.limited("Camera tracking is unavailable."))
         }
     }
 

@@ -7,23 +7,18 @@
 
 import Foundation
 import SwiftUI
-import UIKit
 
 struct ARObjectPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
     let cutoutAssets: [CutoutAsset]
     @State private var selectedCutoutID: CutoutAsset.ID?
-    @State private var selectedAnimalArchetype = AnimalArchetype.generic
+    @State private var selectedAnimalArchetype = AnimalArchetype.fish
     @State private var selectedSpawnMode = SpawnMode.plane
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var deleteRequestID: UUID?
     @State private var placementStatus: ARPlacementStatus = .searching
-    @State private var retryRequestID: UUID?
-    @State private var sessionStatus: ARSessionStatus = .searching
 
     init(cutoutAssets: [CutoutAsset], initialCutoutID: CutoutAsset.ID? = nil) {
         self.cutoutAssets = cutoutAssets
@@ -32,7 +27,7 @@ struct ARObjectPlacementView: View {
         _selectedAnimalArchetype = State(
             initialValue: Self.suggestedArchetype(
                 for: cutoutAssets.first(where: { $0.id == selectedID })
-            ) ?? .generic
+            ) ?? .fish
         )
     }
 
@@ -48,9 +43,7 @@ struct ARObjectPlacementView: View {
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
                 placementStatus: $placementStatus,
-                deleteRequestID: deleteRequestID,
-                retryRequestID: retryRequestID,
-                sessionStatus: $sessionStatus
+                deleteRequestID: deleteRequestID
             )
             .ignoresSafeArea()
 
@@ -59,8 +52,7 @@ struct ARObjectPlacementView: View {
                 ARInstructionBanner(
                     contentType: selectedContentType,
                     spawnMode: selectedSpawnMode,
-                    status: placementStatus,
-                    sessionStatus: sessionStatus
+                    status: placementStatus
                 )
                 .padding(.top, 10)
                 Spacer()
@@ -91,7 +83,7 @@ struct ARObjectPlacementView: View {
                                 .background(Color.accentColor.opacity(0.12))
                                 .clipShape(Circle())
                         }
-
+                        
                         // Compact Archetype Dropdown
                         Menu {
                             Picker("Archetype", selection: archetypeSelection) {
@@ -110,7 +102,7 @@ struct ARObjectPlacementView: View {
                             .background(Color.primary.opacity(0.08))
                             .clipShape(Capsule())
                         }
-
+                        
                         // AI Label override menu
                         if let selectedAsset = selectedCutoutAsset {
                             Menu {
@@ -144,7 +136,7 @@ struct ARObjectPlacementView: View {
                 VStack(spacing: 8) {
                     PlacementContentTypePicker(selection: $selectedContentType)
                         .padding(.top, 6)
-
+                    
                     if selectedContentType == .doodle {
                         if cutoutAssets.isEmpty {
                             EmptyDoodleLibraryMessage()
@@ -161,33 +153,25 @@ struct ARObjectPlacementView: View {
                 .shadow(color: .black.opacity(0.15), radius: 10)
             }
             .padding()
-
-            if sessionStatus.isBlockingOverlay {
-                ARSessionStatusOverlay(
-                    status: sessionStatus,
-                    onRetry: { retryRequestID = UUID() },
-                    onOpenSettings: openCameraSettings,
-                    onBack: { dismiss() }
-                )
-                .zIndex(2)
-            }
         }
         .animation(.smooth(duration: 0.3), value: selectedContentType)
         .animation(.smooth(duration: 0.25), value: placedObjectSelection)
         .navigationTitle("AR Placement")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedCutoutID) { _, selectedID in
-            guard placedObjectSelection == nil else {
+            guard placedObjectSelection == nil,
+                  let suggested = Self.suggestedArchetype(
+                      for: cutoutAssets.first(where: { $0.id == selectedID })
+                  ) else {
                 return
             }
-            guard let suggested = Self.suggestedArchetype(for: asset(with: selectedID)) else { return }
             selectedAnimalArchetype = suggested
         }
         .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
-            guard placedObjectSelection == nil else {
+            guard placedObjectSelection == nil,
+                  let suggested = Self.suggestedArchetype(for: selectedCutoutAsset) else {
                 return
             }
-            guard let suggested = Self.suggestedArchetype(for: selectedCutoutAsset) else { return }
             selectedAnimalArchetype = suggested
         }
     }
@@ -201,11 +185,6 @@ struct ARObjectPlacementView: View {
             return cutoutAssets.first(where: { $0.id == selectedCutoutID })
         }
         return cutoutAssets.first
-    }
-
-    private func asset(with id: CutoutAsset.ID?) -> CutoutAsset? {
-        guard let id else { return nil }
-        return cutoutAssets.first { asset in asset.id == id }
     }
 
     private var archetypeSelection: Binding<AnimalArchetype> {
@@ -233,12 +212,5 @@ struct ARObjectPlacementView: View {
             doodleLabel: label,
             confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
         )
-    }
-
-    private func openCameraSettings() {
-        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
-            return
-        }
-        openURL(settingsURL)
     }
 }
