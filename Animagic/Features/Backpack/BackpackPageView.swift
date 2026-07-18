@@ -62,7 +62,10 @@ struct BackpackPageView: View {
                     Button {
                         router.push(.handdrawnDetail(drawing.id))
                     } label: {
-                        BackpackDrawingCard(drawing: drawing)
+                        BackpackDrawingCard(
+                            drawing: drawing,
+                            classificationError: artworkStore.classificationError(forDrawingID: drawing.id)
+                        )
                     }
                     .buttonStyle(.plain)
                 }

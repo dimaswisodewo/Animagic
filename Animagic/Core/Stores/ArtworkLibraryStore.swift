@@ -56,6 +56,14 @@ final class ArtworkLibraryStore: ObservableObject {
         return savedDrawings.first(where: { $0.id == id })
     }
 
+    func cutout(forDrawingID drawingID: UUID) -> CutoutAsset? {
+        cutoutLibrary.first { $0.sourceDrawingID == drawingID }
+    }
+
+    func classificationError(forDrawingID drawingID: UUID) -> String? {
+        cutout(forDrawingID: drawingID)?.doodleClassificationError
+    }
+
     func saveActiveDrawing(
         id: UUID?,
         name: String,
@@ -122,7 +130,15 @@ final class ArtworkLibraryStore: ObservableObject {
         onFailure: @escaping @MainActor () -> Void = {},
         onSuccess: @escaping @MainActor (SavedDrawing) -> Void
     ) {
-        guard var drawing = drawing(id: drawingID) else { return }
+        guard var drawing = drawing(id: drawingID) else {
+            onFailure()
+            persistenceAlert = PersistenceAlert(
+                title: "Artwork Couldn’t Be Updated",
+                message: "This draft is no longer available. Reload your artwork and try again.",
+                retry: { [weak self] in self?.reload() }
+            )
+            return
+        }
         drawing.doodleClassification = cutout.doodleClassification
         drawing.doodleOverrideLabel = cutout.doodleOverrideLabel
         let resolvedLabel = cutout.doodleOverrideLabel ?? cutout.doodleClassification?.label

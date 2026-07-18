@@ -14,8 +14,24 @@ struct ARInstructionBanner: View {
     let contentType: PlacementContentType
     let spawnMode: SpawnMode
     let status: ARPlacementStatus
+    let sessionStatus: ARSessionStatus?
+
+    init(
+        contentType: PlacementContentType,
+        spawnMode: SpawnMode,
+        status: ARPlacementStatus,
+        sessionStatus: ARSessionStatus? = nil
+    ) {
+        self.contentType = contentType
+        self.spawnMode = spawnMode
+        self.status = status
+        self.sessionStatus = sessionStatus
+    }
 
     private var title: String {
+        if let sessionStatus {
+            return sessionStatus.title
+        }
         switch status {
         case .searching: return "Scanning Surface"
         case .ready: return "Surface Found"
@@ -26,16 +42,28 @@ struct ARInstructionBanner: View {
     }
 
     private var detail: String {
+        if let sessionStatus {
+            if sessionStatus == .ready {
+                return placementInstruction
+            }
+            return sessionStatus.message
+        }
         switch status {
         case .loading(let message), .limited(let message), .failed(let message): return message
-        default:
-            return contentType == .model
-                ? "Tap floor to place"
-                : spawnMode == .plane ? "Tap floor to spawn" : "Tap anywhere to spawn"
+        default: return placementInstruction
         }
     }
 
+    private var placementInstruction: String {
+        contentType == .model
+            ? "Tap floor to place"
+            : spawnMode == .plane ? "Tap floor to spawn" : "Tap anywhere to spawn"
+    }
+
     private var statusIcon: String {
+        if let sessionStatus {
+            return sessionStatus.systemImageName
+        }
         switch status {
         case .ready: return "checkmark.circle.fill"
         case .loading: return "hourglass"
@@ -44,12 +72,19 @@ struct ARInstructionBanner: View {
         }
     }
 
+    private var statusTint: Color {
+        if let sessionStatus {
+            return sessionStatus.tint
+        }
+        return status == .ready ? .green : .accentColor
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: statusIcon)
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(status == .ready ? .green : .accentColor)
-            
+                .foregroundStyle(statusTint)
+
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
                     .font(.caption2.bold())
@@ -64,6 +99,77 @@ struct ARInstructionBanner: View {
         .background(.ultraThinMaterial)
         .clipShape(Capsule())
         .shadow(color: .black.opacity(0.12), radius: 6)
+    }
+}
+
+private extension ARSessionStatus {
+    var tint: Color {
+        switch self {
+        case .ready:
+            .green
+        case .noSurface:
+            .orange
+        case .unsupported, .cameraDenied, .failed:
+            .red
+        case .searching, .retrying:
+            .accentColor
+        }
+    }
+}
+
+struct ARSessionStatusOverlay: View {
+    let status: ARSessionStatus
+    let onRetry: () -> Void
+    let onOpenSettings: () -> Void
+    let onBack: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                Image(systemName: status.systemImageName)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(status.tint)
+
+                VStack(spacing: 6) {
+                    Text(status.title)
+                        .font(.title3.weight(.semibold))
+                    Text(status.message)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                }
+
+                if status == .retrying {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if status.offersSettings {
+                    Button("Open Settings", action: onOpenSettings)
+                        .buttonStyle(.borderedProminent)
+                        .accessibilityHint("Allow camera access before returning to AR.")
+
+                    if status.allowsRetry {
+                        Button("Retry", action: onRetry)
+                            .buttonStyle(.bordered)
+                    }
+                } else if status.allowsRetry {
+                    Button("Retry", action: onRetry)
+                        .buttonStyle(.borderedProminent)
+                }
+
+                Button("Back to Canvas", action: onBack)
+                    .buttonStyle(.bordered)
+            }
+            .padding(24)
+            .frame(maxWidth: 340)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .shadow(radius: 16)
+            .padding(24)
+        }
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -184,14 +290,14 @@ struct SelectedObjectToolbar: View {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(Color.accentColor)
                 .font(.footnote)
-            
+
             Text(title)
                 .font(.caption.bold())
-            
+
             Divider()
                 .frame(height: 14)
                 .background(Color.secondary.opacity(0.3))
-            
+
             Button(role: .destructive, action: onDelete) {
                 Image(systemName: "trash.fill")
                     .font(.footnote)
@@ -230,16 +336,45 @@ struct NewARStatusPill: View {
     }
 
     var body: some View {
+        NewARStatusPillContent(
+            title: content.title,
+            detail: content.detail,
+            icon: content.icon,
+            color: content.color
+        )
+    }
+}
+
+struct NewARSessionStatusPill: View {
+    let status: ARSessionStatus
+
+    var body: some View {
+        NewARStatusPillContent(
+            title: status.title,
+            detail: status.message,
+            icon: status.systemImageName,
+            color: status.tint
+        )
+    }
+}
+
+private struct NewARStatusPillContent: View {
+    let title: String
+    let detail: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: content.icon)
+            Image(systemName: icon)
                 .font(.headline)
-                .foregroundStyle(content.color)
+                .foregroundStyle(color)
                 .frame(width: 28, height: 28)
 
             VStack(alignment: .leading, spacing: 1) {
-                Text(content.title)
+                Text(title)
                     .font(.caption.bold())
-                Text(content.detail)
+                Text(detail)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
