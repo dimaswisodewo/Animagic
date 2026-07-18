@@ -7,7 +7,7 @@ AniMagic is an iOS and iPadOS application that turns hand-drawn animal doodles i
 ## Highlights
 
 - **PencilKit canvas** with Apple Pencil support, the system tool picker, undo/redo, drawing guides, editable names, and debounced draft autosave.
-- **On-device doodle classification** using Vision and the bundled `AnimalSpeciesClassifierV4.mlpackage` Core ML model.
+- **On-device doodle classification** using Vision and the bundled `AnimalSpeciesClassifierV4.mlpackage` Core ML model, trained from scratch with Google Quick, Draw! data.
 - **Reliable classification workflow** with cancellable jobs, stale-result protection, persisted error states, Retry, and an option to continue into AR.
 - **AR placement** powered by ARKit and RealityKit, including surface detection, placement feedback, object selection, deletion, and animated animal motion presets.
 - **My Backpack** for persistent drawings, search, category filters, automatic AI-based naming, sharing, and classification recovery.
@@ -82,6 +82,8 @@ Animagic/Resources/Models/AnimalSpeciesClassifierV4.mlpackage
 ```
 
 At build time, Xcode compiles the package into `AnimalSpeciesClassifierV4.mlmodelc`. Runtime loading is implemented in `Animagic/Core/ImageProcessing/DoodleClassification.swift`.
+
+The bundled V4 model is trained specifically for AniMagic from Google's [Quick, Draw! dataset](https://github.com/googlecreativelab/quickdraw-dataset), without third-party pretrained model weights. The companion [`animal-sketch-coreml`](https://github.com/MorpKnight/animal-sketch-coreml) repository contains the training, evaluation, and Core ML export pipelines, along with the model-generation history and published artifacts.
 
 When replacing the model:
 
