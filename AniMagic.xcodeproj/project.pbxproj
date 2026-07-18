@@ -23,7 +23,6 @@
 		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
-
 		52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */; };
 		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
 		52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */; };
@@ -39,6 +38,7 @@
 		7362427944CD9F93F41B9849 /* Land.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0CD2DE8B958AFA1FBFD38743 /* Land.skybox */; };
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
+		79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
 		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
 		815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */; };
@@ -73,8 +73,6 @@
 		D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */; };
 		DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */; };
 		DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */; };
-		A4D9E1C23B7F4A5E8C0D1123 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D9E1C23B7F4A5E8C0D1124 /* DoodleClassificationCoordinator.swift */; };
-		B4D9E1C23B7F4A5E8C0D1123 /* DrawingRasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D9E1C23B7F4A5E8C0D1124 /* DrawingRasterizer.swift */; };
 		E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */; };
 		EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0E732AD75F0B14CC3DC9564D /* Underwater.skybox */; };
 		EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */; };
@@ -84,13 +82,12 @@
 		F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */; };
 		FC3FA727CD38D1E3AEE4EA4D /* VisionForegroundCutoutProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */; };
 		FF835DCF8EF6498E779F0342 /* BackpackComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */; };
+		FF941C308B8B099A0C0349E2 /* DrawingRasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */; };
 		FFC7B65E3FBFAFCF239C1861 /* VirtualRoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF6055646F729702EE453A /* VirtualRoomModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
-		A4D9E1C23B7F4A5E8C0D1124 /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
-		B4D9E1C23B7F4A5E8C0D1124 /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
 		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
@@ -124,6 +121,7 @@
 		4F33D5C4ECB695106958159D /* StatueRoom.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = StatueRoom.usdz; sourceTree = "<group>"; };
 		572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
 		5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
+		5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
 		68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
 		6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = CitrusOrchard.skybox; sourceTree = "<group>"; };
 		6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityRoomView.swift; sourceTree = "<group>"; };
@@ -149,7 +147,7 @@
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
-
+		C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
 		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		D8131A446EE341BA3133E93A /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = fishs.usdz; sourceTree = "<group>"; };
@@ -425,8 +423,8 @@
 				279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */,
 				EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */,
 				003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */,
-				A4D9E1C23B7F4A5E8C0D1124 /* DoodleClassificationCoordinator.swift */,
-				B4D9E1C23B7F4A5E8C0D1124 /* DrawingRasterizer.swift */,
+				5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */,
+				C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */,
 				0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */,
 				2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */,
 				BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */,
@@ -530,7 +528,6 @@
 			children = (
 				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
 				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
-
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -622,7 +619,6 @@
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
-
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,
@@ -640,7 +636,6 @@
 				8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */,
 				729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */,
 				DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */,
-				A4D9E1C23B7F4A5E8C0D1123 /* DoodleClassificationCoordinator.swift in Sources */,
 				53D0A252C7C4C216EAD2CA04 /* ContentView.swift in Sources */,
 				60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */,
 				8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */,
@@ -653,7 +648,8 @@
 				DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */,
 				94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */,
 				B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */,
-				B4D9E1C23B7F4A5E8C0D1123 /* DrawingRasterizer.swift in Sources */,
+				79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */,
+				FF941C308B8B099A0C0349E2 /* DrawingRasterizer.swift in Sources */,
 				F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */,
 				14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */,
 				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
@@ -697,7 +693,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = DP5XP7C2AM;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -801,7 +797,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = DP5XP7C2AM;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;

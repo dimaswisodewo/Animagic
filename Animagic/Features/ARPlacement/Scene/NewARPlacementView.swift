@@ -62,6 +62,8 @@ final class SystemARPlacementFeedback: ARPlacementFeedbackProviding {
 struct NewARPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedCutoutID: CutoutAsset.ID?
@@ -76,6 +78,13 @@ struct NewARPlacementView: View {
     @State private var isImmersive = false
     @State private var showsImmersiveHint = false
     @State private var immersiveHintTask: Task<Void, Never>?
+    @State private var cameraPermissionState: CameraPermissionState = .checking
+
+    private enum CameraPermissionState {
+        case checking
+        case authorized
+        case denied
+    }
 
     private let initialCutoutID: CutoutAsset.ID?
     private let maximumObjectCount = 20
@@ -97,6 +106,32 @@ struct NewARPlacementView: View {
     }
 
     var body: some View {
+        ZStack(alignment: .bottom) {
+            switch cameraPermissionState {
+            case .checking:
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(uiColor: .systemBackground))
+            case .denied:
+                cameraDeniedView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(uiColor: .systemBackground))
+            case .authorized:
+                arContent
+            }
+        }
+        .onAppear {
+            checkCameraPermission()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                checkCameraPermission()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var arContent: some View {
         ZStack(alignment: .bottom) {
             ARRealityViewRepresentable(
                 cutoutAssets: artworkStore.cutoutLibrary,
@@ -150,7 +185,9 @@ struct NewARPlacementView: View {
                 .accessibilityHint("Shows only the AR scene and selected object guide")
             }
         }
-        .onAppear(perform: synchronizeInitialSelection)
+        .onAppear {
+            synchronizeInitialSelection()
+        }
         .onChange(of: artworkStore.cutoutLibrary.map(\.id)) { _, _ in
             synchronizeInitialSelection()
         }
@@ -321,6 +358,71 @@ struct NewARPlacementView: View {
             confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
         )
     }
+
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            cameraPermissionState = .authorized
+        case .notDetermined:
+            cameraPermissionState = .checking
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                Task { @MainActor in
+                    cameraPermissionState = granted ? .authorized : .denied
+                }
+            }
+        case .denied, .restricted:
+            cameraPermissionState = .denied
+        @unknown default:
+            cameraPermissionState = .denied
+        }
+    }
+
+    private var cameraDeniedView: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                Image(systemName: "camera.fill")
+                    .font(.system(size: 40, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding()
+                    .background(Color.secondary.opacity(0.12), in: Circle())
+                
+                VStack(spacing: 8) {
+                    Text("Camera Access Required")
+                        .font(.title3.weight(.bold))
+                    Text("AniMagic needs camera access to place your doodles in AR. Please enable it in Settings.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+                
+                VStack(spacing: 12) {
+                    Button("Open Settings") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    
+                    Button("Back to Canvas") {
+                        dismiss()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                }
+            }
+            .padding(32)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .shadow(color: .black.opacity(0.15), radius: 15)
+            .padding(24)
+            .frame(maxWidth: 360)
+        }
+    }
 }
 
 struct ARRealityViewRepresentable: UIViewRepresentable {
@@ -460,6 +562,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var planeAnchors: [UUID: AnchorEntity] = [:]
     private var focusIndicator: Entity?
     private var focusAnchor: AnchorEntity?
+    private var statusResetTask: Task<Void, Never>?
     private var isTargetAcquired = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
@@ -724,7 +827,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
               let targetTransform = lastValidTransform,
               let targetNormal = lastValidNormal else {
             updateStatus(.failed("Move the reticle onto a floor or table first."))
-            feedback.error()
+            feedback.warning()
             return
         }
 
@@ -872,6 +975,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func stopAnimationLoop() {
+        statusResetTask?.cancel()
+        statusResetTask = nil
         setSelectionIndicatorDragging(false)
         interactionAdapter?.detach()
         interactionAdapter = nil
@@ -887,6 +992,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onPlacementStatusChanged?(status)
         if isImmersive, case .failed = status {
             requestExitImmersive()
+        }
+        
+        statusResetTask?.cancel()
+        if case .failed = status {
+            statusResetTask = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(2.5))
+                guard !Task.isCancelled, let self else { return }
+                self.updateStatus(self.isTargetAcquired ? .ready : .searching)
+            }
         }
     }
 
