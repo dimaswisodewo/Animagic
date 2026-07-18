@@ -237,7 +237,6 @@ struct MotionSimulator {
         case .rabbit: [sin(phase * 0.9) * 0.2, 0, 0]
         case .snake: [sin(phase * 1.25) * 0.45, 0, 0]
         case .crab: [sin(phase * 0.8) * 0.16, 0, sin(phase * 0.8) * 0.025]
-        case .generic: [sin(phase * 0.65) * 0.12, 0, sin(phase * 0.45) * 0.03]
         }
     }
 
@@ -300,8 +299,7 @@ struct MotionSimulator {
             .cow: [.moving, .resting, .coasting, .resting],
             .rabbit: [.resting, .energetic, .resting, .energetic],
             .snake: [.moving, .coasting, .resting, .moving],
-            .crab: [.energetic, .resting, .moving, .energetic],
-            .generic: [.moving, .coasting, .moving, .energetic]
+            .crab: [.energetic, .resting, .moving, .energetic]
         ]
         let sequence = sequences[archetype] ?? [.moving]
         transitionIndex = (transitionIndex + 1) % sequence.count

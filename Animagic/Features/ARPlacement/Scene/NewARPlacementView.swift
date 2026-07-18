@@ -6,7 +6,6 @@
 //
 
 import ARKit
-import AVFoundation
 import RealityKit
 import SwiftUI
 import UIKit
@@ -17,7 +16,6 @@ enum NewARSceneCommand: Equatable {
     case delete(UUID)
     case undoDelete(UUID)
     case discardUndo(UUID)
-    case retry(UUID)
 }
 
 @MainActor
@@ -65,14 +63,13 @@ struct NewARPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
-    @State private var selectedAnimalArchetype = AnimalArchetype.generic
+    @State private var selectedAnimalArchetype = AnimalArchetype.fish
     @State private var placementStatus: ARPlacementStatus = .searching
-    @State private var sessionStatus: ARSessionStatus = .searching
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var sceneCommand: NewARSceneCommand?
     @State private var objectCount = 0
@@ -81,6 +78,13 @@ struct NewARPlacementView: View {
     @State private var isImmersive = false
     @State private var showsImmersiveHint = false
     @State private var immersiveHintTask: Task<Void, Never>?
+    @State private var cameraPermissionState: CameraPermissionState = .checking
+
+    private enum CameraPermissionState {
+        case checking
+        case authorized
+        case denied
+    }
 
     private let initialCutoutID: CutoutAsset.ID?
     private let maximumObjectCount = 20
@@ -103,6 +107,32 @@ struct NewARPlacementView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            switch cameraPermissionState {
+            case .checking:
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(uiColor: .systemBackground))
+            case .denied:
+                cameraDeniedView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(uiColor: .systemBackground))
+            case .authorized:
+                arContent
+            }
+        }
+        .onAppear {
+            checkCameraPermission()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                checkCameraPermission()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var arContent: some View {
+        ZStack(alignment: .bottom) {
             ARRealityViewRepresentable(
                 cutoutAssets: artworkStore.cutoutLibrary,
                 selectedCutoutID: selectedCutoutID,
@@ -112,7 +142,6 @@ struct NewARPlacementView: View {
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
                 placementStatus: $placementStatus,
-                sessionStatus: $sessionStatus,
                 objectCount: $objectCount,
                 undoAvailable: $undoAvailable,
                 command: sceneCommand,
@@ -138,20 +167,9 @@ struct NewARPlacementView: View {
                     .accessibilityAddTraits(.isStaticText)
                     .transition(.opacity)
             }
-
-            if sessionStatus.isBlockingOverlay {
-                ARSessionStatusOverlay(
-                    status: sessionStatus,
-                    onRetry: { sceneCommand = .retry(UUID()) },
-                    onOpenSettings: openCameraSettings,
-                    onBack: { dismiss() }
-                )
-                .zIndex(2)
-            }
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
         .animation(.easeOut(duration: 0.2), value: placementStatus)
-        .animation(.easeOut(duration: 0.2), value: sessionStatus)
         .animation(.easeOut(duration: 0.2), value: undoAvailable)
         .navigationTitle("Magic Lens")
         .navigationBarTitleDisplayMode(.inline)
@@ -167,23 +185,17 @@ struct NewARPlacementView: View {
                 .accessibilityHint("Shows only the AR scene and selected object guide")
             }
         }
-        .onAppear(perform: synchronizeInitialSelection)
+        .onAppear {
+            synchronizeInitialSelection()
+        }
         .onChange(of: artworkStore.cutoutLibrary.map(\.id)) { _, _ in
             synchronizeInitialSelection()
         }
         .onChange(of: selectedCutoutID) { _, newID in
             guard placedObjectSelection == nil,
-                  let asset = artworkStore.cutoutLibrary.first(where: { $0.id == newID }) else { return }
-            selectedAnimalArchetype = suggestedArchetype(for: asset)
-        }
-        .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
-            guard placedObjectSelection == nil else { return }
-            selectedAnimalArchetype = suggestedArchetype(for: selectedCutoutAsset)
-        }
-        .onChange(of: sessionStatus) { _, status in
-            if status.isBlockingOverlay, isImmersive {
-                exitImmersive()
-            }
+                  let asset = artworkStore.cutoutLibrary.first(where: { $0.id == newID }),
+                  let suggested = suggestedArchetype(for: asset) else { return }
+            selectedAnimalArchetype = suggested
         }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
@@ -202,10 +214,7 @@ struct NewARPlacementView: View {
 
     private var controlsOverlay: some View {
         VStack(spacing: 12) {
-            if shouldShowSessionStatus {
-                NewARSessionStatusPill(status: sessionStatus)
-                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
-            } else if shouldShowPlacementStatus {
+            if shouldShowStatus {
                 NewARStatusPill(status: placementStatus)
                     .transition(.opacity.combined(with: .scale(scale: 0.96)))
             }
@@ -270,26 +279,19 @@ struct NewARPlacementView: View {
         isImmersive = false
     }
 
-    private var shouldShowSessionStatus: Bool {
-        sessionStatus == .searching || sessionStatus == .noSurface
-    }
-
-    private var shouldShowPlacementStatus: Bool {
-        guard sessionStatus == .ready else { return false }
+    private var shouldShowStatus: Bool {
         switch placementStatus {
         case .ready:
-            return false
+            false
         default:
-            return true
+            true
         }
     }
 
     private var canPlace: Bool {
         guard placedObjectSelection == nil,
-              !sessionStatus.isBlockingOverlay,
+              placementStatus == .ready,
               objectCount < maximumObjectCount else { return false }
-
-        if case .loading = placementStatus { return false }
 
         switch selectedContentType {
         case .doodle:
@@ -303,10 +305,14 @@ struct NewARPlacementView: View {
         if objectCount >= maximumObjectCount {
             return "Scene Full"
         }
-        if case .loading = placementStatus {
+        switch placementStatus {
+        case .ready:
+            return "Place"
+        case .loading:
             return "Loading…"
+        default:
+            return "Find a Surface"
         }
-        return sessionStatus == .ready ? "Place" : "Find a Surface"
     }
 
     private var archetypeSelection: Binding<AnimalArchetype> {
@@ -332,8 +338,7 @@ struct NewARPlacementView: View {
         }
 
         if let selectedCutoutID,
-           let selectedAsset = artworkStore.cutoutLibrary.first(where: { $0.id == selectedCutoutID }) {
-            selectedAnimalArchetype = suggestedArchetype(for: selectedAsset)
+           artworkStore.cutoutLibrary.contains(where: { $0.id == selectedCutoutID }) {
             return
         }
 
@@ -341,25 +346,82 @@ struct NewARPlacementView: View {
             artworkStore.cutoutLibrary.first(where: { $0.id == id })
         } ?? artworkStore.cutoutLibrary.first
         selectedCutoutID = initialAsset?.id
-        selectedAnimalArchetype = suggestedArchetype(for: initialAsset)
+        if let suggested = suggestedArchetype(for: initialAsset) {
+            selectedAnimalArchetype = suggested
+        }
     }
 
-    private var selectedCutoutAsset: CutoutAsset? {
-        guard let selectedCutoutID else { return nil }
-        return artworkStore.cutoutLibrary.first { $0.id == selectedCutoutID }
-    }
-
-    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype {
-        guard let asset, let label = asset.resolvedDoodleLabel else { return .generic }
+    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
+        guard let asset, let label = asset.resolvedDoodleLabel else { return nil }
         return AnimalArchetype(
             doodleLabel: label,
             confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
-        ) ?? .generic
+        )
     }
 
-    private func openCameraSettings() {
-        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
-        openURL(settingsURL)
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            cameraPermissionState = .authorized
+        case .notDetermined:
+            cameraPermissionState = .checking
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                Task { @MainActor in
+                    cameraPermissionState = granted ? .authorized : .denied
+                }
+            }
+        case .denied, .restricted:
+            cameraPermissionState = .denied
+        @unknown default:
+            cameraPermissionState = .denied
+        }
+    }
+
+    private var cameraDeniedView: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                Image(systemName: "camera.fill")
+                    .font(.system(size: 40, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding()
+                    .background(Color.secondary.opacity(0.12), in: Circle())
+                
+                VStack(spacing: 8) {
+                    Text("Camera Access Required")
+                        .font(.title3.weight(.bold))
+                    Text("AniMagic needs camera access to place your doodles in AR. Please enable it in Settings.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                }
+                
+                VStack(spacing: 12) {
+                    Button("Open Settings") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    
+                    Button("Back to Canvas") {
+                        dismiss()
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                }
+            }
+            .padding(32)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .shadow(color: .black.opacity(0.15), radius: 15)
+            .padding(24)
+            .frame(maxWidth: 360)
+        }
     }
 }
 
@@ -372,7 +434,6 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
     @Binding var placementStatus: ARPlacementStatus
-    @Binding var sessionStatus: ARSessionStatus
     @Binding var objectCount: Int
     @Binding var undoAvailable: Bool
     let command: NewARSceneCommand?
@@ -390,7 +451,6 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             feedback: feedback,
             onSelectionChanged: updateSelection,
             onPlacementStatusChanged: updateStatus,
-            onSessionStatusChanged: updateSessionStatus,
             onObjectCountChanged: updateObjectCount,
             onUndoAvailabilityChanged: updateUndoAvailability,
             onExitImmersive: onExitImmersive
@@ -413,7 +473,6 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.selectedModelID = selectedModelID
         controller.onSelectionChanged = updateSelection
         controller.onPlacementStatusChanged = updateStatus
-        controller.onSessionStatusChanged = updateSessionStatus
         controller.onObjectCountChanged = updateObjectCount
         controller.onUndoAvailabilityChanged = updateUndoAvailability
         controller.onExitImmersive = onExitImmersive
@@ -431,7 +490,10 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ arView: ARView, coordinator: NewARSceneController) {
-        coordinator.stopSession()
+        coordinator.stopAnimationLoop()
+        coordinator.cleanupFocusIndicator()
+        coordinator.cleanupPlaneAnchors()
+        arView.session.pause()
     }
 
     private func updateSelection(_ selection: PlacedObjectSelection?) {
@@ -446,14 +508,6 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         Task { @MainActor in
             if placementStatus != status {
                 placementStatus = status
-            }
-        }
-    }
-
-    private func updateSessionStatus(_ status: ARSessionStatus) {
-        Task { @MainActor in
-            if sessionStatus != status {
-                sessionStatus = status
             }
         }
     }
@@ -508,24 +562,20 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var planeAnchors: [UUID: AnchorEntity] = [:]
     private var focusIndicator: Entity?
     private var focusAnchor: AnchorEntity?
+    private var statusResetTask: Task<Void, Never>?
     private var isTargetAcquired = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
     private var hasPlacedObject = false
     private var isImmersive = false
-    private var statusResetTask: Task<Void, Never>?
-    private var retryTask: Task<Void, Never>?
-    private var sessionGeneration = UUID()
 
     var handledCommand: NewARSceneCommand?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
-    var onSessionStatusChanged: ((ARSessionStatus) -> Void)?
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)?
     var onObjectCountChanged: ((Int) -> Void)?
     var onUndoAvailabilityChanged: ((Bool) -> Void)?
     var onExitImmersive: (() -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
-    private(set) var sessionStatus: ARSessionStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
     var placedObjectSelection: PlacedObjectSelection? { sceneEditor.placedObjectSelection }
@@ -540,7 +590,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         feedback: any ARPlacementFeedbackProviding,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
-        onSessionStatusChanged: ((ARSessionStatus) -> Void)? = nil,
         onObjectCountChanged: ((Int) -> Void)? = nil,
         onUndoAvailabilityChanged: ((Bool) -> Void)? = nil,
         onExitImmersive: (() -> Void)? = nil
@@ -556,7 +605,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.feedback = feedback
         self.onSelectionChanged = onSelectionChanged
         self.onPlacementStatusChanged = onPlacementStatusChanged
-        self.onSessionStatusChanged = onSessionStatusChanged
         self.onObjectCountChanged = onObjectCountChanged
         self.onUndoAvailabilityChanged = onUndoAvailabilityChanged
         self.onExitImmersive = onExitImmersive
@@ -577,51 +625,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.arView = arView
         sceneEditor.arView = arView
         guard ARWorldTrackingConfiguration.isSupported else {
-            publishSessionStatus(.unsupported)
-            requestExitImmersive()
+            updateStatus(.failed("AR is not supported on this device."))
             return
         }
-
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            startSession(on: arView)
-        case .notDetermined:
-            let generation = UUID()
-            sessionGeneration = generation
-            publishSessionStatus(.retrying)
-            AVCaptureDevice.requestAccess(for: .video) { [weak self] isGranted in
-                guard let self else { return }
-                Task { @MainActor [self] in
-                    guard let arView = self.arView, self.sessionGeneration == generation else { return }
-                    if isGranted {
-                        self.startSession(on: arView)
-                    } else {
-                        self.publishSessionStatus(.cameraDenied)
-                    }
-                }
-            }
-        case .denied, .restricted:
-            publishSessionStatus(.cameraDenied)
-            requestExitImmersive()
-        @unknown default:
-            publishSessionStatus(.cameraDenied)
-            requestExitImmersive()
-        }
-    }
-
-    private func startSession(on arView: ARView) {
-        statusResetTask?.cancel()
-        statusResetTask = nil
-        retryTask?.cancel()
-        retryTask = nil
 
         if !Self.hasRegisteredSystem {
             ARPlacementSystem.registerSystem()
             Self.hasRegisteredSystem = true
         }
 
-        cleanupFocusIndicator()
-        cleanupPlaneAnchors()
         setupFocusIndicator(in: arView)
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
@@ -631,16 +643,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         arView.renderOptions.insert(.disableGroundingShadows)
         arView.renderOptions.insert(.disableDepthOfField)
 
-        interactionAdapter?.detach()
         let adapter = NewARViewInteractionAdapter(controller: self, feedback: feedback)
         adapter.attach(to: arView)
         interactionAdapter = adapter
-        isTargetAcquired = false
-        lastValidTransform = nil
-        lastValidNormal = nil
-        publishSessionStatus(.searching)
         updateStatus(.searching)
-        onObjectCountChanged?(sceneEditor.objectCount)
+        onObjectCountChanged?(0)
     }
 
     func handle(_ command: NewARSceneCommand) {
@@ -665,37 +672,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .discardUndo:
             pendingDeletion = nil
             onUndoAvailabilityChanged?(false)
-        case .retry:
-            retrySession()
-        }
-    }
-
-    private func retrySession() {
-        guard let arView else { return }
-        publishSessionStatus(.retrying)
-        sessionGeneration = UUID()
-        statusResetTask?.cancel()
-        statusResetTask = nil
-        retryTask?.cancel()
-        interactionAdapter?.detach()
-        interactionAdapter = nil
-        sceneEditor.removeAllObjects()
-        pendingDeletion = nil
-        lastSelectedObject = nil
-        hasPlacedObject = false
-        isTargetAcquired = false
-        lastValidTransform = nil
-        lastValidNormal = nil
-        cleanupFocusIndicator()
-        cleanupPlaneAnchors()
-        onUndoAvailabilityChanged?(false)
-        onObjectCountChanged?(0)
-        arView.session.pause()
-
-        retryTask = Task { [weak self, weak arView] in
-            try? await Task.sleep(for: .milliseconds(200))
-            guard !Task.isCancelled, let self, let arView else { return }
-            self.runSession(on: arView)
         }
     }
 
@@ -744,7 +720,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 isTargetAcquired = false
                 focusIndicator.isEnabled = false
                 updateStatusIfScanning(.searching)
-                updateSessionStatusIfScanning(.searching)
             }
             return
         }
@@ -769,7 +744,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         if !isTargetAcquired {
             isTargetAcquired = true
             updateStatusIfScanning(.ready)
-            updateSessionStatusIfScanning(.ready)
         }
         updateFocusVisibility()
     }
@@ -852,7 +826,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
               isTargetAcquired,
               let targetTransform = lastValidTransform,
               let targetNormal = lastValidNormal else {
-            reportNoSurface()
+            updateStatus(.failed("Move the reticle onto a floor or table first."))
+            feedback.warning()
             return
         }
 
@@ -1000,25 +975,12 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func stopAnimationLoop() {
+        statusResetTask?.cancel()
+        statusResetTask = nil
         setSelectionIndicatorDragging(false)
         interactionAdapter?.detach()
         interactionAdapter = nil
         pendingDeletion = nil
-    }
-
-    func stopSession() {
-        sessionGeneration = UUID()
-        statusResetTask?.cancel()
-        statusResetTask = nil
-        retryTask?.cancel()
-        retryTask = nil
-        stopAnimationLoop()
-        cleanupFocusIndicator()
-        cleanupPlaneAnchors()
-        arView?.session.delegate = nil
-        arView?.session.pause()
-        sceneEditor.arView = nil
-        arView = nil
     }
 
     func updateSimulation(deltaTime: Float) {
@@ -1031,6 +993,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         if isImmersive, case .failed = status {
             requestExitImmersive()
         }
+        
+        statusResetTask?.cancel()
+        if case .failed = status {
+            statusResetTask = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(2.5))
+                guard !Task.isCancelled, let self else { return }
+                self.updateStatus(self.isTargetAcquired ? .ready : .searching)
+            }
+        }
     }
 
     private func updateStatusIfScanning(_ newStatus: ARPlacementStatus) {
@@ -1042,69 +1013,14 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         }
     }
 
-    private func publishSessionStatus(_ status: ARSessionStatus) {
-        guard sessionStatus != status else { return }
-        sessionStatus = status
-        onSessionStatusChanged?(status)
-    }
-
-    private func updateSessionStatusIfScanning(_ status: ARSessionStatus) {
-        switch sessionStatus {
-        case .searching, .ready:
-            publishSessionStatus(status)
-        case .noSurface, .unsupported, .cameraDenied, .failed, .retrying:
-            break
-        }
-    }
-
-    private func reportNoSurface() {
-        guard !sessionStatus.isBlockingOverlay else { return }
-        publishSessionStatus(.noSurface)
-        feedback.warning()
-        statusResetTask?.cancel()
-        statusResetTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(2.5))
-            guard !Task.isCancelled, let self, !self.sessionStatus.isBlockingOverlay else { return }
-            self.publishSessionStatus(self.isTargetAcquired ? .ready : .searching)
-        }
-    }
-
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        statusResetTask?.cancel()
-        let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        let nsError = error as NSError
-        let isCameraUnauthorized = nsError.domain == ARErrorDomain && nsError.code == 103
-        if cameraStatus == .denied || cameraStatus == .restricted || isCameraUnauthorized {
-            publishSessionStatus(.cameraDenied)
-        } else {
-            publishSessionStatus(.failed)
-        }
-        requestExitImmersive()
-    }
-
-    func sessionWasInterrupted(_ session: ARSession) {
-        statusResetTask?.cancel()
-        publishSessionStatus(.failed)
-        updateStatus(.limited("The AR session was interrupted."))
-        requestExitImmersive()
-    }
-
-    func sessionInterruptionEnded(_ session: ARSession) {
-        guard sessionStatus != .failed else { return }
-        publishSessionStatus(.searching)
-    }
-
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         switch camera.trackingState {
         case .normal:
             updateStatus(isTargetAcquired ? .ready : .searching)
-            updateSessionStatusIfScanning(isTargetAcquired ? .ready : .searching)
         case .limited(let reason):
             updateStatus(.limited(reason.trackingMessage))
-            updateSessionStatusIfScanning(.searching)
         case .notAvailable:
             updateStatus(.limited("Camera tracking is unavailable."))
-            publishSessionStatus(.failed)
             requestExitImmersive()
         }
     }

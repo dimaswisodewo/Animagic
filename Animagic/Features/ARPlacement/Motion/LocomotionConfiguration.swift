@@ -39,19 +39,17 @@ enum SpawnMode: String, CaseIterable, Identifiable {
 }
 
 enum AnimalArchetype: String, CaseIterable, Identifiable {
-    case fish, bird, butterfly, cat, cow, rabbit, snake, crab, generic
+    case fish, bird, butterfly, cat, cow, rabbit, snake, crab
 
     var id: String { rawValue }
 
     init?(doodleLabel: String, confidence: Float) {
-        let normalizedLabel = doodleLabel
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-        self = confidence >= 0.5
-            ? Self(rawValue: normalizedLabel) ?? .generic
-            : .generic
+        guard confidence >= 0.5 else {
+            return nil
+        }
+        self.init(rawValue: doodleLabel)
     }
-    var title: String { self == .generic ? "Other" : rawValue.capitalized }
+    var title: String { rawValue.capitalized }
 
     var systemImageName: String {
         switch self {
@@ -63,7 +61,6 @@ enum AnimalArchetype: String, CaseIterable, Identifiable {
         case .rabbit: "hare.fill"
         case .snake: "waveform.path"
         case .crab: "arrow.left.and.right"
-        case .generic: "questionmark.circle.fill"
         }
     }
 
@@ -162,11 +159,6 @@ struct AnimalMotionPreset {
                           planeRadius: 0.37, roamRadius: 0.94, gait: 6.5, bob: 0.008,
                           bank: 0.07, pitch: 0.045, pulse: 0.03, noise: 0.01,
                           noiseFrequency: 0.7, depth: 0.035, turn: 0.22)
-        case .generic:
-            Self.grounded(cruise: 0.08, energetic: 0.18, acceleration: 0.8,
-                          planeRadius: 0.38, roamRadius: 0.95, gait: 2.6, bob: 0.015,
-                          bank: 0.05, pitch: 0.06, pulse: 0.02, noise: 0.007,
-                          noiseFrequency: 0.4, depth: 0.03, turn: 0.30)
         }
     }
 
