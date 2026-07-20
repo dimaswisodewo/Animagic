@@ -49,7 +49,7 @@ struct CanvasTopBarView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
-        .background(AnimagicTheme.yellow)
+        .background(Color.Token.Background.primary)
     }
 
     private var editableTitle: Binding<String> {

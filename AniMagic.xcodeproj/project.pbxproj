@@ -33,6 +33,7 @@
 		5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */; };
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
 		60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67231FD4CC90120FA5A8816 /* CustomButton.swift */; };
+		69424C50300E19B200DF7CFA /* ColorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69424C4F300E19AD00DF7CFA /* ColorToken.swift */; };
 		6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */; };
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
 		7362427944CD9F93F41B9849 /* Land.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0CD2DE8B958AFA1FBFD38743 /* Land.skybox */; };
@@ -123,6 +124,7 @@
 		5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
 		5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
 		68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
+		69424C4F300E19AD00DF7CFA /* ColorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToken.swift; sourceTree = "<group>"; };
 		6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = CitrusOrchard.skybox; sourceTree = "<group>"; };
 		6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityRoomView.swift; sourceTree = "<group>"; };
 		6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotionConfiguration.swift; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 		6B5DDB79A34D595499A29477 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				69424C4F300E19AD00DF7CFA /* ColorToken.swift */,
 				1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */,
 			);
 			path = DesignSystem;
@@ -567,7 +570,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */;
+			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -654,6 +657,7 @@
 				14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */,
 				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
 				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
+				69424C50300E19B200DF7CFA /* ColorToken.swift in Sources */,
 				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
 				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
 				B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */,
@@ -883,7 +887,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */ = {
+		74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5FD4AB81F197E396C2F4BADB /* Debug */,
