@@ -24,7 +24,7 @@ struct BackpackHeader: View {
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 12) {
-                TopBarIconButton(icon: "chevron.left", action: onBack)
+                AnimagicIconButton(icon: "chevron.left", backgroundColor: AnimagicTheme.orange, action: onBack)
                 Text("My Backpack")
                     .font(.custom("Belanosima-SemiBold", size: 32, relativeTo: .title))
                     .minimumScaleFactor(0.7)
@@ -32,7 +32,7 @@ struct BackpackHeader: View {
                     .foregroundStyle(.black)
             }
             Spacer()
-            TopBarButton(title: "Draw More!", action: onDrawMore)
+            AnimagicLabelButton(title: "Draw More!", icon: "pencil", backgroundColor: AnimagicTheme.orange, action: onDrawMore)
             BackpackARButton(action: onOpenAR)
         }
         .padding(.horizontal, 24)
@@ -93,20 +93,8 @@ struct BackpackFilterBar: View {
     }
 
     private var searchField: some View {
-        HStack {
-            TextField("Search.....", text: $searchText)
-                .font(.custom("Belanosima-Regular", size: 18, relativeTo: .body))
-                .foregroundStyle(.black)
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.black)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.white)
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(.black, lineWidth: 3))
-        .frame(minWidth: 120, maxWidth: 300)
+        AnimagicTextField(placeholder: "Search.....", text: $searchText)
+            .frame(minWidth: 120, maxWidth: 300)
     }
 }
 
@@ -115,37 +103,25 @@ struct BackpackDrawingCard: View {
     let classificationError: String?
 
     var body: some View {
-        VStack(spacing: 0) {
-            if drawing.drawing.bounds.isEmpty {
-                Spacer()
-                Text("Empty Drawing")
-                    .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
-                    .foregroundStyle(.gray)
-                Spacer()
-            } else {
-                Image(uiImage: drawing.drawing.image(from: drawing.drawing.bounds, scale: 1))
-                    .resizable()
-                    .scaledToFit()
-                    .padding(16)
+        VStack(spacing: 8) {
+            AnimagicCard(title: drawing.name.isEmpty ? "Untitled" : drawing.name) {
+                if drawing.drawing.bounds.isEmpty {
+                    Text("Empty Drawing")
+                        .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
+                        .foregroundStyle(.gray)
+                } else {
+                    Image(uiImage: drawing.drawing.image(from: drawing.drawing.bounds, scale: 1))
+                        .resizable()
+                        .scaledToFit()
+                }
             }
-            Text(drawing.name.isEmpty ? "Untitled" : drawing.name)
-                .font(.custom("Belanosima-Bold", size: 20, relativeTo: .headline))
-                .minimumScaleFactor(0.7)
-                .lineLimit(1)
-                .foregroundStyle(.black)
-                .padding(.bottom, 12)
             if classificationError != nil {
                 Label("AI retry available", systemImage: "exclamationmark.triangle.fill")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.orange)
-                    .padding(.bottom, 8)
             }
         }
-        .frame(height: 200)
         .frame(maxWidth: .infinity)
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 3))
     }
 }
 

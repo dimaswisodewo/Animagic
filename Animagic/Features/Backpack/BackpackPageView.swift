@@ -107,7 +107,7 @@ struct BackpackPageView: View {
 
     private static let scrollSpace = "backpack-scroll"
     private static let gridColumns = [
-        GridItem(.adaptive(minimum: 140))
+        GridItem(.adaptive(minimum: 200))
     ]
 }
 

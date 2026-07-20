@@ -69,20 +69,8 @@ struct GuidePopupView: View {
     }
 
     private var searchField: some View {
-        HStack {
-            TextField("Search.....", text: $searchText)
-                .font(.custom("Belanosima-Regular", size: 18))
-                .foregroundStyle(.black)
-            Spacer()
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.black)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(.white)
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(.black, lineWidth: 3))
-        .padding(.horizontal, 20)
+        AnimagicTextField(placeholder: "Search.....", text: $searchText)
+            .padding(.horizontal, 12)
     }
 
     private var animalGrid: some View {

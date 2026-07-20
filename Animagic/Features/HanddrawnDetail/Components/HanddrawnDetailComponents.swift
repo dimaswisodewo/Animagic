@@ -11,7 +11,7 @@ struct HanddrawnDetailHeader: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            TopBarIconButton(icon: "chevron.left", action: onBack)
+            AnimagicIconButton(icon: "chevron.left", backgroundColor: AnimagicTheme.orange, action: onBack)
             Text(title)
                 .font(.custom("Belanosima-Bold", size: 28))
                 .foregroundStyle(.black)
