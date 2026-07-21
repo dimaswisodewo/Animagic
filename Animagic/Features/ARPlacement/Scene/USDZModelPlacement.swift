@@ -14,12 +14,14 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
         case birds
         case fallingLeaves
         case tree
+        case treeStump
+        case treeTrunk
         case fishSchool
-    }
-
-    enum Normalization: Hashable {
-        case maximumExtent(Float)
-        case height(Float)
+        case graniteRock
+        case watermelon
+        case croissant
+        case brocoli
+        case cloud
     }
 
     let id: ID
@@ -27,7 +29,6 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
     let systemImageName: String
     let resourceName: String
     let resourceSubdirectory: String?
-    let normalization: Normalization
 
     static let all: [Self] = [
         Self(
@@ -35,32 +36,70 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
             title: "Birds",
             systemImageName: "bird.fill",
             resourceName: "Birds",
-            resourceSubdirectory: nil,
-            normalization: .maximumExtent(1.0)
+            resourceSubdirectory: nil
         ),
         Self(
             id: .fallingLeaves,
             title: "Falling Leaves",
             systemImageName: "leaf.fill",
             resourceName: "FallingLeaf",
-            resourceSubdirectory: nil,
-            normalization: .maximumExtent(0.75)
+            resourceSubdirectory: nil
         ),
         Self(
             id: .tree,
             title: "Tree",
             systemImageName: "tree.fill",
             resourceName: "tree_1",
-            resourceSubdirectory: nil,
-            normalization: .height(2.0)
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .treeStump,
+            title: "Tree Stump",
+            systemImageName: "tree.fill",
+            resourceName: "TreeStump",
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .treeTrunk,
+            title: "Tree Trunk",
+            systemImageName: "tree.fill",
+            resourceName: "TreeNoLeaf",
+            resourceSubdirectory: nil
         ),
         Self(
             id: .fishSchool,
             title: "Fish School",
             systemImageName: "fish.fill",
             resourceName: "fishs",
-            resourceSubdirectory: nil,
-            normalization: .maximumExtent(1.0)
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .watermelon,
+            title: "Watermelon",
+            systemImageName: "fish.fill",
+            resourceName: "WaterMelon",
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .croissant,
+            title: "Croissant",
+            systemImageName: "fish.fill",
+            resourceName: "Croissant",
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .brocoli,
+            title: "Broccoli",
+            systemImageName: "fish.fill",
+            resourceName: "Broccoli",
+            resourceSubdirectory: nil
+        ),
+        Self(
+            id: .cloud,
+            title: "Cloud",
+            systemImageName: "fish.fill",
+            resourceName: "Cloud",
+            resourceSubdirectory: nil
         )
     ]
 
@@ -71,12 +110,10 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
 
 enum USDZModelLoadingError: LocalizedError {
     case missingResource(String)
-    case emptyModel(String)
 
     var errorDescription: String? {
         switch self {
         case .missingResource(let title): "The \(title) model is missing from the app bundle."
-        case .emptyModel(let title): "The \(title) model has no visible content."
         }
     }
 }
@@ -164,7 +201,7 @@ final class PlacedUSDZModel: PlacedSceneObject {
         model: PlaceableUSDZModel,
         loadedEntity: Entity,
         supportSurfaceNormal: SIMD3<Float>
-    ) throws {
+    ) {
         self.id = id
         self.anchor = anchor
         catalogID = model.id
@@ -174,27 +211,6 @@ final class PlacedUSDZModel: PlacedSceneObject {
         root.name = "placed_\(model.id.rawValue)"
         interactionRoot = root
 
-        let visualBounds = loadedEntity.visualBounds(relativeTo: loadedEntity)
-        let extents = visualBounds.extents
-        let sourceDimension: Float
-        switch model.normalization {
-        case .maximumExtent:
-            sourceDimension = max(extents.x, extents.y, extents.z)
-        case .height:
-            sourceDimension = extents.y
-        }
-        guard sourceDimension > 0.0001 else {
-            throw USDZModelLoadingError.emptyModel(model.title)
-        }
-
-        let targetDimension: Float
-        switch model.normalization {
-        case .maximumExtent(let target), .height(let target): targetDimension = target
-        }
-        let scale = targetDimension / sourceDimension
-        let center = visualBounds.center
-        loadedEntity.scale = SIMD3(repeating: scale)
-        loadedEntity.position = [-center.x * scale, -visualBounds.min.y * scale, -center.z * scale]
         loadedEntity.generateCollisionShapes(recursive: true)
         Self.configureInteractionCollisions(in: loadedEntity)
         root.components.set(InteractableComponent(objectID: id))
