@@ -586,3 +586,120 @@ private struct ARPressButtonStyle: ButtonStyle {
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
+
+struct VerticalARObjectShelf: View {
+    @Binding var contentType: PlacementContentType
+    let cutoutAssets: [CutoutAsset]
+    @Binding var selectedCutoutID: CutoutAsset.ID?
+    @Binding var selectedModelID: PlaceableUSDZModel.ID?
+    let canPlace: Bool
+    let placeButtonTitle: String
+    let onCollapse: () -> Void
+    let onPlace: () -> Void
+    let onSelectionFeedback: () -> Void
+
+    let columns = [
+        GridItem(.adaptive(minimum: 80, maximum: 100), spacing: 10)
+    ]
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 0) {
+            // Collapse Button attached to the left edge
+            Button(action: onCollapse) {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(12)
+                    .background(Circle().fill(Color.blue))
+                    .overlay(Circle().strokeBorder(Color.white, lineWidth: 4))
+            }
+            .padding(.trailing, -20)
+            .zIndex(1) // Keep above the shelf
+            
+            VStack(spacing: 12) {
+                PlacementContentTypePicker(selection: $contentType)
+                    .onChange(of: contentType) { _, _ in onSelectionFeedback() }
+                    .padding(.top, 8)
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    Group {
+                        if contentType == .doodle {
+                            doodleShelf
+                        } else {
+                            modelShelf
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+                }
+            }
+            .frame(width: 280, height: 400)
+            .background(AnimagicTheme.yellow, in: UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 24, bottomTrailingRadius: 0, topTrailingRadius: 0))
+            .overlay {
+                UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 24, bottomTrailingRadius: 0, topTrailingRadius: 0)
+                    .strokeBorder(Color.white, lineWidth: 6) // Using white border to match reference
+            }
+            .shadow(color: .black.opacity(0.2), radius: 14, y: 5)
+        }
+    }
+
+    @ViewBuilder
+    private var doodleShelf: some View {
+        if cutoutAssets.isEmpty {
+            VStack(spacing: 10) {
+                Image(systemName: "paintbrush.pointed.fill")
+                    .foregroundStyle(.blue)
+                    .font(.largeTitle)
+                Text("No doodles yet")
+                    .font(.callout.bold())
+                Text("Choose 3D Models, or go back and make a doodle.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(16)
+        } else {
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(cutoutAssets) { asset in
+                    Button {
+                        selectedCutoutID = asset.id
+                        onSelectionFeedback()
+                    } label: {
+                        ARSelectionCard(
+                            title: asset.resolvedDoodleLabel?.capitalized ?? "My Doodle",
+                            isSelected: selectedCutoutID == asset.id
+                        ) {
+                            Image(uiImage: asset.image)
+                                .resizable()
+                                .scaledToFit()
+                                .padding(6)
+                        }
+                    }
+                    .buttonStyle(ARPressButtonStyle())
+                    .accessibilityLabel(asset.resolvedDoodleLabel?.capitalized ?? "Doodle")
+                    .accessibilityAddTraits(selectedCutoutID == asset.id ? .isSelected : [])
+                }
+            }
+            .padding(.vertical, 8)
+        }
+    }
+
+    private var modelShelf: some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+            ForEach(PlaceableUSDZModel.all) { model in
+                Button {
+                    selectedModelID = model.id
+                    onSelectionFeedback()
+                } label: {
+                    ARSelectionCard(title: model.title, isSelected: selectedModelID == model.id) {
+                        ARUSDZThumbnail(model: model)
+                    }
+                }
+                .buttonStyle(ARPressButtonStyle())
+                .accessibilityLabel(model.title)
+                .accessibilityAddTraits(selectedModelID == model.id ? .isSelected : [])
+            }
+        }
+        .padding(.vertical, 8)
+    }
+}

@@ -17,6 +17,7 @@ enum ArtworkFilter {
 }
 
 struct BackpackHeader: View {
+    @Binding var searchText: String
     let onBack: () -> Void
     let onDrawMore: () -> Void
     let onOpenAR: () -> Void
@@ -32,71 +33,55 @@ struct BackpackHeader: View {
                     .foregroundStyle(.black)
             }
             Spacer()
-            AnimagicLabelButton(title: "Draw More!", icon: "pencil", backgroundColor: AnimagicTheme.orange, action: onDrawMore)
-            BackpackARButton(action: onOpenAR)
+            AnimagicTextField(placeholder: "Search.....", text: $searchText)
+                .frame(minWidth: 120, maxWidth: 300)
+            AnimagicIconButton(icon: "paintbrush.fill", backgroundColor: AnimagicTheme.orange, action: onDrawMore)
+            AnimagicIconButton(icon: "camera.fill", backgroundColor: AnimagicTheme.orange, action: onOpenAR)
         }
         .padding(.horizontal, 24)
-        .padding(.vertical, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 8)
     }
 }
 
-struct BackpackFilterBar: View {
+struct BackpackCategoryBar: View {
     @Binding var selectedCategory: ArtworkCategory?
-    @Binding var searchText: String
-    @Environment(\.horizontalSizeClass) private var sizeClass
-
-    private let categories: [ArtworkCategory?] = [nil, .skies, .underwater, .land]
+    private let categories: [ArtworkCategory?] = [nil, .underwater, .land, .skies]
 
     var body: some View {
-        Group {
-            if sizeClass == .compact {
-                compactLayout
-            } else {
-                regularLayout
-            }
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 16)
-    }
-
-    /// Single-row layout for regular (wide) size classes.
-    private var regularLayout: some View {
-        HStack(spacing: 16) {
-            tabButtons
-            Spacer()
-            searchField
-        }
-    }
-
-    /// Stacked layout for compact (narrow) size classes — scrollable tabs above search.
-    private var compactLayout: some View {
-        VStack(spacing: 12) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    tabButtons
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(categories, id: \.self) { category in
+                    let isSelected = selectedCategory == category
+                    let title = category?.title ?? "All"
+                    
+                    Button {
+                        selectedCategory = category
+                    } label: {
+                        Text(title)
+                            .font(.custom("Belanosima-SemiBold", size: 28))
+                            .foregroundStyle(isSelected ? .white : AnimagicTheme.blue)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 12)
+                            .background(
+                                Capsule()
+                                    .fill(isSelected ? AnimagicTheme.blue : AnimagicTheme.blue.opacity(0.15))
+                            )
+                            .padding(6)
+                            .background(
+                                Capsule()
+                                    .fill(Color.white)
+                            )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            searchField
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
         }
-    }
-
-    @ViewBuilder
-    private var tabButtons: some View {
-        ForEach(categories, id: \.self) { category in
-            BackpackTabButton(
-                title: category?.title ?? "All",
-                isSelected: selectedCategory == category
-            ) {
-                selectedCategory = category
-            }
-        }
-    }
-
-    private var searchField: some View {
-        AnimagicTextField(placeholder: "Search.....", text: $searchText)
-            .frame(minWidth: 120, maxWidth: 300)
     }
 }
+
 
 struct BackpackDrawingCard: View {
     let drawing: SavedDrawing
@@ -149,45 +134,4 @@ struct BackpackScrollIndicator: View {
     }
 }
 
-private struct BackpackARButton: View {
-    let action: () -> Void
 
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: "camera")
-                Image(systemName: "sparkles")
-            }
-            .font(.system(size: 20, weight: .bold))
-            .foregroundStyle(.black)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(AnimagicTheme.orange)
-            .clipShape(Capsule())
-            .overlay(Capsule().stroke(.black, lineWidth: 3))
-        }
-        .buttonStyle(.animagicPress)
-    }
-}
-
-private struct BackpackTabButton: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.custom("Belanosima-Bold", size: 20, relativeTo: .headline))
-                .minimumScaleFactor(0.75)
-                .lineLimit(1)
-                .foregroundStyle(isSelected ? .white : .black)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 8)
-                .background(isSelected ? AnimagicTheme.blue : AnimagicTheme.pink)
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(isSelected ? .white : .black, lineWidth: 3))
-        }
-        .buttonStyle(.animagicPress)
-    }
-}

@@ -26,14 +26,16 @@ extension ButtonStyle where Self == AnimagicPressButtonStyle {
 struct AnimagicIconButton: View {
     let icon: String
     let backgroundColor: Color
+    var iconColor: Color = .white
     var innerBorderColor: Color = .black.opacity(0.2)
+    var isSelected: Bool = true
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 32, weight: .bold))
-                .foregroundColor(.white)
+                .foregroundColor(iconColor)
                 .padding(18)
                 .background(
                     Circle()
@@ -50,6 +52,8 @@ struct AnimagicIconButton: View {
                 )
         }
         .buttonStyle(.animagicPress)
+        .scaleEffect(isSelected ? 1.0 : 0.85)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
     }
 }
 
@@ -185,3 +189,88 @@ struct AnimagicCard<Content: View>: View {
         }
     }
 }
+
+public struct ExpandableButtonItem: Identifiable {
+    public let id = UUID()
+    let icon: String
+    let backgroundColor: Color
+    var iconColor: Color = .white
+    var innerBorderColor: Color = .black.opacity(0.2)
+    var isSelected: Bool = true
+    let action: () -> Void
+}
+
+struct AnimagicExpandableButtonGroup: View {
+    @Binding var isExpanded: Bool
+    
+    let mainIconExpanded: String
+    let mainIconCollapsed: String
+    let mainColor: Color
+    let items: [ExpandableButtonItem]
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            if isExpanded {
+                HStack(spacing: 8) {
+                    ForEach(items) { item in
+                        AnimagicIconButton(
+                            icon: item.icon,
+                            backgroundColor: item.backgroundColor,
+                            iconColor: item.iconColor,
+                            innerBorderColor: item.innerBorderColor,
+                            isSelected: item.isSelected,
+                            action: item.action
+                        )
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .padding(.leading, 8)
+                .padding(.trailing, 8)
+            }
+            
+            AnimagicIconButton(
+                icon: isExpanded ? mainIconExpanded : mainIconCollapsed,
+                backgroundColor: mainColor,
+                action: {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                        isExpanded.toggle()
+                    }
+                }
+            )
+        }
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(isExpanded ? 0.9 : 0))
+                .shadow(color: isExpanded ? .black.opacity(0.1) : .clear, radius: 5)
+        )
+    }
+}
+
+struct AnimagicSideTabButton: View {
+    let icon: String
+    let backgroundColor: Color
+    var iconColor: Color = .white
+    var innerBorderColor: Color = .white
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(iconColor)
+                .padding(.vertical, 24)
+                .padding(.horizontal, 20)
+                .background(
+                    UnevenRoundedRectangle(topLeadingRadius: 32, bottomLeadingRadius: 32, bottomTrailingRadius: 0, topTrailingRadius: 0)
+                        .fill(backgroundColor)
+                        .overlay(
+                            UnevenRoundedRectangle(topLeadingRadius: 32, bottomLeadingRadius: 32, bottomTrailingRadius: 0, topTrailingRadius: 0)
+                                .strokeBorder(innerBorderColor, lineWidth: 4)
+                        )
+                )
+                .padding(.trailing, -4) // Slight overlap to ensure it sits flush against the edge even with borders
+        }
+        .buttonStyle(.animagicPress)
+    }
+}
+

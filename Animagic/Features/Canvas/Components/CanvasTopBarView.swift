@@ -35,14 +35,6 @@ struct CanvasTopBarView: View {
                 }
             }
             
-            AnimagicIconButton(icon: "arrow.uturn.backward", backgroundColor: AnimagicTheme.orange) {
-                canvasView.undoManager?.undo()
-            }
-            
-            AnimagicIconButton(icon: "arrow.uturn.forward", backgroundColor: AnimagicTheme.orange) {
-                canvasView.undoManager?.redo()
-            }
-            
             AnimagicLabelButton(title: "Save", icon: "checkmark", backgroundColor: AnimagicTheme.orange, isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {
                 onSave()
             }
