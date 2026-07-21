@@ -75,10 +75,13 @@ struct NewARPlacementView: View {
     @State private var objectCount = 0
     @State private var undoAvailable = false
     @State private var undoDismissTask: Task<Void, Never>?
+    @Environment(NavigationRouter.self) private var router
     @State private var isImmersive = false
     @State private var showsImmersiveHint = false
     @State private var immersiveHintTask: Task<Void, Never>?
     @State private var cameraPermissionState: CameraPermissionState = .checking
+    @State private var isTopMenuExpanded = false
+    @State private var isBackpackExpanded = false
 
     private enum CameraPermissionState {
         case checking
@@ -167,24 +170,15 @@ struct NewARPlacementView: View {
                     .accessibilityAddTraits(.isStaticText)
                     .transition(.opacity)
             }
+            
+            ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
         .animation(.easeOut(duration: 0.2), value: placementStatus)
         .animation(.easeOut(duration: 0.2), value: undoAvailable)
-        .navigationTitle("Magic Lens")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        .toolbar(isImmersive ? .hidden : .visible, for: .navigationBar)
-        .statusBarHidden(isImmersive)
-        .persistentSystemOverlays(isImmersive ? .hidden : .automatic)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: enterImmersive) {
-                    Label("Hide controls", systemImage: "eye.slash")
-                }
-                .accessibilityHint("Shows only the AR scene and selected object guide")
-            }
-        }
+        .navigationBarHidden(true)
+        .statusBarHidden(true)
+        .persistentSystemOverlays(.hidden)
         .onAppear {
             synchronizeInitialSelection()
         }
@@ -214,6 +208,43 @@ struct NewARPlacementView: View {
 
     private var controlsOverlay: some View {
         VStack(spacing: 12) {
+            // Top Row
+            HStack(alignment: .top) {
+                AnimagicIconButton(
+                    icon: "chevron.left",
+                    backgroundColor: .white,
+                    iconColor: AnimagicTheme.orange,
+                    innerBorderColor: .clear,
+                    action: { router.popToRoot() }
+                )
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    AnimagicExpandableButtonGroup(
+                        isExpanded: $isTopMenuExpanded,
+                        mainIconExpanded: "xmark",
+                        mainIconCollapsed: "rectangle.3.group.fill",
+                        mainColor: AnimagicTheme.orange,
+                        items: [
+                            ExpandableButtonItem(icon: "questionmark", backgroundColor: .green, innerBorderColor: .clear, action: { /* Help action */ }),
+                            ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: .clear, action: { enterImmersive() }),
+                            ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: .clear, action: { /* Camera action */ })
+                        ]
+                    )
+                    
+                    AnimagicIconButton(
+                        icon: "paintbrush.fill",
+                        backgroundColor: .yellow,
+                        innerBorderColor: .clear,
+                        isSelected: selectedContentType == .doodle,
+                        action: { router.push(.canvas) }
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
+            
             if shouldShowStatus {
                 NewARStatusPill(status: placementStatus)
                     .transition(.opacity.combined(with: .scale(scale: 0.96)))
@@ -229,37 +260,75 @@ struct NewARPlacementView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
 
-            if let placedObjectSelection {
-                NewAREditCard(
-                    selection: placedObjectSelection,
-                    animalArchetype: archetypeSelection,
-                    onDone: {
-                        sceneCommand = .clearSelection(UUID())
-                    },
-                    onDelete: {
-                        sceneCommand = .delete(UUID())
+            // Bottom Row
+            HStack(alignment: .bottom) {
+                Group {
+                    if let placedObjectSelection {
+                        NewAREditCard(
+                            selection: placedObjectSelection,
+                            animalArchetype: archetypeSelection,
+                            onDone: {
+                                sceneCommand = .clearSelection(UUID())
+                            },
+                            onDelete: {
+                                sceneCommand = .delete(UUID())
+                            }
+                        )
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    } else {
+                        AnimagicLabelButton(
+                            title: placeButtonTitle,
+                            backgroundColor: AnimagicTheme.blue,
+                            innerBorderColor: .clear,
+                            isDisabled: !canPlace,
+                            isDimmed: !canPlace,
+                            action: { sceneCommand = .place(UUID()) }
+                        )
                     }
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            } else {
-                NewARObjectShelf(
-                    contentType: $selectedContentType,
-                    cutoutAssets: artworkStore.cutoutLibrary,
-                    selectedCutoutID: $selectedCutoutID,
-                    selectedModelID: $selectedModelID,
-                    canPlace: canPlace,
-                    placeButtonTitle: placeButtonTitle,
-                    onPlace: {
-                        sceneCommand = .place(UUID())
-                    },
-                    onSelectionFeedback: feedback.selectionChanged
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .padding(.leading, 24)
+                .padding(.vertical, 24)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 12) {
+                    if isBackpackExpanded {
+                        VerticalARObjectShelf(
+                            contentType: $selectedContentType,
+                            cutoutAssets: artworkStore.cutoutLibrary,
+                            selectedCutoutID: $selectedCutoutID,
+                            selectedModelID: $selectedModelID,
+                            canPlace: canPlace,
+                            placeButtonTitle: placeButtonTitle,
+                            onCollapse: {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                    isBackpackExpanded = false
+                                }
+                            },
+                            onPlace: { sceneCommand = .place(UUID()) },
+                            onSelectionFeedback: feedback.selectionChanged
+                        )
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                    } else {
+                        AnimagicSideTabButton(
+                            icon: "backpack.fill",
+                            backgroundColor: AnimagicTheme.orange,
+                            action: {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                    isBackpackExpanded = true
+                                }
+                            }
+                        )
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .padding(.bottom, 32)
+                    }
+                }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .frame(maxWidth: 780)
+        .padding(.horizontal, 0)
+        .padding(.vertical, 0)
+        .frame(maxWidth: .infinity, maxHeight: .infinity) // Allow reaching edges
+        .ignoresSafeArea(.all, edges: .trailing) // Ignore trailing safe area to sit flush on right edge
     }
 
     private func enterImmersive() {
@@ -1400,3 +1469,86 @@ final class InitialTouchPanGestureRecognizer: UIPanGestureRecognizer {
         initialTouchLocation = nil
     }
 }
+
+struct ARLoadingOverlayView: View {
+    @State private var phase = 0
+    @State private var textTitleSize: CGFloat = 40
+    
+    var body: some View {
+        ZStack {
+            if phase < 3 {
+                // Background
+                Color.Token.Background.primary
+                    .opacity(phase == 0 ? 1.0 : (phase == 1 ? 0.8 : 0.6))
+                    .ignoresSafeArea()
+                    .animation(.easeInOut(duration: 0.8), value: phase)
+                
+                VStack(spacing: 30) {
+                    if phase < 2 {
+                        iconView(icon: "iphone", secondaryIcon: "hand.tap.fill")
+                        outlinedText(text: "Move your phone to start")
+                    } else {
+                        iconView(icon: "iphone.radiowaves.left.and.right", secondaryIcon: "hand.tap.fill")
+                        outlinedText(text: "Finding a Surface")
+                    }
+                }
+                .transition(.opacity)
+                .animation(.easeInOut(duration: 0.8), value: phase)
+            }
+        }
+        .onAppear {
+            startAnimation()
+        }
+    }
+    
+    @ViewBuilder
+    private func iconView(icon: String, secondaryIcon: String) -> some View {
+        ZStack {
+            Image(systemName: icon)
+                .font(.system(size: 80))
+                .foregroundColor(Color.Token.Text.primary)
+            
+            Image(systemName: secondaryIcon)
+                .font(.system(size: 50))
+                .foregroundColor(Color.Token.Button.primary) // orange-ish
+                .offset(x: 25, y: 35)
+        }
+        .frame(height: 120)
+    }
+    
+    @ViewBuilder
+    private func outlinedText(text: String) -> some View {
+        ZStack {
+            ForEach(0..<12) { i in
+                Text(text)
+                    .font(.custom("Belanosima-SemiBold", size: textTitleSize))
+                    .foregroundColor(.white)
+                    .offset(
+                        x: CGFloat(cos(Double(i) * .pi / 6)) * 6,
+                        y: CGFloat(sin(Double(i) * .pi / 6)) * 6
+                    )
+            }
+            Text(text)
+                .font(.custom("Belanosima-SemiBold", size: textTitleSize))
+                .foregroundColor(Color.Token.Text.primary)
+        }
+    }
+    
+    private func startAnimation() {
+        // Phase 0: Solid (0s - 1s)
+        // Phase 1: Translucent (1s - 2s)
+        // Phase 2: Finding Surface (2s - 3s)
+        // Phase 3: Hidden (>3s)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.easeInOut(duration: 0.8)) { phase = 1 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeInOut(duration: 0.8)) { phase = 2 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            withAnimation(.easeInOut(duration: 0.8)) { phase = 3 }
+        }
+    }
+}
+
