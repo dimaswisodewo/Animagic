@@ -21,4 +21,6 @@ Pods/
 *.dSYM.zip
 *.dSYM
 *.log
-docs/
+docs/*
+!docs/asset-pipeline/
+!docs/asset-pipeline/*.md

@@ -50,6 +50,12 @@ AniMagic is an iOS SwiftUI application. Follow the existing SwiftUI, Observation
 - Make state ownership and environment dependencies explicit.
 - Preserve accessibility, previews, and existing visual behavior when refactoring.
 
+## Blender and USDZ assets
+
+- Follow the authoritative [AR asset pipeline](docs/asset-pipeline/README.md) when adding or replacing Blender-derived USDZ resources.
+- Use the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) and complete every check in [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md).
+- Never overwrite an artist's source Blend or accept a USDZ based only on successful export; dependency validation and an Apple Metal render are required.
+
 ## File headers and authorship
 
 - Every new or modified source file must contain a header identifying its author.
