@@ -72,7 +72,7 @@ struct PlacementContentTypePicker: View {
     @Binding var selection: PlacementContentType
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 6) {
             ForEach(PlacementContentType.allCases) { type in
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -80,18 +80,30 @@ struct PlacementContentTypePicker: View {
                     }
                 } label: {
                     Text(type.title)
-                        .font(.caption.bold())
+                        .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                         .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 10)
                         .padding(.vertical, 8)
-                        .background(selection == type ? Color.accentColor : Color.clear)
-                        .foregroundStyle(selection == type ? .white : .primary)
+                        .foregroundStyle(selection == type ? .white : AnimagicTheme.blue.opacity(0.7))
+                        .background(
+                            Capsule()
+                                .fill(selection == type ? AnimagicTheme.blue : Color(Color.Palette.b50))
+                        )
                         .clipShape(Capsule())
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel(type.title)
+                .accessibilityAddTraits(selection == type ? .isSelected : [])
             }
         }
-        .padding(2)
-        .background(Color(.systemGroupedBackground).opacity(0.8))
-        .clipShape(Capsule())
+        .padding(4)
+        .background(Capsule().fill(Color.white))
+        .overlay {
+            Capsule()
+                .strokeBorder(Color(Color.Palette.b50), lineWidth: 3)
+        }
         .frame(maxWidth: 220)
     }
 }
@@ -482,17 +494,17 @@ private struct ARSelectionCard<Preview: View>: View {
     var body: some View {
         VStack(spacing: 4) {
             preview
-                .frame(width: 68, height: 56)
+                .frame(width: 82, height: 64)
             Text(title)
                 .font(.caption2.bold())
                 .lineLimit(1)
-                .frame(maxWidth: 82)
+                .frame(maxWidth: 104)
         }
         .foregroundStyle(.primary)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 5)
-        .frame(width: 94)
-        .frame(minHeight: 84)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 7)
+        .frame(width: 112)
+        .frame(minHeight: 104)
         .background(isSelected ? Color.yellow.opacity(0.28) : Color.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay {
@@ -588,10 +600,13 @@ private struct ARPressButtonStyle: ButtonStyle {
 }
 
 struct VerticalARObjectShelf: View {
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
     @Binding var contentType: PlacementContentType
     let cutoutAssets: [CutoutAsset]
     @Binding var selectedCutoutID: CutoutAsset.ID?
     @Binding var selectedModelID: PlaceableUSDZModel.ID?
+    let shelfHeight: CGFloat
     let canPlace: Bool
     let placeButtonTitle: String
     let onCollapse: () -> Void
@@ -599,8 +614,12 @@ struct VerticalARObjectShelf: View {
     let onSelectionFeedback: () -> Void
 
     let columns = [
-        GridItem(.adaptive(minimum: 80, maximum: 100), spacing: 10)
+        GridItem(.adaptive(minimum: 112, maximum: 130), spacing: 12)
     ]
+
+    private var shelfWidth: CGFloat {
+        verticalSizeClass == .compact ? 340 : 400
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -616,6 +635,13 @@ struct VerticalARObjectShelf: View {
             .padding(.trailing, -20)
             .zIndex(1) // Keep above the shelf
             
+            let shelfShape = UnevenRoundedRectangle(
+                topLeadingRadius: 24,
+                bottomLeadingRadius: 24,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: 0
+            )
+
             VStack(spacing: 12) {
                 PlacementContentTypePicker(selection: $contentType)
                     .onChange(of: contentType) { _, _ in onSelectionFeedback() }
@@ -633,10 +659,11 @@ struct VerticalARObjectShelf: View {
                     .padding(.bottom, 12)
                 }
             }
-            .frame(width: 280, height: 400)
-            .background(AnimagicTheme.yellow, in: UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 24, bottomTrailingRadius: 0, topTrailingRadius: 0))
+            .frame(width: shelfWidth, height: shelfHeight)
+            .background(AnimagicTheme.yellow, in: shelfShape)
+            .clipShape(shelfShape)
             .overlay {
-                UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 24, bottomTrailingRadius: 0, topTrailingRadius: 0)
+                shelfShape
                     .strokeBorder(Color.white, lineWidth: 6) // Using white border to match reference
             }
             .shadow(color: .black.opacity(0.2), radius: 14, y: 5)

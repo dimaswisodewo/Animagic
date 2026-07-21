@@ -207,129 +207,132 @@ struct NewARPlacementView: View {
     }
 
     private var controlsOverlay: some View {
-        VStack(spacing: 12) {
-            // Top Row
-            HStack(alignment: .top) {
-                AnimagicIconButton(
-                    icon: "chevron.left",
-                    backgroundColor: Color(Color.Palette.n20),
-                    iconColor: Color(Color.Palette.n70),
-                    innerBorderColor: .clear,
-                    action: { router.popToRoot() }
-                )
-                
-                Spacer()
-                
-                HStack(spacing: 8) {
-                    AnimagicExpandableButtonGroup(
-                        isExpanded: $isTopMenuExpanded,
-                        mainIconExpanded: "xmark",
-                        mainIconCollapsed: "rectangle.3.group.fill",
-                        mainColor: AnimagicTheme.orange,
-                        items: [
-                            ExpandableButtonItem(
-                                icon: "questionmark",
-                                backgroundColor: .green,
-                                innerBorderColor: .clear,
-                                action: {
-                                    isTopMenuExpanded = false
-                                    router.push(.help)
-                                }
-                            ),
-                            ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: .clear, action: { enterImmersive() }),
-                            ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: .clear, action: { /* Camera action */ })
-                        ]
-                    )
-                    
+        GeometryReader { geometry in
+            VStack(spacing: 12) {
+                // Top Row
+                HStack(alignment: .top) {
                     AnimagicIconButton(
-                        icon: "paintbrush.fill",
-                        backgroundColor: .yellow,
+                        icon: "chevron.left",
+                        backgroundColor: Color(Color.Palette.n20),
+                        iconColor: Color(Color.Palette.n70),
                         innerBorderColor: .clear,
-                        isSelected: selectedContentType == .doodle,
-                        action: { router.push(.canvas) }
+                        action: { router.popToRoot() }
                     )
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-            .padding(.bottom, 24)
-            
-            if shouldShowStatus {
-                NewARStatusPill(status: placementStatus)
-                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
-            }
 
-            Spacer()
+                    Spacer()
 
-            if undoAvailable {
-                ARDeleteUndoToast {
-                    undoDismissTask?.cancel()
-                    sceneCommand = .undoDelete(UUID())
-                }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
-            // Bottom Row
-            HStack(alignment: .bottom) {
-                Group {
-                    if let placedObjectSelection {
-                        NewAREditCard(
-                            selection: placedObjectSelection,
-                            animalArchetype: archetypeSelection,
-                            onDone: {
-                                sceneCommand = .clearSelection(UUID())
-                            },
-                            onDelete: {
-                                sceneCommand = .delete(UUID())
-                            }
+                    HStack(spacing: 8) {
+                        AnimagicExpandableButtonGroup(
+                            isExpanded: $isTopMenuExpanded,
+                            mainIconExpanded: "xmark",
+                            mainIconCollapsed: "rectangle.3.group.fill",
+                            mainColor: AnimagicTheme.orange,
+                            items: [
+                                ExpandableButtonItem(
+                                    icon: "questionmark",
+                                    backgroundColor: .green,
+                                    innerBorderColor: .clear,
+                                    action: {
+                                        isTopMenuExpanded = false
+                                        router.push(.help)
+                                    }
+                                ),
+                                ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: .clear, action: { enterImmersive() }),
+                                ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: .clear, action: { /* Camera action */ })
+                            ]
                         )
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    } else {
-                        AnimagicLabelButton(
-                            title: placeButtonTitle,
-                            backgroundColor: AnimagicTheme.blue,
+
+                        AnimagicIconButton(
+                            icon: "paintbrush.fill",
+                            backgroundColor: .yellow,
                             innerBorderColor: .clear,
-                            isDisabled: !canPlace,
-                            isDimmed: !canPlace,
-                            action: { sceneCommand = .place(UUID()) }
+                            isSelected: selectedContentType == .doodle,
+                            action: { router.push(.canvas) }
                         )
                     }
                 }
-                .padding(.leading, 24)
-                .padding(.vertical, 24)
-                
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
+
+                if shouldShowStatus {
+                    NewARStatusPill(status: placementStatus)
+                        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                }
+
                 Spacer()
-                
-                VStack(alignment: .trailing, spacing: 12) {
-                    if isBackpackExpanded {
-                        VerticalARObjectShelf(
-                            contentType: $selectedContentType,
-                            cutoutAssets: artworkStore.cutoutLibrary,
-                            selectedCutoutID: $selectedCutoutID,
-                            selectedModelID: $selectedModelID,
-                            canPlace: canPlace,
-                            placeButtonTitle: placeButtonTitle,
-                            onCollapse: {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                                    isBackpackExpanded = false
+
+                if undoAvailable {
+                    ARDeleteUndoToast {
+                        undoDismissTask?.cancel()
+                        sceneCommand = .undoDelete(UUID())
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                // Bottom Row
+                HStack(alignment: .bottom) {
+                    Group {
+                        if let placedObjectSelection {
+                            NewAREditCard(
+                                selection: placedObjectSelection,
+                                animalArchetype: archetypeSelection,
+                                onDone: {
+                                    sceneCommand = .clearSelection(UUID())
+                                },
+                                onDelete: {
+                                    sceneCommand = .delete(UUID())
                                 }
-                            },
-                            onPlace: { sceneCommand = .place(UUID()) },
-                            onSelectionFeedback: feedback.selectionChanged
-                        )
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
-                    } else {
-                        AnimagicSideTabButton(
-                            icon: "backpack.fill",
-                            backgroundColor: AnimagicTheme.orange,
-                            action: {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                                    isBackpackExpanded = true
+                            )
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                        } else {
+                            AnimagicLabelButton(
+                                title: placeButtonTitle,
+                                backgroundColor: AnimagicTheme.blue,
+                                innerBorderColor: .clear,
+                                isDisabled: !canPlace,
+                                isDimmed: !canPlace,
+                                action: { sceneCommand = .place(UUID()) }
+                            )
+                        }
+                    }
+                    .padding(.leading, 24)
+                    .padding(.vertical, 24)
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 12) {
+                        if isBackpackExpanded {
+                            VerticalARObjectShelf(
+                                contentType: $selectedContentType,
+                                cutoutAssets: artworkStore.cutoutLibrary,
+                                selectedCutoutID: $selectedCutoutID,
+                                selectedModelID: $selectedModelID,
+                                shelfHeight: backpackShelfHeight(for: geometry.size.height),
+                                canPlace: canPlace,
+                                placeButtonTitle: placeButtonTitle,
+                                onCollapse: {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                        isBackpackExpanded = false
+                                    }
+                                },
+                                onPlace: { sceneCommand = .place(UUID()) },
+                                onSelectionFeedback: feedback.selectionChanged
+                            )
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                        } else {
+                            AnimagicSideTabButton(
+                                icon: "backpack.fill",
+                                backgroundColor: AnimagicTheme.orange,
+                                action: {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                        isBackpackExpanded = true
+                                    }
                                 }
-                            }
-                        )
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
-                        .padding(.bottom, 32)
+                            )
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                            .padding(.bottom, 32)
+                        }
                     }
                 }
             }
@@ -337,7 +340,17 @@ struct NewARPlacementView: View {
         .padding(.horizontal, 0)
         .padding(.vertical, 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity) // Allow reaching edges
-        .ignoresSafeArea(.all, edges: .trailing) // Ignore trailing safe area to sit flush on right edge
+        .ignoresSafeArea(.container, edges: [.top, .trailing]) // Keep the top row fixed while the backpack sits flush on the right edge
+    }
+
+    private func backpackShelfHeight(for availableHeight: CGFloat) -> CGFloat {
+        if availableHeight < 500 {
+            return min(360, max(280, availableHeight - 32))
+        }
+
+        // Leave a small breathing space below the top controls while keeping
+        // the shelf inside the bottom safe-area padding on taller layouts.
+        return min(availableHeight - 32, max(620, availableHeight - 140))
     }
 
     private func enterImmersive() {
