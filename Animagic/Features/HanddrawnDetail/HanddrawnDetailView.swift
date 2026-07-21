@@ -137,8 +137,10 @@ struct HanddrawnDetailView: View {
             VStack(spacing: 12) {
                 ProgressView()
                     .controlSize(.large)
-                Text("AniMagic is recognizing your doodle…")
-                    .font(.headline)
+                Text("AniMagix is recognizing your doodle…")
+                    .font(.custom("Belanosima-SemiBold", size: 28))
+                    .foregroundStyle(Color(Color.Palette.n70))
+                    .multilineTextAlignment(.center)
                 Text("Preparing it for AR")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
