@@ -22,14 +22,12 @@ struct BackpackPageView: View {
     var body: some View {
         VStack(spacing: 0) {
             BackpackHeader(
+                searchText: $searchText,
                 onBack: dismiss.callAsFunction,
                 onDrawMore: startNewDrawing,
                 onOpenAR: openAR
             )
-            BackpackFilterBar(
-                selectedCategory: $selectedCategory,
-                searchText: $searchText
-            )
+            BackpackCategoryBar(selectedCategory: $selectedCategory)
             drawingContent
         }
         .background(AnimagicTheme.yellow)

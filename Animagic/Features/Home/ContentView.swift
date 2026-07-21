@@ -12,84 +12,112 @@ struct ContentView: View {
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
+    @State private var isBreathing = false
+    @State private var showHelp = false
     
     var body: some View {
         ZStack {
-            ZStack {
-                // Background Color
-                Color(red: 1.0, green: 0.79, blue: 0.07) // Yellow #FFC812
-                    .ignoresSafeArea()
-                
-                // Background Graphics
-                GeometryReader { geometry in
-                    let scale = min(geometry.size.width, geometry.size.height) / 1024
-
-                    TopRightGraphic(scale: scale)
-                        .offset(x: isAnimatingGraphics ? -30 : 20)
-                        .animation(.easeInOut(duration: 3.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .offset(y: isAnimatingGraphics ? -20 : 25)
-                        .animation(.easeInOut(duration: 4.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .position(x: geometry.size.width - 50, y: 50)
-                    
-                    BottomLeftGraphic(scale: scale)
-                        .offset(x: isAnimatingGraphics ? 25 : -15)
-                        .animation(.easeInOut(duration: 3.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .offset(y: isAnimatingGraphics ? 30 : -20)
-                        .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .position(x: 50, y: geometry.size.height - 50)
-                        
-                    TopLeftGraphic(scale: scale)
-                        .offset(x: isAnimatingGraphics ? 15 : -25)
-                        .animation(.easeInOut(duration: 4.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .offset(y: isAnimatingGraphics ? -30 : 15)
-                        .animation(.easeInOut(duration: 3.3).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .position(x: 50, y: 150)
-                        
-                    BottomRightGraphic(scale: scale)
-                        .offset(x: isAnimatingGraphics ? -20 : 30)
-                        .animation(.easeInOut(duration: 3.5).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .offset(y: isAnimatingGraphics ? 25 : -30)
-                        .animation(.easeInOut(duration: 4.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                        .position(x: geometry.size.width - 50, y: geometry.size.height - 150)
-                }
+            // Background Color
+            Color.Token.Background.primary
                 .ignoresSafeArea()
-                .onAppear {
-                    isAnimatingGraphics = true
-                }
-                
-                // Main Content
-                GeometryReader { geo in
-                    let titleSize = min(geo.size.width * 0.35, 150)
+            
+            // Background Graphics
+            GeometryReader { geometry in
+                let scale = min(geometry.size.width, geometry.size.height) / 1024
 
-                    VStack(spacing: 20) {
-                        Text("AniMagic")
+                TopRightGraphic(scale: scale)
+                    .offset(x: isAnimatingGraphics ? -30 : 20)
+                    .animation(.easeInOut(duration: 3.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(y: isAnimatingGraphics ? -20 : 25)
+                    .animation(.easeInOut(duration: 4.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .position(x: geometry.size.width - 50, y: 50)
+                
+                BottomLeftGraphic(scale: scale)
+                    .offset(x: isAnimatingGraphics ? 25 : -15)
+                    .animation(.easeInOut(duration: 3.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(y: isAnimatingGraphics ? 30 : -20)
+                    .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .position(x: 50, y: geometry.size.height - 50)
+            }
+            .ignoresSafeArea()
+            .onAppear {
+                isAnimatingGraphics = true
+                isBreathing = true
+            }
+            
+            // Main Content
+            GeometryReader { geo in
+                let titleSize = min(geo.size.width * 0.35, 150)
+
+                VStack(spacing: 50) {
+                    ZStack {
+                        // Thick outline for "AniMagix"
+                        ForEach(0..<12) { i in
+                            Text("AniMagix")
+                                .font(.custom("Belanosima-SemiBold", size: titleSize, relativeTo: .largeTitle))
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                                .foregroundColor(.white)
+                                .offset(
+                                    x: CGFloat(cos(Double(i) * .pi / 6)) * 8,
+                                    y: CGFloat(sin(Double(i) * .pi / 6)) * 8
+                                )
+                        }
+                        
+                        Text("AniMagix")
                             .font(.custom("Belanosima-SemiBold", size: titleSize, relativeTo: .largeTitle))
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
-                            .foregroundColor(.black)
-                            .padding(.bottom, 20)
-
-                        CustomButton(title: "Let's Draw!") {
-                            drawingSession.startNewDrawing()
-                            router.push(.canvas)
-                        }
-
-                        CustomButton(title: "Magic Lens") {
-                            drawingSession.clearDrawing()
-                            router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
-                        }
-
-                        CustomButton(title: "Virtual Room") {
-                            router.push(.virtualRoom)
-                        }
-
-                        CustomButton(title: "My Backpack") {
-                            router.push(.backpack)
-                        }
+                            .foregroundColor(Color.Token.Text.primary)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    AnimagicIconButton(
+                        icon: "play.fill",
+                        backgroundColor: Color.Palette.o300,
+                        iconColor: .white,
+                        innerBorderColor: .white.opacity(0.8)
+                    ) {
+                        drawingSession.clearDrawing()
+                        router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
+                    }
+                    .scaleEffect(2.0)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            
+            // Floating Bottom Buttons
+            VStack {
+                Spacer()
+                HStack {
+                    AnimagicIconButton(
+                        icon: "questionmark",
+                        backgroundColor: .white,
+                        iconColor: Color.Token.Icon.primary,
+                        innerBorderColor: .clear
+                    ) {
+                        showHelp = true
+                    }
+                    .padding(.leading, 32)
+                    .padding(.bottom, 32)
+                    
+                    Spacer()
+                    
+                    AnimagicIconButton(
+                        icon: "backpack.fill",
+                        backgroundColor: .white,
+                        iconColor: Color.Token.Icon.primary,
+                        innerBorderColor: .clear
+                    ) {
+                        router.push(.backpack)
+                    }
+                    .padding(.trailing, 32)
+                    .padding(.bottom, 32)
                 }
             }
+        }
+        .sheet(isPresented: $showHelp) {
+            GuidePopupView(isPresented: $showHelp, selectedAnimal: .constant(nil))
+                .presentationBackground(.clear)
         }
         .withAppRouter()
         .alert(
@@ -170,53 +198,6 @@ struct BottomLeftGraphic: View {
     }
 }
 
-struct TopLeftGraphic: View {
-    var scale: CGFloat = 1
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(Color(red: 1.0, green: 0.44, blue: 0.0)) // Orange
-                .frame(width: 300 * scale, height: 300 * scale)
-            
-            // Geometric shapes inside orange circle
-            VStack(spacing: 8 * scale) {
-                HStack(spacing: 8 * scale) {
-                    Circle().fill(Color.white).frame(width: 30 * scale, height: 30 * scale)
-                    Circle().fill(Color.black).frame(width: 30 * scale, height: 30 * scale)
-                }
-                HStack(spacing: 8 * scale) {
-                    Circle().fill(Color.black).frame(width: 30 * scale, height: 30 * scale)
-                    Circle().fill(Color.white).frame(width: 30 * scale, height: 30 * scale)
-                }
-            }
-            .rotationEffect(.degrees(15))
-            .offset(x: 30 * scale, y: 30 * scale)
-        }
-    }
-}
-
-struct BottomRightGraphic: View {
-    var scale: CGFloat = 1
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(Color.white)
-                .frame(width: 350 * scale, height: 350 * scale)
-                .overlay(Circle().stroke(Color.black, lineWidth: 10 * scale))
-            
-            // Geometric shapes inside
-            HStack(spacing: -10 * scale) {
-                Rectangle().fill(Color(red: 0.05, green: 0.45, blue: 0.98)).frame(width: 50 * scale, height: 100 * scale)
-                Rectangle().fill(Color(red: 1.0, green: 0.45, blue: 0.75)).frame(width: 50 * scale, height: 100 * scale)
-                Rectangle().fill(Color.black).frame(width: 50 * scale, height: 100 * scale)
-            }
-            .rotationEffect(.degrees(-25))
-            .offset(x: -40 * scale, y: -40 * scale)
-        }
-    }
-}
 
 #if DEBUG
 #Preview {

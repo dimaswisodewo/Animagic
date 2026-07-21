@@ -16,7 +16,9 @@ enum GuideCatalog {
         GuideAnimal(name: "Fish", imageName: "fish"),
         GuideAnimal(name: "Tortoise", imageName: "tortoise"),
         GuideAnimal(name: "Ladybug", imageName: "ladybug"),
-        GuideAnimal(name: "Ant", imageName: "ant")
+        GuideAnimal(name: "Ant", imageName: "ant"),
+        GuideAnimal(name: "Lizard", imageName: "lizard"),
+        GuideAnimal(name: "Snail", imageName: "snail")
     ]
 
     static func animals(matching searchText: String) -> [GuideAnimal] {
@@ -48,21 +50,17 @@ struct GuidePopupView: View {
 
     private var header: some View {
         HStack {
-            Spacer()
             Text("Guide")
-                .font(.custom("Belanosima-Bold", size: 28))
+                .font(.custom("Belanosima-SemiBold", size: 32))
                 .foregroundStyle(.white)
             Spacer()
-            Button(action: dismiss) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(.black)
-                    .padding(10)
-                    .background(AnimagicTheme.orange)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(.black, lineWidth: 2))
-            }
-            .buttonStyle(.animagicPress)
+            AnimagicIconButton(
+                icon: "xmark",
+                backgroundColor: AnimagicTheme.orange,
+                iconColor: .white,
+                innerBorderColor: Color(red: 0.8, green: 0.35, blue: 0.0),
+                action: dismiss
+            )
         }
         .padding(.top, 20)
         .padding(.horizontal, 20)
@@ -101,20 +99,12 @@ private struct GuideAnimalButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack {
+            AnimagicCard(title: animal.name) {
                 Image(systemName: animal.imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 50)
                     .foregroundStyle(.gray)
-                Text(animal.name)
-                    .font(.custom("Belanosima-SemiBold", size: 20))
-                    .foregroundStyle(.black)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 120)
-            .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
     }
