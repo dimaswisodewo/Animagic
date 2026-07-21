@@ -14,6 +14,8 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
         case birds
         case fallingLeaves
         case tree
+        case treeStump
+        case treeTrunk
         case fishSchool
     }
 
@@ -51,6 +53,22 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
             title: "Tree",
             systemImageName: "tree.fill",
             resourceName: "tree_1",
+            resourceSubdirectory: nil,
+            normalization: .height(2.0)
+        ),
+        Self(
+            id: .treeStump,
+            title: "Tree Stump",
+            systemImageName: "tree.fill",
+            resourceName: "TreeStump",
+            resourceSubdirectory: nil,
+            normalization: .height(2.0)
+        ),
+        Self(
+            id: .treeTrunk,
+            title: "Tree Trunk",
+            systemImageName: "tree.fill",
+            resourceName: "TreeNoLeaf",
             resourceSubdirectory: nil,
             normalization: .height(2.0)
         ),
@@ -194,7 +212,7 @@ final class PlacedUSDZModel: PlacedSceneObject {
         let scale = targetDimension / sourceDimension
         let center = visualBounds.center
         loadedEntity.scale = SIMD3(repeating: scale)
-        loadedEntity.position = [-center.x * scale, -visualBounds.min.y * scale, -center.z * scale]
+        loadedEntity.position = [-center.x * scale, 0, -center.z * scale]
         loadedEntity.generateCollisionShapes(recursive: true)
         Self.configureInteractionCollisions(in: loadedEntity)
         root.components.set(InteractableComponent(objectID: id))

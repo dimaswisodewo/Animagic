@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
+		0BEF7B47300F52D600DC61B2 /* TreeStump.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B46300F52D600DC61B2 /* TreeStump.usdz */; };
+		0BEF7B49300F55E200DC61B2 /* TreeNoLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B48300F55E200DC61B2 /* TreeNoLeaf.usdz */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
@@ -101,6 +102,8 @@
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		0BEF7B46300F52D600DC61B2 /* TreeStump.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = TreeStump.usdz; sourceTree = "<group>"; };
+		0BEF7B48300F55E200DC61B2 /* TreeNoLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = TreeNoLeaf.usdz; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -560,6 +563,8 @@
 			isa = PBXGroup;
 			children = (
 				14A60964229B227465EE8AD4 /* Birds.usdz */,
+				0BEF7B48300F55E200DC61B2 /* TreeNoLeaf.usdz */,
+				0BEF7B46300F52D600DC61B2 /* TreeStump.usdz */,
 				9AE036FFA5A33C658370D38B /* bubbles.usdz */,
 				6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */,
 				46D74A3ECD9818F1F0D944C1 /* cloud.usdz */,
@@ -643,7 +648,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */;
+			buildConfigurationList = 74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -667,11 +672,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BEF7B49300F55E200DC61B2 /* TreeNoLeaf.usdz in Resources */,
 				22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */,
 				11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */,
 				1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */,
 				D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */,
 				238238874722D44037214247 /* Birds.usdz in Resources */,
+				0BEF7B47300F52D600DC61B2 /* TreeStump.usdz in Resources */,
 				EC19538278E20B32114ABEC7 /* CitrusOrchard.skybox in Resources */,
 				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
 				7362427944CD9F93F41B9849 /* Land.skybox in Resources */,
@@ -780,7 +787,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = Q7Y8Z9Y2W8;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -885,7 +892,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = Q7Y8Z9Y2W8;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
@@ -972,7 +979,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		74F1245031E0906762807C29 /* Build configuration list for PBXProject "Animagic" */ = {
+		74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5FD4AB81F197E396C2F4BADB /* Debug */,
