@@ -218,7 +218,6 @@ final class CutoutSceneEditor: SceneEditing {
         case .model:
             return placeModel(
                 at: transform,
-                cameraTransform: cameraTransform,
                 supportSurfaceNormal: supportSurfaceNormal
             )
         }
@@ -272,7 +271,6 @@ final class CutoutSceneEditor: SceneEditing {
 
     private func placeModel(
         at transform: simd_float4x4,
-        cameraTransform: simd_float4x4?,
         supportSurfaceNormal: SIMD3<Float>
     ) -> CutoutPlacementResult {
         guard !isLoadingModel else {
@@ -305,29 +303,21 @@ final class CutoutSceneEditor: SceneEditing {
             case .success(let loadedEntity):
                 let objectID = UUID()
                 let anchor = AnchorEntity(world: transform)
-                do {
-                    let placedModel = try PlacedUSDZModel(
-                        id: objectID,
-                        anchor: anchor,
-                        model: model,
-                        loadedEntity: loadedEntity,
-                        supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
-                    )
-                    if let cameraTransform {
-                        placedModel.interactionRoot.orientation = simd_quatf(
-                            angle: cameraTransform.yawFacingCamera(from: transform.translation),
-                            axis: [0, 1, 0]
-                        )
-                    }
-                    arView.scene.addAnchor(anchor)
-                    self.registry.register(placedModel)
-                    self.interactionManager.selectObject(withID: objectID)
-                    self.onPlacementResult?(.placed)
-                } catch {
-                    self.onPlacementResult?(
-                        .creationFailed(error.localizedDescription)
-                    )
-                }
+                let placedModel = PlacedUSDZModel(
+                    id: objectID,
+                    anchor: anchor,
+                    model: model,
+                    loadedEntity: loadedEntity,
+                    supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
+                )
+                placedModel.interactionRoot.orientation = simd_quatf(
+                    angle: Float.random(in: (-.pi / 30)...(.pi / 30)),
+                    axis: [0, 1, 0]
+                )
+                arView.scene.addAnchor(anchor)
+                self.registry.register(placedModel)
+                self.interactionManager.selectObject(withID: objectID)
+                self.onPlacementResult?(.placed)
             }
         }
         return .loading("Loading \(model.title)…")
