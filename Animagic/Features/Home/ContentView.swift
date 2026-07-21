@@ -76,7 +76,7 @@ struct ContentView: View {
                         icon: "play.fill",
                         backgroundColor: Color.Palette.o300,
                         iconColor: .white,
-                        innerBorderColor: .white.opacity(0.8)
+                        innerBorderColor: Color.Palette.o400
                     ) {
                         drawingSession.clearDrawing()
                         router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
@@ -86,27 +86,28 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
 
-            AnimagicIconButton(
-                icon: "questionmark",
-                backgroundColor: Color.Token.Button.success
-            ) {
-                router.push(.help)
-            }
-            .accessibilityLabel("Help")
-            .accessibilityHint("Opens the AniMagix guide")
-            .padding(24)
-            
             // Floating Bottom Buttons
             VStack {
                 Spacer()
                 HStack {
+                    AnimagicIconButton(
+                        icon: "questionmark",
+                        backgroundColor: Color.Token.Button.success
+                    ) {
+                        router.push(.help)
+                    }
+                    .accessibilityLabel("Help")
+                    .accessibilityHint("Opens the AniMagix guide")
+                    .padding(.leading, 32)
+                    .padding(.bottom, 32)
+
                     Spacer()
                     
                     AnimagicIconButton(
                         icon: "backpack.fill",
                         backgroundColor: Color(Color.Palette.n20),
                         iconColor: Color(Color.Palette.n70),
-                        innerBorderColor: .clear
+                        innerBorderColor: .black.opacity(0.2)
                     ) {
                         router.push(.backpack)
                     }

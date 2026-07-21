@@ -1,3 +1,10 @@
+//
+//  HanddrawnDetailComponents.swift
+//  AniMagic
+//
+//  Created by Amelia Putri Aftiana on 21/07/26.
+//
+
 import PencilKit
 import SwiftUI
 
@@ -11,21 +18,36 @@ struct HanddrawnDetailHeader: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            AnimagicIconButton(icon: "chevron.left", backgroundColor: AnimagicTheme.orange, action: onBack)
+            AnimagicIconButton(
+                icon: "chevron.left",
+                backgroundColor: Color(Color.Palette.n20),
+                iconColor: Color(Color.Palette.n70),
+                innerBorderColor: .black.opacity(0.2),
+                action: onBack
+            )
             Text(title)
                 .font(.custom("Belanosima-Bold", size: 28))
                 .foregroundStyle(.black)
             Spacer()
-            DetailActionButton(
-                icons: ["camera", "sparkles"],
-                shape: .capsule,
+            AnimagicIconButton(
+                icon: "camera.fill",
+                backgroundColor: Color.Token.Button.secondary,
+                innerBorderColor: .black.opacity(0.2),
                 action: onOpenAR
             )
-            DetailActionButton(icon: "square.and.arrow.up", action: onShare)
-            DetailActionButton(icon: "arrow.down.to.line", action: onSave)
-            DetailActionButton(
+            AnimagicIconButton(
+                icon: "square.and.arrow.up",
+                backgroundColor: Color.Token.Button.primary,
+                action: onShare
+            )
+            AnimagicIconButton(
+                icon: "arrow.down.to.line",
+                backgroundColor: Color.Token.Button.success,
+                action: onSave
+            )
+            AnimagicIconButton(
                 icon: "trash",
-                backgroundColor: AnimagicTheme.pink,
+                backgroundColor: Color(Color.Palette.r300),
                 action: onDelete
             )
         }
@@ -52,63 +74,5 @@ struct HanddrawnArtworkView: View {
                     .padding(40)
             }
         }
-    }
-}
-
-private struct DetailActionButton: View {
-    enum Shape: Equatable {
-        case circle
-        case capsule
-    }
-
-    let icons: [String]
-    var shape: Shape = .circle
-    var backgroundColor = AnimagicTheme.orange
-    let action: () -> Void
-
-    init(
-        icon: String,
-        backgroundColor: Color = AnimagicTheme.orange,
-        action: @escaping () -> Void
-    ) {
-        icons = [icon]
-        self.backgroundColor = backgroundColor
-        self.action = action
-    }
-
-    init(
-        icons: [String],
-        shape: Shape,
-        backgroundColor: Color = AnimagicTheme.orange,
-        action: @escaping () -> Void
-    ) {
-        self.icons = icons
-        self.shape = shape
-        self.backgroundColor = backgroundColor
-        self.action = action
-    }
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                ForEach(icons, id: \.self) { icon in
-                    Image(systemName: icon)
-                }
-            }
-            .font(.system(size: 24, weight: .bold))
-            .foregroundStyle(.black)
-            .frame(width: shape == .circle ? 50 : nil, height: 50)
-            .padding(.horizontal, shape == .capsule ? 16 : 0)
-            .background(backgroundColor)
-            .clipShape(shape == .circle ? AnyShape(Circle()) : AnyShape(Capsule()))
-            .overlay {
-                if shape == .circle {
-                    Circle().stroke(.black, lineWidth: 3)
-                } else {
-                    Capsule().stroke(.black, lineWidth: 3)
-                }
-            }
-        }
-        .buttonStyle(.animagicPress)
     }
 }

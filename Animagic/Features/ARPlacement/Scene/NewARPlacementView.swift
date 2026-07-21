@@ -215,7 +215,7 @@ struct NewARPlacementView: View {
                         icon: "chevron.left",
                         backgroundColor: Color(Color.Palette.n20),
                         iconColor: Color(Color.Palette.n70),
-                        innerBorderColor: .clear,
+                        innerBorderColor: .black.opacity(0.2),
                         action: { router.popToRoot() }
                     )
 
@@ -231,21 +231,21 @@ struct NewARPlacementView: View {
                                 ExpandableButtonItem(
                                     icon: "questionmark",
                                     backgroundColor: .green,
-                                    innerBorderColor: .clear,
+                                    innerBorderColor: Color.Palette.g400,
                                     action: {
                                         isTopMenuExpanded = false
                                         router.push(.help)
                                     }
                                 ),
-                                ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: .clear, action: { enterImmersive() }),
-                                ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: .clear, action: { /* Camera action */ })
+                                ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: Color.Palette.o400, action: { enterImmersive() }),
+                                ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: Color.Palette.b400, action: { /* Camera action */ })
                             ]
                         )
 
                         AnimagicIconButton(
                             icon: "paintbrush.fill",
                             backgroundColor: .yellow,
-                            innerBorderColor: .clear,
+                            innerBorderColor: Color.Palette.y400,
                             isSelected: selectedContentType == .doodle,
                             action: { router.push(.canvas) }
                         )
@@ -289,7 +289,7 @@ struct NewARPlacementView: View {
                             AnimagicLabelButton(
                                 title: placeButtonTitle,
                                 backgroundColor: AnimagicTheme.blue,
-                                innerBorderColor: .clear,
+                            innerBorderColor: Color.Palette.b400,
                                 isDisabled: !canPlace,
                                 isDimmed: !canPlace,
                                 action: { sceneCommand = .place(UUID()) }

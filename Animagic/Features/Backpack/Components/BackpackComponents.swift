@@ -1,3 +1,10 @@
+//
+//  BackpackComponents.swift
+//  AniMagic
+//
+//  Created by Amelia Putri Aftiana on 21/07/26.
+//
+
 import PencilKit
 import SwiftUI
 
@@ -29,7 +36,7 @@ struct BackpackHeader: View {
                     icon: "chevron.left",
                     backgroundColor: Color(Color.Palette.n20),
                     iconColor: Color(Color.Palette.n70),
-                    innerBorderColor: .clear,
+                    innerBorderColor: .black.opacity(0.2),
                     action: onBack
                 )
                 Text("My Backpack")
@@ -42,7 +49,12 @@ struct BackpackHeader: View {
             AnimagicTextField(placeholder: "Search.....", text: $searchText)
                 .frame(minWidth: 120, maxWidth: 300)
             AnimagicIconButton(icon: "paintbrush.fill", backgroundColor: Color.Token.Button.primary, action: onDrawMore)
-            AnimagicIconButton(icon: "camera.fill", backgroundColor: Color.Token.Button.secondary, action: onOpenAR)
+            AnimagicIconButton(
+                icon: "camera.fill",
+                backgroundColor: Color.Token.Button.secondary,
+                innerBorderColor: .black.opacity(0.2),
+                action: onOpenAR
+            )
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
@@ -143,5 +155,3 @@ struct BackpackScrollIndicator: View {
         .frame(width: 16)
     }
 }
-
-
