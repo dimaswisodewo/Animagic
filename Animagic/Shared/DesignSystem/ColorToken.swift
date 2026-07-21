@@ -54,6 +54,15 @@ extension Color {
             static let r300 = Color(red: 231/255, green: 27/255,  blue: 60/255)
             static let r400 = Color(red: 161/255, green: 11/255,  blue: 36/255)
             static let r500 = Color(red: 141/255, green: 5/255,   blue: 27/255)
+        
+            // MARK: - Green Swatch
+               static let g50  = Color(red: 234/255, green: 250/255, blue: 230/255)
+               static let g75  = Color(red: 167/255, green: 235/255, blue: 150/255)
+               static let g100 = Color(red: 131/255, green: 227/255, blue: 107/255)
+               static let g200 = Color(red: 77/255,  green: 215/255, blue: 43/255)
+               static let g300 = Color(red: 41/255,  green: 207/255, blue: 0/255)   // Main Green
+               static let g400 = Color(red: 29/255,  green: 145/255, blue: 0/255)
+               static let g500 = Color(red: 25/255,  green: 126/255, blue: 0/255)
         }
     
     struct Token {
@@ -62,25 +71,33 @@ extension Color {
             static let surface = Color(Palette.n0)
         }
         struct Button {
-            static let primary = Color(Palette.y300)
-            static let secondary = Color(Palette.b300)
-            static let neutral = Color(Palette.n0)
-            static let disabled = Color(Palette.n30)
+            static let primary = Color(Palette.o200)
+            static let secondary = Color(Palette.b200)
+            static let outline = Color(Palette.n0)
+            static let success = Color(Palette.g200)
+            static let error = Color(Palette.n0)
+            static let disabled = Color(Palette.n20)
         }
         struct Text {
-            static let primary = Color(Palette.n70)
-            static let secondary = Color(Palette.n40)
+            static let primary = Color(Palette.n0)
+            static let secondary = Color(Palette.n70)
             static let disabled = Color(Palette.n30)
         }
         struct Border {
-            static let primary = Color(Palette.n70)
-            static let disabled = Color(Palette.n60)
+            static let primary = Color(Palette.o300)
+            static let secondary = Color(Palette.b300)
+            static let outline = Color(Palette.n20)
             static let alert = Color(Palette.r300)
+            static let disabled = Color(Palette.n20)
         }
         struct Icon {
-            static let primary = Color(Palette.n70)
+            static let primary = Color(Palette.n0)
             static let disabled = Color(Palette.n30)
-            static let alert = Color(Palette.r300)
+            static let alert = Color(Palette.n60)
+        }
+        struct Card {
+            static let primary = Color(Palette.b50)
+            static let selected = Color(Palette.o50)
         }
     }
 }
