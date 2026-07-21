@@ -1,3 +1,10 @@
+//
+//  AppRoute.swift
+//  AniMagic
+//
+//  Created by Meynabel Dimas Wisodewo on 15/07/26.
+//
+
 import Observation
 import SwiftUI
 
@@ -8,6 +15,7 @@ enum AppRoute: Hashable, Identifiable {
     case handdrawnDetail(UUID)
     case cutoutLibrary
     case virtualRoom
+    case help
 
     var id: Self { self }
 }

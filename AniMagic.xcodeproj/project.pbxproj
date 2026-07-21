@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1B2C3D4E5F60718293A4B5C /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A5B6C /* HelpPageView.swift */; };
+		A7E1C09F4B2D6C8E10F3A5D7 /* ExpandableActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A3E2B17D4F8EA032B5C7F9 /* ExpandableActionMenu.swift */; };
+		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
@@ -19,6 +22,7 @@
 		26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */; };
 		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
+		3B17930B7D49F78B8961394B /* NativeCameraPhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */; };
 		40EE59D01AD561897FCB7FF6 /* cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46D74A3ECD9818F1F0D944C1 /* cloud.usdz */; };
 		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
@@ -50,10 +54,12 @@
 		881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A7F710F439BF8B2277743917 /* tree_1.usdz */; };
 		8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */; };
 		8C3CB096710C0F7ACEFE478F /* CutoutLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */; };
+		8F7C3A695681B127019DC85A /* NativeCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */; };
 		8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */; };
 		94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */; };
 		9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */; };
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
+		B8F2D1A06C3E7D9F21A4B6E8 /* NativeCameraComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B4F3C28E5A9FB143C6D8A0 /* NativeCameraComponent.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
 		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
@@ -67,6 +73,7 @@
 		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
 		CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */; };
 		D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */; };
+		D3417E7C6E2E0C2D361E8AFA /* StandalonePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */; };
 		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
 		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
 		D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */; };
@@ -78,6 +85,7 @@
 		E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */; };
 		EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0E732AD75F0B14CC3DC9564D /* Underwater.skybox */; };
 		EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */; };
+		EC0BF8E0F69BBFFE35B038E7 /* NativeCameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */; };
 		EC19538278E20B32114ABEC7 /* CitrusOrchard.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */; };
 		EC67889AF56BDE8DACB33C4C /* VirtualRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */; };
 		F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */; };
@@ -89,12 +97,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B1C2D3E4F5061728394A5B6C /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
+		C9A3E2B17D4F8EA032B5C7F9 /* ExpandableActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableActionMenu.swift; sourceTree = "<group>"; };
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
 		0CD2DE8B958AFA1FBFD38743 /* Land.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Land.skybox; sourceTree = "<group>"; };
 		0E732AD75F0B14CC3DC9564D /* Underwater.skybox */ = {isa = PBXFileReference; lastKnownFileType = file.skybox; path = Underwater.skybox; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePlaceholderView.swift; sourceTree = "<group>"; };
 		14A60964229B227465EE8AD4 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Birds.usdz; sourceTree = "<group>"; };
 		1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
 		1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
@@ -121,7 +132,10 @@
 		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCoordinator.swift; sourceTree = "<group>"; };
 		4F33D5C4ECB695106958159D /* StatueRoom.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = StatueRoom.usdz; sourceTree = "<group>"; };
+		50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraView.swift; sourceTree = "<group>"; };
 		572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
+		57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraPreview.swift; sourceTree = "<group>"; };
+		5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraViewModel.swift; sourceTree = "<group>"; };
 		5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
 		5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
 		68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
@@ -159,6 +173,7 @@
 		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
 		DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRoute+Modifier.swift"; sourceTree = "<group>"; };
 		DED0B6AC60C494DD24513C40 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
+		D0B4F3C28E5A9FB143C6D8A0 /* NativeCameraComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraComponent.swift; sourceTree = "<group>"; };
 		DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
 		E67231FD4CC90120FA5A8816 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
@@ -169,6 +184,7 @@
 		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
 		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
 		FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderingExtensions.swift; sourceTree = "<group>"; };
+		FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraPhotoLibrarySaver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -236,6 +252,28 @@
 			isa = PBXGroup;
 			children = (
 				9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		5D6782BAF85E6912C50BC905 /* Standalone */ = {
+			isa = PBXGroup;
+			children = (
+				E1C5A4D39F6B0AC254D7E9B1 /* Components */,
+				FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */,
+				57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */,
+				50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */,
+				5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */,
+				11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */,
+			);
+			path = Standalone;
+			sourceTree = "<group>";
+		};
+		E1C5A4D39F6B0AC254D7E9B1 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C9A3E2B17D4F8EA032B5C7F9 /* ExpandableActionMenu.swift */,
+				D0B4F3C28E5A9FB143C6D8A0 /* NativeCameraComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -455,10 +493,20 @@
 				14F490A5186D6FF0F5DD4D60 /* Canvas */,
 				A0699E86CB5BE10927B5BA4F /* CutoutLibrary */,
 				84B89C5C3EA3F1C662E022E3 /* HanddrawnDetail */,
+				C1D2E3F40516273849A5B6C7 /* Help */,
 				6051DEF4E13484984B7629BF /* Home */,
+				5D6782BAF85E6912C50BC905 /* Standalone */,
 				84EA2F52992B787344A9052B /* VirtualRoom */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		C1D2E3F40516273849A5B6C7 /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				B1C2D3E4F5061728394A5B6C /* HelpPageView.swift */,
+			);
+			path = Help;
 			sourceTree = "<group>";
 		};
 		D2CAA9303FA6EF6CA28F14B3 /* Stores */ = {
@@ -659,6 +707,7 @@
 				F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */,
 				14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */,
 				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* HelpPageView.swift in Sources */,
 				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
 				69424C50300E19B200DF7CFA /* ColorToken.swift in Sources */,
 				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
@@ -668,6 +717,11 @@
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
 				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
 				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
+				3B17930B7D49F78B8961394B /* NativeCameraPhotoLibrarySaver.swift in Sources */,
+				EC0BF8E0F69BBFFE35B038E7 /* NativeCameraPreview.swift in Sources */,
+				B8F2D1A06C3E7D9F21A4B6E8 /* NativeCameraComponent.swift in Sources */,
+				027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */,
+				8F7C3A695681B127019DC85A /* NativeCameraViewModel.swift in Sources */,
 				815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */,
 				5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */,
 				BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */,
@@ -680,6 +734,8 @@
 				860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */,
 				E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */,
 				861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */,
+				D3417E7C6E2E0C2D361E8AFA /* StandalonePlaceholderView.swift in Sources */,
+				A7E1C09F4B2D6C8E10F3A5D7 /* ExpandableActionMenu.swift in Sources */,
 				7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */,
 				C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */,
 				D6AB40DEEC6444D08179A8D4 /* USDZModelPlacement.swift in Sources */,
@@ -710,6 +766,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app requires microphone access to record audio with your camera videos.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -810,6 +867,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app requires microphone access to record audio with your camera videos.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;

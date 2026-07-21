@@ -1,3 +1,10 @@
+//
+//  AppRoute+Modifier.swift
+//  AniMagic
+//
+//  Created by Meynabel Dimas Wisodewo on 17/07/26.
+//
+
 import SwiftUI
 
 struct RouterViewModifier: ViewModifier {
@@ -57,6 +64,7 @@ struct AppRouterView {
         case .handdrawnDetail(let id): HanddrawnDetailView(drawingID: id)
         case .cutoutLibrary: CutoutLibraryView()
         case .virtualRoom: VirtualRoomView()
+        case .help: HelpPageView()
         }
     }
 
