@@ -152,6 +152,10 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         select(id)
     }
 
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)? {
+        objectID(containing: entity).flatMap(registry.object(withID:))
+    }
+
     func clearSelection() {
         select(nil)
     }

@@ -165,6 +165,14 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.selectedObject
     }
 
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)? {
+        interactionManager.object(containing: entity)
+    }
+
+    func selectObject(withID id: UUID) {
+        interactionManager.selectObject(withID: id)
+    }
+
     func handleTap(on entity: Entity?) -> Bool {
         interactionManager.handleTap(on: entity)
     }

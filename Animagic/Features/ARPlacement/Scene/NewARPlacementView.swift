@@ -16,6 +16,7 @@ enum NewARSceneCommand: Equatable {
     case delete(UUID)
     case undoDelete(UUID)
     case discardUndo(UUID)
+    case cancelPencilInteraction(UUID)
 }
 
 @MainActor
@@ -24,6 +25,8 @@ protocol ARPlacementFeedbackProviding: AnyObject {
     func dragStarted()
     func placementSucceeded()
     func boundaryReached()
+    func pencilTargetAcquired()
+    func pencilRotationCommitted()
     func warning()
     func error()
 }
@@ -48,6 +51,14 @@ final class SystemARPlacementFeedback: ARPlacementFeedbackProviding {
 
     func boundaryReached() {
         UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: 0.65)
+    }
+
+    func pencilTargetAcquired() {
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+
+    func pencilRotationCommitted() {
+        UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.65)
     }
 
     func warning() {
@@ -82,6 +93,9 @@ struct NewARPlacementView: View {
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
     @State private var isBackpackExpanded = false
+    @AppStorage("hasCompletedARPencilRotation") private var hasCompletedPencilRotation = false
+    @State private var pencilHint: String?
+    @State private var pencilHintTask: Task<Void, Never>?
 
     private enum CameraPermissionState {
         case checking
@@ -129,6 +143,8 @@ struct NewARPlacementView: View {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 checkCameraPermission()
+            } else {
+                sceneCommand = .cancelPencilInteraction(UUID())
             }
         }
     }
@@ -150,6 +166,9 @@ struct NewARPlacementView: View {
                 command: sceneCommand,
                 isImmersive: isImmersive,
                 onExitImmersive: exitImmersive,
+                onPencilTargetHovered: showPencilCoachMark,
+                onPencilTargetMissing: showPencilTargetHint,
+                onPencilRotationCompleted: completePencilCoachMark,
                 feedback: feedback
             )
             .ignoresSafeArea()
@@ -170,12 +189,26 @@ struct NewARPlacementView: View {
                     .accessibilityAddTraits(.isStaticText)
                     .transition(.opacity)
             }
+
+            if let pencilHint {
+                Text(pencilHint)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .padding(.bottom, showsImmersiveHint ? 76 : 24)
+                    .allowsHitTesting(false)
+                    .accessibilityAddTraits(.isStaticText)
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            }
             
             ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
         .animation(.easeOut(duration: 0.2), value: placementStatus)
         .animation(.easeOut(duration: 0.2), value: undoAvailable)
+        .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.24), value: pencilHint)
         .navigationBarHidden(true)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -203,6 +236,32 @@ struct NewARPlacementView: View {
         .onDisappear {
             undoDismissTask?.cancel()
             immersiveHintTask?.cancel()
+            pencilHintTask?.cancel()
+        }
+    }
+
+    private func showPencilCoachMark() {
+        guard !hasCompletedPencilRotation else { return }
+        showPencilHint("Squeeze and roll to rotate", duration: .seconds(3))
+    }
+
+    private func showPencilTargetHint() {
+        showPencilHint("Hover over an object", duration: .milliseconds(1_800))
+    }
+
+    private func completePencilCoachMark() {
+        hasCompletedPencilRotation = true
+        pencilHintTask?.cancel()
+        pencilHint = nil
+    }
+
+    private func showPencilHint(_ message: String, duration: Duration) {
+        pencilHintTask?.cancel()
+        pencilHint = message
+        pencilHintTask = Task {
+            try? await Task.sleep(for: duration)
+            guard !Task.isCancelled else { return }
+            pencilHint = nil
         }
     }
 
@@ -517,6 +576,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     let command: NewARSceneCommand?
     let isImmersive: Bool
     let onExitImmersive: () -> Void
+    let onPencilTargetHovered: () -> Void
+    let onPencilTargetMissing: () -> Void
+    let onPencilRotationCompleted: () -> Void
     let feedback: any ARPlacementFeedbackProviding
 
     func makeCoordinator() -> NewARSceneController {
@@ -531,7 +593,10 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onPlacementStatusChanged: updateStatus,
             onObjectCountChanged: updateObjectCount,
             onUndoAvailabilityChanged: updateUndoAvailability,
-            onExitImmersive: onExitImmersive
+            onExitImmersive: onExitImmersive,
+            onPencilTargetHovered: onPencilTargetHovered,
+            onPencilTargetMissing: onPencilTargetMissing,
+            onPencilRotationCompleted: onPencilRotationCompleted
         )
     }
 
@@ -554,6 +619,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onObjectCountChanged = updateObjectCount
         controller.onUndoAvailabilityChanged = updateUndoAvailability
         controller.onExitImmersive = onExitImmersive
+        controller.onPencilTargetHovered = onPencilTargetHovered
+        controller.onPencilTargetMissing = onPencilTargetMissing
+        controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.setImmersive(isImmersive)
 
         if let selectedObjectAnimalArchetype,
@@ -608,6 +676,13 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     }
 }
 
+private struct PencilRotationSession {
+    let object: any PlacedSceneObject
+    let initialOrientation: simd_quatf
+    var lastRollAngle: Float
+    var accumulatedAngle: Float = 0
+}
+
 @MainActor
 final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
@@ -636,7 +711,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private weak var arView: ARView?
     private static var hasRegisteredSystem = false
     private var interactionAdapter: NewARViewInteractionAdapter?
+    private var pencilInteractionAdapter: ApplePencilARInteractionAdapter?
     private var lastSelectedObject: (any PlacedSceneObject)?
+    private weak var pencilHoverTarget: (any PlacedSceneObject)?
+    private var pencilRotationSession: PencilRotationSession?
     private var pendingDeletion: DeletedSceneObject?
     private var planeAnchors: [UUID: AnchorEntity] = [:]
     private var focusIndicator: Entity?
@@ -655,11 +733,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var onObjectCountChanged: ((Int) -> Void)?
     var onUndoAvailabilityChanged: ((Bool) -> Void)?
     var onExitImmersive: (() -> Void)?
+    var onPencilTargetHovered: (() -> Void)?
+    var onPencilTargetMissing: (() -> Void)?
+    var onPencilRotationCompleted: (() -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
     var placedObjectSelection: PlacedObjectSelection? { sceneEditor.placedObjectSelection }
     var isShowingImmersiveUI: Bool { isImmersive }
+    var isPencilRotating: Bool { pencilRotationSession != nil }
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -672,7 +754,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
         onObjectCountChanged: ((Int) -> Void)? = nil,
         onUndoAvailabilityChanged: ((Bool) -> Void)? = nil,
-        onExitImmersive: (() -> Void)? = nil
+        onExitImmersive: (() -> Void)? = nil,
+        onPencilTargetHovered: (() -> Void)? = nil,
+        onPencilTargetMissing: (() -> Void)? = nil,
+        onPencilRotationCompleted: (() -> Void)? = nil
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
@@ -688,6 +773,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.onObjectCountChanged = onObjectCountChanged
         self.onUndoAvailabilityChanged = onUndoAvailabilityChanged
         self.onExitImmersive = onExitImmersive
+        self.onPencilTargetHovered = onPencilTargetHovered
+        self.onPencilTargetMissing = onPencilTargetMissing
+        self.onPencilRotationCompleted = onPencilRotationCompleted
         super.init()
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
@@ -728,6 +816,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         let adapter = NewARViewInteractionAdapter(controller: self, feedback: feedback)
         adapter.attach(to: arView)
         interactionAdapter = adapter
+        let pencilAdapter = ApplePencilARInteractionAdapter(controller: self)
+        pencilAdapter.attach(to: arView)
+        pencilInteractionAdapter = pencilAdapter
         updateStatus(.searching)
         onObjectCountChanged?(0)
     }
@@ -780,6 +871,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .clearSelection:
             clearSelection()
         case .delete:
+            cancelPencilRotation()
             pendingDeletion = deleteSelectedObject()
             let hasUndo = pendingDeletion != nil
             if hasUndo { feedback.warning() }
@@ -795,6 +887,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .discardUndo:
             pendingDeletion = nil
             onUndoAvailabilityChanged?(false)
+        case .cancelPencilInteraction:
+            cancelPencilRotation()
         }
     }
 
@@ -909,6 +1003,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         }
     }
 
+    func sessionWasInterrupted(_ session: ARSession) {
+        cancelPencilRotation()
+        clearPencilHoverTarget()
+    }
+
     private func makePlaneVisualization(for planeAnchor: ARPlaneAnchor) -> AnchorEntity {
         let anchorEntity = AnchorEntity(anchor: planeAnchor)
         addPlaneModel(for: planeAnchor, to: anchorEntity)
@@ -1000,6 +1099,125 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             feedback.selectionChanged()
         }
         return handled
+    }
+
+    func setPencilHoverTarget(at point: CGPoint) {
+        guard !isPencilRotating, let arView else { return }
+        let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
+        let target = sceneEditor.object(containing: entity)
+        guard target?.id != pencilHoverTarget?.id else { return }
+
+        removePencilHoverIndicator()
+        pencilHoverTarget = target
+        guard let target else { return }
+
+        let bounds = target.interactionRoot.visualBounds(relativeTo: target.interactionRoot)
+        let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.72, 0.14)
+        let indicator = PencilHoverIndicatorFactory.make(radius: radius)
+        target.interactionRoot.addChild(indicator)
+        if !UIAccessibility.isReduceMotionEnabled {
+            indicator.scale = SIMD3(repeating: 0.9)
+            var targetTransform = indicator.transform
+            targetTransform.scale = .one
+            indicator.move(
+                to: targetTransform,
+                relativeTo: target.interactionRoot,
+                duration: 0.16,
+                timingFunction: .easeOut
+            )
+        }
+        onPencilTargetHovered?()
+    }
+
+    func clearPencilHoverTarget() {
+        guard !isPencilRotating else { return }
+        removePencilHoverIndicator()
+        pencilHoverTarget = nil
+    }
+
+    func beginPencilRotation(at point: CGPoint?, rollAngle: Float) {
+        guard pencilRotationSession == nil else { return }
+        if let point {
+            setPencilHoverTarget(at: point)
+        }
+        guard let object = pencilHoverTarget else {
+            feedback.warning()
+            onPencilTargetMissing?()
+            return
+        }
+
+        interactionAdapter?.setPencilInteractionActive(true)
+        removePencilHoverIndicator()
+        pencilHoverTarget = nil
+        sceneEditor.selectObject(withID: object.id)
+        object.setInteractionPaused(true)
+        pencilRotationSession = PencilRotationSession(
+            object: object,
+            initialOrientation: object.interactionRoot.orientation(relativeTo: nil),
+            lastRollAngle: rollAngle
+        )
+        addPencilRotationIndicator(to: object)
+        feedback.pencilTargetAcquired()
+    }
+
+    func updatePencilRotation(rollAngle: Float) {
+        guard var session = pencilRotationSession else { return }
+        var delta = rollAngle - session.lastRollAngle
+        if delta > .pi {
+            delta -= 2 * .pi
+        } else if delta < -.pi {
+            delta += 2 * .pi
+        }
+        session.accumulatedAngle += delta
+        session.lastRollAngle = rollAngle
+        let axis = simd_normalize(session.object.supportSurfaceNormal)
+        let rotation = simd_quatf(angle: -session.accumulatedAngle, axis: axis)
+        session.object.interactionRoot.setOrientation(
+            rotation * session.initialOrientation,
+            relativeTo: nil
+        )
+        pencilRotationSession = session
+    }
+
+    func commitPencilRotation() {
+        guard let session = pencilRotationSession else { return }
+        finishPencilRotation(session: session, restoringOrientation: false)
+        feedback.pencilRotationCommitted()
+        onPencilRotationCompleted?()
+    }
+
+    func cancelPencilRotation() {
+        guard let session = pencilRotationSession else {
+            interactionAdapter?.setPencilInteractionActive(false)
+            return
+        }
+        finishPencilRotation(session: session, restoringOrientation: true)
+    }
+
+    private func finishPencilRotation(
+        session: PencilRotationSession,
+        restoringOrientation: Bool
+    ) {
+        if restoringOrientation {
+            session.object.interactionRoot.setOrientation(session.initialOrientation, relativeTo: nil)
+        }
+        session.object.interactionRoot.findEntity(named: "pencil_rotation_indicator")?.removeFromParent()
+        session.object.setInteractionPaused(false)
+        pencilRotationSession = nil
+        interactionAdapter?.setPencilInteractionActive(false)
+    }
+
+    private func addPencilRotationIndicator(to object: any PlacedSceneObject) {
+        object.interactionRoot.findEntity(named: "pencil_rotation_indicator")?.removeFromParent()
+        let bounds = object.interactionRoot.visualBounds(relativeTo: object.interactionRoot)
+        let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.82, 0.16)
+        object.interactionRoot.addChild(PencilRotationIndicatorFactory.make(radius: radius))
+    }
+
+    private func removePencilHoverIndicator() {
+        pencilHoverTarget?.interactionRoot
+            .findEntity(named: "pencil_hover_indicator")?
+            .removeFromParent()
     }
 
     func selectedObjectInteractionRegion(in arView: ARView) -> CGRect? {
@@ -1094,6 +1312,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func clearSelection() {
+        cancelPencilRotation()
         sceneEditor.clearSelection()
     }
 
@@ -1101,6 +1320,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         statusResetTask?.cancel()
         statusResetTask = nil
         setSelectionIndicatorDragging(false)
+        pencilInteractionAdapter?.detach()
+        pencilInteractionAdapter = nil
         interactionAdapter?.detach()
         interactionAdapter = nil
         pendingDeletion = nil
@@ -1279,6 +1500,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     private var initialOrientation = simd_quatf()
     private var didReachLowerScaleBound = false
     private var didReachUpperScaleBound = false
+    private var isPencilInteractionActive = false
 
     init(controller: NewARSceneController, feedback: any ARPlacementFeedbackProviding) {
         self.controller = controller
@@ -1312,7 +1534,23 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         self.arView = nil
     }
 
+    func setPencilInteractionActive(_ isActive: Bool) {
+        guard isPencilInteractionActive != isActive else { return }
+        if isActive {
+            recognizers.forEach {
+                $0.isEnabled = false
+                $0.isEnabled = true
+            }
+            activeManipulations.removeAll()
+            resetDragState()
+            controller?.setSelectionIndicatorDragging(false)
+            controller?.selectedObject?.setInteractionPaused(false)
+        }
+        isPencilInteractionActive = isActive
+    }
+
     @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let arView, let controller else { return }
         let point = recognizer.location(in: arView)
         let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
@@ -1328,6 +1566,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handlePan(_ recognizer: InitialTouchPanGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let arView, let controller else { return }
         let point = recognizer.location(in: arView)
 
@@ -1407,6 +1646,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:
@@ -1429,6 +1669,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handleRotation(_ recognizer: UIRotationGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:

@@ -91,6 +91,7 @@ protocol ObjectInteractionManaging: AnyObject {
     func deleteSelected() -> DeletedSceneObject?
     func restore(_ deletedObject: DeletedSceneObject)
     func selectObject(withID id: UUID)
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)?
     func clearSelection()
 }
 
