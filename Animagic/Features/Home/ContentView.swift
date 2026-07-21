@@ -76,7 +76,7 @@ struct ContentView: View {
                         icon: "play.fill",
                         backgroundColor: Color.Palette.o300,
                         iconColor: .white,
-                        innerBorderColor: .white.opacity(0.8)
+                        innerBorderColor: Color.Palette.o400
                     ) {
                         drawingSession.clearDrawing()
                         router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.last?.id))
@@ -106,7 +106,7 @@ struct ContentView: View {
                         icon: "backpack.fill",
                         backgroundColor: Color(Color.Palette.n20),
                         iconColor: Color(Color.Palette.n70),
-                        innerBorderColor: .clear
+                        innerBorderColor: .black.opacity(0.2)
                     ) {
                         router.push(.backpack)
                     }

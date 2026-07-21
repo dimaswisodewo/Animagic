@@ -22,7 +22,7 @@ struct HanddrawnDetailHeader: View {
                 icon: "chevron.left",
                 backgroundColor: Color(Color.Palette.n20),
                 iconColor: Color(Color.Palette.n70),
-                innerBorderColor: .clear,
+                innerBorderColor: .black.opacity(0.2),
                 action: onBack
             )
             Text(title)
@@ -32,6 +32,7 @@ struct HanddrawnDetailHeader: View {
             AnimagicIconButton(
                 icon: "camera.fill",
                 backgroundColor: Color.Token.Button.secondary,
+                innerBorderColor: .black.opacity(0.2),
                 action: onOpenAR
             )
             AnimagicIconButton(
