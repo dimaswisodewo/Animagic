@@ -79,7 +79,7 @@ struct NewARPlacementView: View {
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
-    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedAnimalLocomotion = AnimalLocomotion.generic
     @State private var placementStatus: ARPlacementStatus = .searching
     @State private var placedObjectSelection: PlacedObjectSelection?
     @State private var sceneCommand: NewARSceneCommand?
@@ -155,8 +155,8 @@ struct NewARPlacementView: View {
             ARRealityViewRepresentable(
                 cutoutAssets: artworkStore.cutoutLibrary,
                 selectedCutoutID: selectedCutoutID,
-                spawnAnimalArchetype: selectedAnimalArchetype,
-                selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
+                spawnAnimalLocomotion: selectedAnimalLocomotion,
+                selectedObjectAnimalLocomotion: placedObjectSelection?.animalLocomotion,
                 selectedContentType: selectedContentType,
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
@@ -221,8 +221,8 @@ struct NewARPlacementView: View {
         .onChange(of: selectedCutoutID) { _, newID in
             guard placedObjectSelection == nil,
                   let asset = artworkStore.cutoutLibrary.first(where: { $0.id == newID }),
-                  let suggested = suggestedArchetype(for: asset) else { return }
-            selectedAnimalArchetype = suggested
+                  let suggested = suggestedLocomotion(for: asset) else { return }
+            selectedAnimalLocomotion = suggested
         }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
@@ -334,7 +334,7 @@ struct NewARPlacementView: View {
                     if let placedObjectSelection {
                         NewAREditCard(
                             selection: placedObjectSelection,
-                            animalArchetype: archetypeSelection,
+                            animalLocomotion: locomotionSelection,
                             onDone: {
                                 sceneCommand = .clearSelection(UUID())
                             },
@@ -452,15 +452,15 @@ struct NewARPlacementView: View {
         }
     }
 
-    private var archetypeSelection: Binding<AnimalArchetype> {
+    private var locomotionSelection: Binding<AnimalLocomotion> {
         Binding(
-            get: { placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype },
-            set: { archetype in
+            get: { placedObjectSelection?.animalLocomotion ?? selectedAnimalLocomotion },
+            set: { locomotion in
                 guard let selection = placedObjectSelection,
-                      selection.animalArchetype != nil else { return }
+                      selection.animalLocomotion != nil else { return }
                 placedObjectSelection = PlacedObjectSelection(
                     objectID: selection.objectID,
-                    content: .doodle(archetype)
+                    content: .doodle(locomotion)
                 )
                 feedback.selectionChanged()
             }
@@ -483,17 +483,13 @@ struct NewARPlacementView: View {
             artworkStore.cutoutLibrary.first(where: { $0.id == id })
         } ?? artworkStore.cutoutLibrary.first
         selectedCutoutID = initialAsset?.id
-        if let suggested = suggestedArchetype(for: initialAsset) {
-            selectedAnimalArchetype = suggested
+        if let suggested = suggestedLocomotion(for: initialAsset) {
+            selectedAnimalLocomotion = suggested
         }
     }
 
-    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
-        guard let asset, let label = asset.resolvedDoodleLabel else { return nil }
-        return AnimalArchetype(
-            doodleLabel: label,
-            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
-        )
+    private func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
+        AnimalMotionProfileResolver.profile(for: asset).locomotion
     }
 
     private func checkCameraPermission() {
@@ -565,8 +561,8 @@ struct NewARPlacementView: View {
 struct ARRealityViewRepresentable: UIViewRepresentable {
     let cutoutAssets: [CutoutAsset]
     let selectedCutoutID: CutoutAsset.ID?
-    let spawnAnimalArchetype: AnimalArchetype
-    let selectedObjectAnimalArchetype: AnimalArchetype?
+    let spawnAnimalLocomotion: AnimalLocomotion
+    let selectedObjectAnimalLocomotion: AnimalLocomotion?
     let selectedContentType: PlacementContentType
     let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
@@ -585,7 +581,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         NewARSceneController(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
             feedback: feedback,
@@ -611,7 +607,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         let controller = context.coordinator
         controller.cutoutAssets = cutoutAssets
         controller.selectedCutoutID = selectedCutoutID
-        controller.selectedAnimalArchetype = spawnAnimalArchetype
+        controller.selectedAnimalLocomotion = spawnAnimalLocomotion
         controller.selectedContentType = selectedContentType
         controller.selectedModelID = selectedModelID
         controller.onSelectionChanged = updateSelection
@@ -624,9 +620,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.setImmersive(isImmersive)
 
-        if let selectedObjectAnimalArchetype,
-           controller.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
-            controller.setSelectedObjectAnimalArchetype(selectedObjectAnimalArchetype)
+        if let selectedObjectAnimalLocomotion,
+           controller.placedObjectSelection?.animalLocomotion != selectedObjectAnimalLocomotion {
+            controller.setSelectedObjectAnimalLocomotion(selectedObjectAnimalLocomotion)
         }
 
         if let command, controller.handledCommand != command {
@@ -693,9 +689,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         get { sceneEditor.selectedCutoutID }
         set { sceneEditor.selectedCutoutID = newValue }
     }
-    var selectedAnimalArchetype: AnimalArchetype {
-        get { sceneEditor.selectedAnimalArchetype }
-        set { sceneEditor.selectedAnimalArchetype = newValue }
+    var selectedAnimalLocomotion: AnimalLocomotion {
+        get { sceneEditor.selectedAnimalLocomotion }
+        set { sceneEditor.selectedAnimalLocomotion = newValue }
     }
     var selectedContentType: PlacementContentType {
         get { sceneEditor.selectedContentType }
@@ -746,7 +742,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
         feedback: any ARPlacementFeedbackProviding,
@@ -762,7 +758,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedAnimalLocomotion: selectedAnimalLocomotion,
             selectedSpawnMode: .plane,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID
@@ -1298,8 +1294,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         ring.move(to: target, relativeTo: selectedObject.interactionRoot, duration: 0.22, timingFunction: .easeOut)
     }
 
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        sceneEditor.setSelectedObjectAnimalArchetype(archetype)
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
     }
 
     @discardableResult

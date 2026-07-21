@@ -45,8 +45,8 @@ struct CutoutLibraryCell: View {
 
             Menu {
                 Button("Use AI Suggestion") { onClassificationOverride(nil) }
-                ForEach(DoodleSpecies.all, id: \.self) { label in
-                    Button(label.capitalized) { onClassificationOverride(label) }
+                ForEach(DoodleSpecies.allCases) { species in
+                    Button(species.title) { onClassificationOverride(species.rawValue) }
                 }
             } label: {
                 Label("Change animal", systemImage: "slider.horizontal.3")

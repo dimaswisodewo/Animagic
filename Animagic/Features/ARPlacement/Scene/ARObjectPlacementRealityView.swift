@@ -13,8 +13,8 @@ import UIKit
 struct ARObjectPlacementRealityView: UIViewRepresentable {
     let cutoutAssets: [CutoutAsset]
     let selectedCutoutID: CutoutAsset.ID?
-    let spawnAnimalArchetype: AnimalArchetype
-    let selectedObjectAnimalArchetype: AnimalArchetype?
+    let spawnAnimalLocomotion: AnimalLocomotion
+    let selectedObjectAnimalLocomotion: AnimalLocomotion?
     let selectedSpawnMode: SpawnMode
     let selectedContentType: PlacementContentType
     let selectedModelID: PlaceableUSDZModel.ID?
@@ -26,7 +26,7 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
         ARSceneController(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
             selectedSpawnMode: selectedSpawnMode,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
@@ -71,7 +71,7 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
     func updateUIView(_ arView: ARView, context: Context) {
         context.coordinator.cutoutAssets = cutoutAssets
         context.coordinator.selectedCutoutID = selectedCutoutID
-        context.coordinator.selectedAnimalArchetype = spawnAnimalArchetype
+        context.coordinator.selectedAnimalLocomotion = spawnAnimalLocomotion
         context.coordinator.selectedSpawnMode = selectedSpawnMode
         context.coordinator.selectedContentType = selectedContentType
         context.coordinator.selectedModelID = selectedModelID
@@ -90,9 +90,9 @@ struct ARObjectPlacementRealityView: UIViewRepresentable {
             }
         }
 
-        if let selectedObjectAnimalArchetype,
-           context.coordinator.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
-            context.coordinator.setSelectedObjectAnimalArchetype(selectedObjectAnimalArchetype)
+        if let selectedObjectAnimalLocomotion,
+           context.coordinator.placedObjectSelection?.animalLocomotion != selectedObjectAnimalLocomotion {
+            context.coordinator.setSelectedObjectAnimalLocomotion(selectedObjectAnimalLocomotion)
         }
 
         if let deleteRequestID,

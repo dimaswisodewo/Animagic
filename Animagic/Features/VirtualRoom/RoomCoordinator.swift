@@ -90,7 +90,7 @@ final class RoomCoordinator: NSObject {
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
@@ -103,7 +103,7 @@ final class RoomCoordinator: NSObject {
         cutoutEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedAnimalLocomotion: selectedAnimalLocomotion,
             selectedSpawnMode: selectedSpawnMode,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
@@ -163,8 +163,8 @@ final class RoomCoordinator: NSObject {
         skybox: VirtualRoomSkybox,
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
-        selectedObjectAnimalArchetype: AnimalArchetype?,
+        selectedAnimalLocomotion: AnimalLocomotion,
+        selectedObjectAnimalLocomotion: AnimalLocomotion?,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
@@ -175,7 +175,7 @@ final class RoomCoordinator: NSObject {
     ) {
         cutoutEditor.cutoutAssets = cutoutAssets
         cutoutEditor.selectedCutoutID = selectedCutoutID
-        cutoutEditor.selectedAnimalArchetype = selectedAnimalArchetype
+        cutoutEditor.selectedAnimalLocomotion = selectedAnimalLocomotion
         cutoutEditor.selectedSpawnMode = selectedSpawnMode
         cutoutEditor.selectedContentType = selectedContentType
         cutoutEditor.selectedModelID = selectedModelID
@@ -189,9 +189,9 @@ final class RoomCoordinator: NSObject {
         if selectedSkybox != skybox || appliedSkybox == nil {
             applySkybox(skybox)
         }
-        if let selectedObjectAnimalArchetype,
-           cutoutEditor.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
-            cutoutEditor.setSelectedObjectAnimalArchetype(selectedObjectAnimalArchetype)
+        if let selectedObjectAnimalLocomotion,
+           cutoutEditor.placedObjectSelection?.animalLocomotion != selectedObjectAnimalLocomotion {
+            cutoutEditor.setSelectedObjectAnimalLocomotion(selectedObjectAnimalLocomotion)
         }
         if let deleteRequestID,
            handledDeleteRequestID != deleteRequestID {

@@ -120,11 +120,11 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         end(.rotation)
     }
 
-    func setSelectedAnimalArchetype(_ archetype: AnimalArchetype) {
+    func setSelectedAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         guard let selectedObject else {
             return
         }
-        selectedObject.setAnimalArchetype(archetype)
+        selectedObject.setAnimalLocomotion(locomotion)
         notifySelectionChanged()
     }
 

@@ -21,26 +21,27 @@ final class PlacedCutout: PlacedSceneObject {
     private let initialYaw: Float
     private let initialRoll: Float
     private let physicalWidth: Float
+    private let bodyStyle: AnimalBodyStyle
     private var configuration: MotionInstanceConfiguration
     private var simulator: MotionSimulator
     private var previousSample: MotionSample?
     private var transitionSample: MotionSample?
     private var transitionElapsed: Float = 1
-    private var lastMaterialArchetype: AnimalArchetype?
+    private var lastMaterialLocomotion: AnimalLocomotion?
     private var lastMaterialBehavior: AnimalBehavior?
-    private(set) var animalArchetype: AnimalArchetype
+    private(set) var animalLocomotion: AnimalLocomotion
     var isAnimationPaused = false
     var supportSurfaceNormal: SIMD3<Float>
 
     var selection: PlacedObjectSelection {
-        PlacedObjectSelection(objectID: id, content: .doodle(animalArchetype))
+        PlacedObjectSelection(objectID: id, content: .doodle(animalLocomotion))
     }
 
     init(
         id: UUID,
         anchor: AnchorEntity,
         parts: CutoutEntityParts,
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         spawnMode: SpawnMode,
         initialYaw: Float = 0,
         initialRoll: Float = 0,
@@ -57,11 +58,12 @@ final class PlacedCutout: PlacedSceneObject {
         self.initialYaw = initialYaw
         self.initialRoll = initialRoll
         physicalWidth = parts.physicalSize.x
-        animalArchetype = archetype
+        bodyStyle = parts.bodyStyle
+        animalLocomotion = locomotion
         self.supportSurfaceNormal = supportSurfaceNormal
 
         let configuration = MotionInstanceConfiguration.make(
-            for: archetype,
+            for: locomotion,
             spawnMode: spawnMode,
             physicalWidth: parts.physicalSize.x
         )
@@ -73,7 +75,7 @@ final class PlacedCutout: PlacedSceneObject {
         guard !isAnimationPaused else { return }
         var sample = simulator.update(
             deltaTime: deltaTime,
-            archetype: animalArchetype,
+            locomotion: animalLocomotion,
             configuration: configuration,
             initialYaw: initialYaw
         )
@@ -97,15 +99,15 @@ final class PlacedCutout: PlacedSceneObject {
         isAnimationPaused = isPaused
     }
 
-    func setAnimalArchetype(_ archetype: AnimalArchetype) {
-        guard archetype != animalArchetype else { return }
+    func setAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        guard locomotion != animalLocomotion else { return }
         transitionSample = previousSample
         transitionElapsed = 0
-        animalArchetype = archetype
-        lastMaterialArchetype = nil
+        animalLocomotion = locomotion
+        lastMaterialLocomotion = nil
 
         let nextConfiguration = MotionInstanceConfiguration.make(
-            for: archetype,
+            for: locomotion,
             spawnMode: spawnMode,
             physicalWidth: physicalWidth
         )
@@ -148,11 +150,11 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     private func updateDeformationMaterialIfNeeded(_ sample: MotionSample) {
-        guard lastMaterialArchetype != animalArchetype ||
+        guard lastMaterialLocomotion != animalLocomotion ||
               lastMaterialBehavior != sample.behavior else {
             return
         }
-        lastMaterialArchetype = animalArchetype
+        lastMaterialLocomotion = animalLocomotion
         lastMaterialBehavior = sample.behavior
         updateDeformationMaterial(on: frontEntity, sample: sample, faceDirection: 1)
         updateDeformationMaterial(on: backEntity, sample: sample, faceDirection: -1)
@@ -167,7 +169,9 @@ final class PlacedCutout: PlacedSceneObject {
               var material = model.materials.first as? CustomMaterial else { return }
         let phaseOffset = material.custom.value.z
         material.custom.value = [
-            animalArchetype.shaderIndex + Float(sample.behavior.rawValue) * 0.01,
+            bodyStyle.shaderIndex
+                + animalLocomotion.shaderIndex * 0.01
+                + Float(sample.behavior.rawValue) * 0.0001,
             sample.deformationActivity,
             phaseOffset,
             faceDirection
@@ -177,6 +181,20 @@ final class PlacedCutout: PlacedSceneObject {
     }
 }
 
-extension AnimalArchetype {
-    var shaderIndex: Float { Float(Self.allCases.firstIndex(of: self) ?? 0) }
+extension AnimalLocomotion {
+    var shaderIndex: Float {
+        switch self {
+        case .swim: 0
+        case .fly: 1
+        case .flutter: 2
+        case .walk: 3
+        case .stomp: 4
+        case .hop: 5
+        case .slither: 6
+        case .scuttle: 7
+        case .crawl: 8
+        case .waddle: 9
+        case .generic: 10
+        }
+    }
 }

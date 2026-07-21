@@ -12,7 +12,7 @@ struct ARObjectPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     let cutoutAssets: [CutoutAsset]
     @State private var selectedCutoutID: CutoutAsset.ID?
-    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedAnimalLocomotion = AnimalLocomotion.generic
     @State private var selectedSpawnMode = SpawnMode.plane
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
@@ -24,10 +24,10 @@ struct ARObjectPlacementView: View {
         self.cutoutAssets = cutoutAssets
         let selectedID = initialCutoutID ?? cutoutAssets.first?.id
         _selectedCutoutID = State(initialValue: selectedID)
-        _selectedAnimalArchetype = State(
-            initialValue: Self.suggestedArchetype(
+        _selectedAnimalLocomotion = State(
+            initialValue: Self.suggestedLocomotion(
                 for: cutoutAssets.first(where: { $0.id == selectedID })
-            ) ?? .fish
+            ) ?? .generic
         )
     }
 
@@ -36,8 +36,8 @@ struct ARObjectPlacementView: View {
             ARObjectPlacementRealityView(
                 cutoutAssets: cutoutAssets,
                 selectedCutoutID: selectedCutoutID,
-                spawnAnimalArchetype: selectedAnimalArchetype,
-                selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
+                spawnAnimalLocomotion: selectedAnimalLocomotion,
+                selectedObjectAnimalLocomotion: placedObjectSelection?.animalLocomotion,
                 selectedSpawnMode: selectedSpawnMode,
                 selectedContentType: selectedContentType,
                 selectedModelID: selectedModelID,
@@ -84,17 +84,17 @@ struct ARObjectPlacementView: View {
                                 .clipShape(Circle())
                         }
                         
-                        // Compact Archetype Dropdown
+                        // Compact Movement Dropdown
                         Menu {
-                            Picker("Archetype", selection: archetypeSelection) {
-                                ForEach(AnimalArchetype.allCases) { archetype in
-                                    Label(archetype.title, systemImage: archetype.systemImageName).tag(archetype)
+                            Picker("Movement", selection: locomotionSelection) {
+                                ForEach(AnimalLocomotion.allCases) { locomotion in
+                                    Label(locomotion.title, systemImage: locomotion.systemImageName).tag(locomotion)
                                 }
                             }
                         } label: {
                             HStack(spacing: 4) {
-                                Image(systemName: activeAnimalArchetype.systemImageName)
-                                Text(activeAnimalArchetype.title)
+                                Image(systemName: activeAnimalLocomotion.systemImageName)
+                                Text(activeAnimalLocomotion.title)
                             }
                             .font(.caption.bold())
                             .padding(.horizontal, 12)
@@ -109,9 +109,9 @@ struct ARObjectPlacementView: View {
                                 Button("Use AI Suggestion") {
                                     artworkStore.updateCutoutOverride(id: selectedAsset.id, label: nil)
                                 }
-                                ForEach(DoodleSpecies.all, id: \.self) { label in
-                                    Button(label.capitalized) {
-                                        artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                                ForEach(DoodleSpecies.allCases) { species in
+                                    Button(species.title) {
+                                        artworkStore.updateCutoutOverride(id: selectedAsset.id, label: species.rawValue)
                                     }
                                 }
                             } label: {
@@ -160,24 +160,24 @@ struct ARObjectPlacementView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedCutoutID) { _, selectedID in
             guard placedObjectSelection == nil,
-                  let suggested = Self.suggestedArchetype(
+                  let suggested = Self.suggestedLocomotion(
                       for: cutoutAssets.first(where: { $0.id == selectedID })
                   ) else {
                 return
             }
-            selectedAnimalArchetype = suggested
+            selectedAnimalLocomotion = suggested
         }
         .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
             guard placedObjectSelection == nil,
-                  let suggested = Self.suggestedArchetype(for: selectedCutoutAsset) else {
+                  let suggested = Self.suggestedLocomotion(for: selectedCutoutAsset) else {
                 return
             }
-            selectedAnimalArchetype = suggested
+            selectedAnimalLocomotion = suggested
         }
     }
 
-    private var activeAnimalArchetype: AnimalArchetype {
-        placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype
+    private var activeAnimalLocomotion: AnimalLocomotion {
+        placedObjectSelection?.animalLocomotion ?? selectedAnimalLocomotion
     }
 
     private var selectedCutoutAsset: CutoutAsset? {
@@ -187,30 +187,24 @@ struct ARObjectPlacementView: View {
         return cutoutAssets.first
     }
 
-    private var archetypeSelection: Binding<AnimalArchetype> {
+    private var locomotionSelection: Binding<AnimalLocomotion> {
         Binding(
-            get: { placedObjectSelection?.animalArchetype ?? activeAnimalArchetype },
-            set: { archetype in
+            get: { placedObjectSelection?.animalLocomotion ?? activeAnimalLocomotion },
+            set: { locomotion in
                 if let selection = placedObjectSelection,
-                   selection.animalArchetype != nil {
+                   selection.animalLocomotion != nil {
                     placedObjectSelection = PlacedObjectSelection(
                         objectID: selection.objectID,
-                        content: .doodle(archetype)
+                        content: .doodle(locomotion)
                     )
                 } else {
-                    selectedAnimalArchetype = archetype
+                    selectedAnimalLocomotion = locomotion
                 }
             }
         )
     }
 
-    private static func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
-        guard let asset, let label = asset.resolvedDoodleLabel else {
-            return nil
-        }
-        return AnimalArchetype(
-            doodleLabel: label,
-            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
-        )
+    private static func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
+        AnimalMotionProfileResolver.profile(for: asset).locomotion
     }
 }

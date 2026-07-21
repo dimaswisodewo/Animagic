@@ -374,7 +374,7 @@ struct NewARObjectShelf: View {
 
 struct NewAREditCard: View {
     let selection: PlacedObjectSelection
-    @Binding var animalArchetype: AnimalArchetype
+    @Binding var animalLocomotion: AnimalLocomotion
     let onDone: () -> Void
     let onDelete: () -> Void
 
@@ -427,7 +427,7 @@ struct NewAREditCard: View {
                     }
             )
 
-            if selection.animalArchetype != nil {
+            if selection.animalLocomotion != nil {
                 VStack(spacing: 10) {
                     Button {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
@@ -435,8 +435,8 @@ struct NewAREditCard: View {
                         }
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: animalArchetype.systemImageName)
-                            Text("Moves like \(animalArchetype.title)")
+                            Image(systemName: animalLocomotion.systemImageName)
+                            Text(animalLocomotion.title)
                             Spacer()
                             Image(systemName: isMovementPickerExpanded ? "chevron.up" : "chevron.down")
                         }
@@ -456,17 +456,17 @@ struct NewAREditCard: View {
                         .background(Capsule().fill(Color.white))
                     }
                     .buttonStyle(.animagicPress)
-                    .accessibilityLabel("Movement behavior, \(animalArchetype.title)")
+                    .accessibilityLabel("Movement behavior, \(animalLocomotion.title)")
 
                     if isMovementPickerExpanded {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 10) {
-                                ForEach(AnimalArchetype.allCases) { archetype in
+                                ForEach(AnimalLocomotion.allCases) { locomotion in
                                     ARMovementChoiceButton(
-                                        archetype: archetype,
-                                        isSelected: animalArchetype == archetype
+                                        locomotion: locomotion,
+                                        isSelected: animalLocomotion == locomotion
                                     ) {
-                                        animalArchetype = archetype
+                                        animalLocomotion = locomotion
                                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                                             isMovementPickerExpanded = false
                                         }
@@ -512,16 +512,16 @@ struct NewAREditCard: View {
 }
 
 private struct ARMovementChoiceButton: View {
-    let archetype: AnimalArchetype
+    let locomotion: AnimalLocomotion
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
-                Image(systemName: archetype.systemImageName)
+                Image(systemName: locomotion.systemImageName)
                     .font(.system(size: 22, weight: .bold))
-                Text(archetype.title)
+                Text(locomotion.title)
                     .font(.custom("Belanosima-Regular", size: 15))
                     .lineLimit(1)
             }
@@ -545,7 +545,7 @@ private struct ARMovementChoiceButton: View {
             )
         }
         .buttonStyle(.animagicPress)
-        .accessibilityLabel(archetype.title)
+        .accessibilityLabel(locomotion.title)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

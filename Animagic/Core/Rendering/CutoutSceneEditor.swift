@@ -31,7 +31,7 @@ enum CutoutPlacementResult: Equatable {
 final class CutoutSceneEditor: SceneEditing {
     var cutoutAssets: [CutoutAsset]
     var selectedCutoutID: CutoutAsset.ID?
-    var selectedAnimalArchetype: AnimalArchetype
+    var selectedAnimalLocomotion: AnimalLocomotion
     var selectedSpawnMode: SpawnMode
     var selectedContentType: PlacementContentType
     var selectedModelID: PlaceableUSDZModel.ID?
@@ -59,7 +59,7 @@ final class CutoutSceneEditor: SceneEditing {
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType = .doodle,
         selectedModelID: PlaceableUSDZModel.ID? = nil,
@@ -71,7 +71,7 @@ final class CutoutSceneEditor: SceneEditing {
         let registry = SceneObjectRegistry()
         self.cutoutAssets = cutoutAssets
         self.selectedCutoutID = selectedCutoutID
-        self.selectedAnimalArchetype = selectedAnimalArchetype
+        self.selectedAnimalLocomotion = selectedAnimalLocomotion
         self.selectedSpawnMode = selectedSpawnMode
         self.selectedContentType = selectedContentType
         self.selectedModelID = selectedModelID ?? PlaceableUSDZModel.all.first?.id
@@ -177,8 +177,8 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.handleTap(on: entity)
     }
 
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        interactionManager.setSelectedAnimalArchetype(archetype)
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        interactionManager.setSelectedAnimalLocomotion(locomotion)
     }
 
     @discardableResult
@@ -243,7 +243,7 @@ final class CutoutSceneEditor: SceneEditing {
         }
         guard let cutout = try? entityFactory.makeEntity(
                   from: cutoutAsset,
-                  archetype: selectedAnimalArchetype,
+                  locomotion: selectedAnimalLocomotion,
                   objectID: objectID,
                   physicalWidth: configuration.physicalWidthOverride,
                   showsShadow: configuration.showsShadow
@@ -266,7 +266,7 @@ final class CutoutSceneEditor: SceneEditing {
                 id: objectID,
                 anchor: anchor,
                 parts: cutout,
-                archetype: selectedAnimalArchetype,
+                locomotion: selectedAnimalLocomotion,
                 spawnMode: spawnMode,
                 initialYaw: spawnOrientation.yaw,
                 initialRoll: spawnOrientation.roll,

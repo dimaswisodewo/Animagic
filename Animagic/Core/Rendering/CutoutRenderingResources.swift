@@ -60,7 +60,8 @@ enum DenseCutoutMesh {
 enum CutoutDeformationMaterial {
     static func make(
         texture: TextureResource,
-        archetype: AnimalArchetype,
+        bodyStyle: AnimalBodyStyle,
+        locomotion: AnimalLocomotion,
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
@@ -77,19 +78,31 @@ enum CutoutDeformationMaterial {
             lightingModel: .unlit
         )
         material.custom.texture = .init(texture)
-        material.custom.value = [archetype.shaderIndex, 1, phase, faceDirection]
+        material.custom.value = [
+            bodyStyle.shaderIndex + locomotion.shaderIndex * 0.01,
+            1,
+            phase,
+            faceDirection
+        ]
         material.blending = .transparent(opacity: .init(floatLiteral: 1))
         return material
     }
 
     static func make(
         from image: CGImage,
-        archetype: AnimalArchetype,
+        bodyStyle: AnimalBodyStyle,
+        locomotion: AnimalLocomotion,
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
         let texture = try TextureResource(image: image, options: .init(semantic: .color))
-        return try make(texture: texture, archetype: archetype, phase: phase, faceDirection: faceDirection)
+        return try make(
+            texture: texture,
+            bodyStyle: bodyStyle,
+            locomotion: locomotion,
+            phase: phase,
+            faceDirection: faceDirection
+        )
     }
 
 }

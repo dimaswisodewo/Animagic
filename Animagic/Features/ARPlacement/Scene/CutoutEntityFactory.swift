@@ -16,6 +16,7 @@ struct CutoutEntityParts {
     let front: ModelEntity
     let back: ModelEntity
     let physicalSize: SIMD2<Float>
+    let bodyStyle: AnimalBodyStyle
 }
 
 final class CutoutEntityFactory {
@@ -39,7 +40,7 @@ final class CutoutEntityFactory {
 
     func makeEntity(
         from asset: CutoutAsset,
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         objectID: UUID,
         physicalWidth: Float? = nil,
         showsShadow: Bool = true
@@ -53,16 +54,19 @@ final class CutoutEntityFactory {
         let width = physicalWidth ?? asset.defaultPhysicalWidth
         let height = width / aspectRatio
         let phase = Float.random(in: 0...(2 * Float.pi))
+        let bodyStyle = AnimalMotionProfileResolver.profile(for: asset).bodyStyle
         let textures = try textures(for: asset, cgImage: cgImage)
         let frontMaterial = try CutoutDeformationMaterial.make(
             texture: textures.front,
-            archetype: archetype,
+            bodyStyle: bodyStyle,
+            locomotion: locomotion,
             phase: phase,
             faceDirection: 1
         )
         let backMaterial = try CutoutDeformationMaterial.make(
             texture: textures.back,
-            archetype: archetype,
+            bodyStyle: bodyStyle,
+            locomotion: locomotion,
             phase: phase,
             faceDirection: -1
         )
@@ -122,7 +126,8 @@ final class CutoutEntityFactory {
             shadow: shadowEntity,
             front: frontEntity,
             back: backEntity,
-            physicalSize: [width, height]
+            physicalSize: [width, height],
+            bodyStyle: bodyStyle
         )
     }
 

@@ -18,7 +18,7 @@ struct VirtualRoomView: View {
     @State private var selectedSkybox = VirtualRoomSkybox.citrusOrchard
     @State private var skyboxLoadState = SkyboxLoadState.loading
     @State private var selectedCutoutID: CutoutAsset.ID?
-    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedAnimalLocomotion = AnimalLocomotion.generic
     @State private var selectedSpawnMode = SpawnMode.plane
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
@@ -34,8 +34,8 @@ struct VirtualRoomView: View {
                 selectedSkybox: selectedSkybox,
                 cutoutAssets: artworkStore.cutoutLibrary,
                 selectedCutoutID: selectedCutoutID,
-                spawnAnimalArchetype: selectedAnimalArchetype,
-                selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
+                spawnAnimalLocomotion: selectedAnimalLocomotion,
+                selectedObjectAnimalLocomotion: placedObjectSelection?.animalLocomotion,
                 selectedSpawnMode: selectedSpawnMode,
                 selectedContentType: selectedContentType,
                 selectedModelID: selectedModelID,
@@ -125,19 +125,19 @@ struct VirtualRoomView: View {
         }
         .onChange(of: selectedCutoutID) { _, selectedID in
             guard placedObjectSelection == nil,
-                  let suggested = suggestedArchetype(
+                  let suggested = suggestedLocomotion(
                       for: artworkStore.cutoutLibrary.first(where: { $0.id == selectedID })
                   ) else {
                 return
             }
-            selectedAnimalArchetype = suggested
+            selectedAnimalLocomotion = suggested
         }
         .onChange(of: selectedCutoutAsset?.resolvedDoodleLabel) { _, _ in
             guard placedObjectSelection == nil,
-                  let suggested = suggestedArchetype(for: selectedCutoutAsset) else {
+                  let suggested = suggestedLocomotion(for: selectedCutoutAsset) else {
                 return
             }
-            selectedAnimalArchetype = suggested
+            selectedAnimalLocomotion = suggested
         }
         .navigationTitle("Virtual Room")
         .navigationBarTitleDisplayMode(.inline)
@@ -227,17 +227,17 @@ struct VirtualRoomView: View {
                             .clipShape(Circle())
                     }
                     
-                    // Archetype Menu Picker
+                    // Movement Menu Picker
                     Menu {
-                        Picker("Archetype", selection: archetypeSelection) {
-                            ForEach(AnimalArchetype.allCases) { archetype in
-                                Label(archetype.title, systemImage: archetype.systemImageName).tag(archetype)
+                        Picker("Movement", selection: locomotionSelection) {
+                            ForEach(AnimalLocomotion.allCases) { locomotion in
+                                Label(locomotion.title, systemImage: locomotion.systemImageName).tag(locomotion)
                             }
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: selectedAnimalArchetype.systemImageName)
-                            Text(selectedAnimalArchetype.title)
+                            Image(systemName: selectedAnimalLocomotion.systemImageName)
+                            Text(selectedAnimalLocomotion.title)
                         }
                         .font(.caption.bold())
                         .padding(.horizontal, 12)
@@ -252,9 +252,9 @@ struct VirtualRoomView: View {
                             Button("Use AI Suggestion") {
                                 artworkStore.updateCutoutOverride(id: selectedAsset.id, label: nil)
                             }
-                            ForEach(DoodleSpecies.all, id: \.self) { label in
-                                Button(label.capitalized) {
-                                    artworkStore.updateCutoutOverride(id: selectedAsset.id, label: label)
+                            ForEach(DoodleSpecies.allCases) { species in
+                                Button(species.title) {
+                                    artworkStore.updateCutoutOverride(id: selectedAsset.id, label: species.rawValue)
                                 }
                             }
                         } label: {
@@ -307,18 +307,18 @@ struct VirtualRoomView: View {
         return artworkStore.cutoutLibrary.first
     }
 
-    private var archetypeSelection: Binding<AnimalArchetype> {
+    private var locomotionSelection: Binding<AnimalLocomotion> {
         Binding(
-            get: { placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype },
-            set: { archetype in
+            get: { placedObjectSelection?.animalLocomotion ?? selectedAnimalLocomotion },
+            set: { locomotion in
                 if let selection = placedObjectSelection,
-                   selection.animalArchetype != nil {
+                   selection.animalLocomotion != nil {
                     placedObjectSelection = PlacedObjectSelection(
                         objectID: selection.objectID,
-                        content: .doodle(archetype)
+                        content: .doodle(locomotion)
                     )
                 } else {
-                    selectedAnimalArchetype = archetype
+                    selectedAnimalLocomotion = locomotion
                 }
             }
         )
@@ -330,19 +330,13 @@ struct VirtualRoomView: View {
             return
         }
         selectedCutoutID = artworkStore.cutoutLibrary.first?.id
-        if let suggested = suggestedArchetype(for: artworkStore.cutoutLibrary.first) {
-            selectedAnimalArchetype = suggested
+        if let suggested = suggestedLocomotion(for: artworkStore.cutoutLibrary.first) {
+            selectedAnimalLocomotion = suggested
         }
     }
 
-    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
-        guard let asset, let label = asset.resolvedDoodleLabel else {
-            return nil
-        }
-        return AnimalArchetype(
-            doodleLabel: label,
-            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
-        )
+    private func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
+        AnimalMotionProfileResolver.profile(for: asset).locomotion
     }
 }
 
