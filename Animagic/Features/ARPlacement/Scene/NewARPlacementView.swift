@@ -569,6 +569,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
 
     static func dismantleUIView(_ arView: ARView, coordinator: NewARSceneController) {
         coordinator.stopAnimationLoop()
+        coordinator.cleanupLighting()
         coordinator.cleanupFocusIndicator()
         coordinator.cleanupPlaneAnchors()
         arView.session.pause()
@@ -640,6 +641,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var planeAnchors: [UUID: AnchorEntity] = [:]
     private var focusIndicator: Entity?
     private var focusAnchor: AnchorEntity?
+    private var lightingAnchor: AnchorEntity?
     private var statusResetTask: Task<Void, Never>?
     private var isTargetAcquired = false
     private var lastValidTransform: simd_float4x4?
@@ -712,9 +714,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             Self.hasRegisteredSystem = true
         }
 
+        setupLighting(in: arView)
         setupFocusIndicator(in: arView)
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
+        configuration.environmentTexturing = .automatic
         configureOcclusion(on: arView, with: configuration)
         arView.session.delegate = self
         arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
@@ -726,6 +730,47 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         interactionAdapter = adapter
         updateStatus(.searching)
         onObjectCountChanged?(0)
+    }
+
+    private func setupLighting(in arView: ARView) {
+        cleanupLighting()
+
+        let anchor = AnchorEntity(.camera)
+        addDirectionalLight(
+            color: UIColor(red: 1.0, green: 0.97, blue: 0.92, alpha: 1.0),
+            intensity: 1_000,
+            position: [-1.0, 1.4, 0.8],
+            to: anchor
+        )
+        addDirectionalLight(
+            color: UIColor(red: 0.90, green: 0.95, blue: 1.0, alpha: 1.0),
+            intensity: 1_000,
+            position: [1.2, 0.7, 0.6],
+            to: anchor
+        )
+        arView.scene.addAnchor(anchor)
+        lightingAnchor = anchor
+    }
+
+    private func addDirectionalLight(
+        color: UIColor,
+        intensity: Float,
+        position: SIMD3<Float>,
+        to anchor: AnchorEntity
+    ) {
+        let light = Entity()
+        var component = DirectionalLightComponent()
+        component.color = color
+        component.intensity = intensity
+        light.components.set(component)
+        anchor.addChild(light)
+        light.look(at: [0, 0, -1], from: position, relativeTo: anchor)
+    }
+
+    func cleanupLighting() {
+        guard let lightingAnchor else { return }
+        arView?.scene.removeAnchor(lightingAnchor)
+        self.lightingAnchor = nil
     }
 
     func handle(_ command: NewARSceneCommand) {
@@ -1391,7 +1436,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
             begin(.rotation)
         case .changed:
             let axis = simd_normalize(selectedObject.supportSurfaceNormal)
-            let rotation = simd_quatf(angle: Float(recognizer.rotation), axis: axis)
+            let rotation = simd_quatf(angle: -Float(recognizer.rotation), axis: axis)
             selectedObject.interactionRoot.setOrientation(rotation * initialOrientation, relativeTo: nil)
         case .ended, .cancelled, .failed:
             end(.rotation)
