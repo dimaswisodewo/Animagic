@@ -17,6 +17,8 @@ struct CutoutEntityParts {
     let back: ModelEntity
     let physicalSize: SIMD2<Float>
     let bodyStyle: AnimalBodyStyle
+    let meshes: [CutoutRenderQuality: MeshResource]
+    let defaultFacing: Float
 }
 
 final class CutoutEntityFactory {
@@ -27,6 +29,8 @@ final class CutoutEntityFactory {
     private struct MeshKey: Hashable {
         let width: Int
         let height: Int
+        let bounds: [Int]
+        let subdivisions: Int
     }
 
     private struct TexturePair {
@@ -49,8 +53,11 @@ final class CutoutEntityFactory {
             throw CutoutEntityFactoryError.invalidImage
         }
 
-        let imageSize = asset.image.size
-        let aspectRatio = Float(max(imageSize.width / max(imageSize.height, 1), 0.01))
+        let rig = CutoutRigAnalyzer.analyze(cgImage)
+        let visibleBounds = rig.visibleBounds
+        let pixelWidth = CGFloat(cgImage.width) * visibleBounds.width
+        let pixelHeight = CGFloat(cgImage.height) * visibleBounds.height
+        let aspectRatio = Float(max(pixelWidth / max(pixelHeight, 1), 0.01))
         let width = physicalWidth ?? asset.defaultPhysicalWidth
         let height = width / aspectRatio
         let phase = Float.random(in: 0...(2 * Float.pi))
@@ -71,14 +78,25 @@ final class CutoutEntityFactory {
             faceDirection: -1
         )
 
-        let key = MeshKey(width: Int((width * 10_000).rounded()), height: Int((height * 10_000).rounded()))
-        let mesh: MeshResource
-        if let cached = meshCache[key] {
-            mesh = cached
-        } else {
-            mesh = try DenseCutoutMesh.generate(width: width, height: height)
+        let meshes = try Dictionary(uniqueKeysWithValues: CutoutRenderQuality.allCases.map { quality in
+            let key = MeshKey(
+                width: Int((width * 10_000).rounded()),
+                height: Int((height * 10_000).rounded()),
+                bounds: [visibleBounds.minX, visibleBounds.minY, visibleBounds.width, visibleBounds.height]
+                    .map { Int(($0 * 1_000).rounded()) },
+                subdivisions: quality.rawValue
+            )
+            if let cached = meshCache[key] { return (quality, cached) }
+            let mesh = try DenseCutoutMesh.generate(
+                width: width,
+                height: height,
+                subdivisions: quality.rawValue,
+                textureBounds: visibleBounds
+            )
             meshCache[key] = mesh
-        }
+            return (quality, mesh)
+        })
+        guard let mesh = meshes[.balanced] else { throw CutoutEntityFactoryError.invalidImage }
         let frontEntity = ModelEntity(mesh: mesh, materials: [frontMaterial])
         frontEntity.position = [0, height / 2, 0.0005]
         let shadowComp = GroundingShadowComponent(castsShadow: false)
@@ -127,7 +145,9 @@ final class CutoutEntityFactory {
             front: frontEntity,
             back: backEntity,
             physicalSize: [width, height],
-            bodyStyle: bodyStyle
+            bodyStyle: bodyStyle,
+            meshes: meshes,
+            defaultFacing: rig.defaultFacing
         )
     }
 

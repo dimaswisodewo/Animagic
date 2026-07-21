@@ -29,6 +29,11 @@ final class PlacedCutout: PlacedSceneObject {
     private var transitionElapsed: Float = 1
     private var lastMaterialLocomotion: AnimalLocomotion?
     private var lastMaterialBehavior: AnimalBehavior?
+    private var facingOverride: Float = 1
+    private let meshes: [CutoutRenderQuality: MeshResource]
+    private var renderQuality: CutoutRenderQuality = .balanced
+    private var isSelected = false
+    private var viewerDistance: Float = 1.5
     private(set) var animalLocomotion: AnimalLocomotion
     var isAnimationPaused = false
     var supportSurfaceNormal: SIMD3<Float>
@@ -59,6 +64,8 @@ final class PlacedCutout: PlacedSceneObject {
         self.initialRoll = initialRoll
         physicalWidth = parts.physicalSize.x
         bodyStyle = parts.bodyStyle
+        meshes = parts.meshes
+        facingOverride = parts.defaultFacing
         animalLocomotion = locomotion
         self.supportSurfaceNormal = supportSurfaceNormal
 
@@ -92,7 +99,8 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     func setSelected(_ isSelected: Bool) {
-        // No-op (handled by 3D gizmo in the controller)
+        self.isSelected = isSelected
+        setViewerDistance(viewerDistance)
     }
 
     func setInteractionPaused(_ isPaused: Bool) {
@@ -123,6 +131,31 @@ final class PlacedCutout: PlacedSceneObject {
         )
     }
 
+    func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus) {
+        simulator.receive(stimulus)
+    }
+
+    func flipFacing() {
+        facingOverride *= -1
+        lastMaterialLocomotion = nil
+    }
+
+    func setViewerDistance(_ distance: Float) {
+        viewerDistance = distance
+        let quality: CutoutRenderQuality = isSelected ? .hero : distance < 1.1 ? .hero : distance < 2.2 ? .balanced : .economy
+        applyRenderQuality(quality)
+    }
+
+    private func applyRenderQuality(_ quality: CutoutRenderQuality) {
+        guard quality != renderQuality, let mesh = meshes[quality] else { return }
+        renderQuality = quality
+        for entity in [frontEntity, backEntity] {
+            guard var model = entity.model else { continue }
+            model.mesh = mesh
+            entity.model = model
+        }
+    }
+
     private func apply(_ sample: MotionSample) {
         animatedRoot.position = sample.position
         animatedRoot.orientation = simd_quatf(angle: sample.yaw, axis: [0, 1, 0])
@@ -150,10 +183,6 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     private func updateDeformationMaterialIfNeeded(_ sample: MotionSample) {
-        guard lastMaterialLocomotion != animalLocomotion ||
-              lastMaterialBehavior != sample.behavior else {
-            return
-        }
         lastMaterialLocomotion = animalLocomotion
         lastMaterialBehavior = sample.behavior
         updateDeformationMaterial(on: frontEntity, sample: sample, faceDirection: 1)
@@ -167,14 +196,13 @@ final class PlacedCutout: PlacedSceneObject {
     ) {
         guard var model = entity.model,
               var material = model.materials.first as? CustomMaterial else { return }
-        let phaseOffset = material.custom.value.z
         material.custom.value = [
             bodyStyle.shaderIndex
                 + animalLocomotion.shaderIndex * 0.01
                 + Float(sample.behavior.rawValue) * 0.0001,
-            sample.deformationActivity,
-            phaseOffset,
-            faceDirection
+            min(sample.deformationActivity + sample.attention * 0.35, 1.25),
+            sample.deformationPhase,
+            faceDirection * facingOverride
         ]
         model.materials = [material]
         entity.model = model

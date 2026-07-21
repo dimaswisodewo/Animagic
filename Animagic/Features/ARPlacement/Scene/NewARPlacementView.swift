@@ -14,6 +14,7 @@ enum NewARSceneCommand: Equatable {
     case place(UUID)
     case clearSelection(UUID)
     case delete(UUID)
+    case flipFacing(UUID)
     case undoDelete(UUID)
     case discardUndo(UUID)
     case cancelPencilInteraction(UUID)
@@ -335,6 +336,7 @@ struct NewARPlacementView: View {
                         NewAREditCard(
                             selection: placedObjectSelection,
                             animalLocomotion: locomotionSelection,
+                            onFlip: { sceneCommand = .flipFacing(UUID()) },
                             onDone: {
                                 sceneCommand = .clearSelection(UUID())
                             },
@@ -873,6 +875,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             if hasUndo { feedback.warning() }
             onUndoAvailabilityChanged?(hasUndo)
             onObjectCountChanged?(sceneEditor.objectCount)
+        case .flipFacing:
+            flipSelectedObjectAnimalFacing()
         case .undoDelete:
             guard let pendingDeletion else { return }
             restoreDeletedObject(pendingDeletion)
@@ -1296,6 +1300,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
 
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
+    }
+
+    func flipSelectedObjectAnimalFacing() {
+        sceneEditor.flipSelectedObjectAnimalFacing()
     }
 
     @discardableResult

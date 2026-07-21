@@ -15,7 +15,10 @@ void cutoutSurface(realitykit::surface_parameters params)
 {
     constexpr sampler textureSampler(coord::normalized, address::clamp_to_edge, filter::linear, mip_filter::linear);
     half4 color = params.textures().custom().sample(textureSampler, params.geometry().uv0());
-    params.surface().set_emissive_color(color.rgb);
+    params.surface().set_base_color(color.rgb);
+    params.surface().set_emissive_color(color.rgb * half3(0.12));
+    params.surface().set_roughness(0.92h);
+    params.surface().set_metallic(0.0h);
     params.surface().set_opacity(color.a);
 }
 
@@ -31,20 +34,8 @@ void cutoutGeometryModifier(realitykit::geometry_parameters params)
     float activity = configuration.y;
     float phaseOffset = configuration.z;
     float faceDirection = configuration.w;
-    float gaitFrequency = locomotion < 0.5 ? 3.8 :
-        locomotion < 1.5 ? 5.6 :
-        locomotion < 2.5 ? 8.2 :
-        locomotion < 3.5 ? 3.8 :
-        locomotion < 4.5 ? 2.0 :
-        locomotion < 5.5 ? 2.7 :
-        locomotion < 6.5 ? 3.2 :
-        locomotion < 7.5 ? 6.5 :
-        locomotion < 8.5 ? 5.2 :
-        locomotion < 9.5 ? 3.1 : 1.8;
-    float cadence = behavior < 0.5 ? 1.0 :
-        behavior < 1.5 ? 1.75 :
-        behavior < 2.5 ? 0.55 : 0.18;
-    float phase = phaseOffset + params.uniforms().time() * gaitFrequency * cadence;
+    // Swift owns the authoritative phase so travel, contact, and deformation cannot drift.
+    float phase = phaseOffset;
 
     float2 sourceUV = geometry.uv0();
     float2 uv = float2(faceDirection < 0.0 ? 1.0 - sourceUV.x : sourceUV.x, sourceUV.y);

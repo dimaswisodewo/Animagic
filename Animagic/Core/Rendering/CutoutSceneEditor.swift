@@ -146,6 +146,7 @@ final class CutoutSceneEditor: SceneEditing {
 
     func update(deltaTime: Float) {
         guard !registry.isEmpty else { return }
+        deliverCameraProximityStimuli()
         guard let simulationInterval = configuration.simulationInterval else {
             registry.forEach { $0.update(deltaTime: deltaTime) }
             return
@@ -155,6 +156,18 @@ final class CutoutSceneEditor: SceneEditing {
         let step = min(simulationAccumulator, 1.0 / 15.0)
         simulationAccumulator = 0
         registry.forEach { $0.update(deltaTime: step) }
+    }
+
+    private func deliverCameraProximityStimuli() {
+        guard let cameraPosition = arView?.cameraTransform.translation else { return }
+        registry.forEach { object in
+            let objectPosition = object.animatedWorldPosition
+            let distance = simd_distance(cameraPosition, objectPosition)
+            object.setViewerDistance(distance)
+            if distance < 1.2 {
+                object.receiveMotionStimulus(.proximity(distance))
+            }
+        }
     }
 
     var placedObjectSelection: PlacedObjectSelection? {
@@ -179,6 +192,10 @@ final class CutoutSceneEditor: SceneEditing {
 
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         interactionManager.setSelectedAnimalLocomotion(locomotion)
+    }
+
+    func flipSelectedObjectAnimalFacing() {
+        interactionManager.flipSelectedAnimalFacing()
     }
 
     @discardableResult

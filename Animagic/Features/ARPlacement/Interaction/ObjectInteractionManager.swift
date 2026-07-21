@@ -46,6 +46,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         }
 
         select(objectID)
+        selectedObject?.receiveMotionStimulus(.tapped)
         return true
     }
 
@@ -126,6 +127,10 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         }
         selectedObject.setAnimalLocomotion(locomotion)
         notifySelectionChanged()
+    }
+
+    func flipSelectedAnimalFacing() {
+        selectedObject?.flipFacing()
     }
 
     @discardableResult

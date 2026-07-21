@@ -375,6 +375,7 @@ struct NewARObjectShelf: View {
 struct NewAREditCard: View {
     let selection: PlacedObjectSelection
     @Binding var animalLocomotion: AnimalLocomotion
+    let onFlip: () -> Void
     let onDone: () -> Void
     let onDelete: () -> Void
 
@@ -429,6 +430,13 @@ struct NewAREditCard: View {
 
             if selection.animalLocomotion != nil {
                 VStack(spacing: 10) {
+//                    Button(action: onFlip) {
+//                        Label("Flip direction", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right")
+//                            .font(.custom("Belanosima-SemiBold", size: 18))
+//                    }
+//                    .buttonStyle(.bordered)
+//                    .accessibilityHint("Corrects which way the doodle faces and moves")
+
                     Button {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                             isMovementPickerExpanded.toggle()

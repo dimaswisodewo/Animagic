@@ -18,6 +18,13 @@ struct MotionSample {
     var behavior: AnimalBehavior
     var deformationActivity: Float
     var deformationPhase: Float
+    var contact: Float
+    var attention: Float
+}
+
+enum AnimalMotionStimulus {
+    case tapped
+    case proximity(Float)
 }
 
 private struct OrganicNoiseField {
@@ -60,6 +67,10 @@ struct MotionSimulator {
     private var hasLaneTarget = false
     private var isTurning = false
     private var turnElapsed: Float = 0
+    private var reactionElapsed: Float = 0
+    private var reactionDuration: Float = 0
+    private var reactionStrength: Float = 0
+    private var proximityCooldown: Float = 0
     private let random: GKRandomSource
     private let noise: OrganicNoiseField
 
@@ -77,6 +88,20 @@ struct MotionSimulator {
         noise = OrganicNoiseField(seed: configuration.noiseSeed)
     }
 
+    mutating func receive(_ stimulus: AnimalMotionStimulus) {
+        switch stimulus {
+        case .tapped:
+            reactionDuration = 0.9
+            reactionStrength = 1
+        case .proximity(let distance):
+            guard reactionElapsed >= reactionDuration, proximityCooldown <= 0 else { return }
+            reactionDuration = 0.65
+            reactionStrength = min(max((1.2 - distance) / 0.8, 0), 0.65)
+            proximityCooldown = 2.5
+        }
+        reactionElapsed = 0
+    }
+
     mutating func update(
         deltaTime rawDeltaTime: Float,
         locomotion: AnimalLocomotion,
@@ -84,6 +109,12 @@ struct MotionSimulator {
         initialYaw: Float
     ) -> MotionSample {
         let deltaTime = min(max(rawDeltaTime, 0), 1.0 / 15.0)
+        reactionElapsed += deltaTime
+        proximityCooldown = max(proximityCooldown - deltaTime, 0)
+        let reactionProgress = min(reactionElapsed / max(reactionDuration, 0.001), 1)
+        let reactionEnvelope = reactionElapsed < reactionDuration
+            ? sin(reactionProgress * .pi) * reactionStrength
+            : 0
         behaviorElapsed += deltaTime
         motionPhase += deltaTime * configuration.gaitFrequency * cadenceMultiplier
         if behaviorElapsed >= behaviorDuration {
@@ -114,7 +145,7 @@ struct MotionSimulator {
         }
 
         let direction = safeNormalize(toTarget, fallback: [laneDirection, 0, 0])
-        let desiredSpeed = isTurning ? 0 : speed(configuration: configuration)
+        let desiredSpeed = isTurning ? 0 : speed(configuration: configuration) * (1 + reactionEnvelope * 0.7)
         let targetVelocity = direction * desiredSpeed
         let velocityBlend = 1 - exp(-configuration.acceleration * deltaTime * 4)
         velocity += (targetVelocity - velocity) * velocityBlend
@@ -173,11 +204,13 @@ struct MotionSimulator {
             yaw: yaw,
             pitch: pitch,
             roll: roll,
-            scaleX: (1 + compression * 0.55) * turnScale,
-            scaleY: (1 - compression) * (1 + (1 - turnScale) * 0.12),
+            scaleX: (1 + compression * 0.55 + reactionEnvelope * 0.035) * turnScale,
+            scaleY: (1 - compression - reactionEnvelope * 0.055) * (1 + (1 - turnScale) * 0.12),
             behavior: behavior,
             deformationActivity: deformationActivity * configuration.personality,
-            deformationPhase: motionPhase
+            deformationPhase: motionPhase,
+            contact: locomotion.verticalStyle == .grounded ? 1 - min(footfall, 1) : 0,
+            attention: reactionEnvelope
         )
     }
 
@@ -354,7 +387,9 @@ func blend(from: MotionSample, to: MotionSample, amount: Float) -> MotionSample 
         scaleY: mix(from.scaleY, to.scaleY, t: amount),
         behavior: to.behavior,
         deformationActivity: mix(from.deformationActivity, to.deformationActivity, t: amount),
-        deformationPhase: mix(from.deformationPhase, to.deformationPhase, t: amount)
+        deformationPhase: mix(from.deformationPhase, to.deformationPhase, t: amount),
+        contact: mix(from.contact, to.contact, t: amount),
+        attention: mix(from.attention, to.attention, t: amount)
     )
 }
 

@@ -102,23 +102,32 @@ protocol PlacedSceneObject: AnyObject {
     var interactionRoot: Entity { get }
     var supportSurfaceNormal: SIMD3<Float> { get set }
     var selection: PlacedObjectSelection { get }
+    var animatedWorldPosition: SIMD3<Float> { get }
 
     func update(deltaTime: Float)
     func setSelected(_ isSelected: Bool)
     func setInteractionPaused(_ isPaused: Bool)
     func setAnimalLocomotion(_ locomotion: AnimalLocomotion)
+    func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus)
+    func flipFacing()
+    func setViewerDistance(_ distance: Float)
 }
 
 extension PlacedSceneObject {
+    var animatedWorldPosition: SIMD3<Float> { interactionRoot.position(relativeTo: nil) }
     func update(deltaTime: Float) {}
     func setInteractionPaused(_ isPaused: Bool) {}
     func setAnimalLocomotion(_ locomotion: AnimalLocomotion) {}
+    func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus) {}
+    func flipFacing() {}
+    func setViewerDistance(_ distance: Float) {}
 }
 
 @MainActor
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion)
+    func flipSelectedObjectAnimalFacing()
     @discardableResult
     func deleteSelectedObject() -> DeletedSceneObject?
     func restoreDeletedObject(_ deletedObject: DeletedSceneObject)

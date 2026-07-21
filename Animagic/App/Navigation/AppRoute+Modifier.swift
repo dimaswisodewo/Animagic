@@ -65,6 +65,9 @@ struct AppRouterView {
         case .cutoutLibrary: CutoutLibraryView()
         case .virtualRoom: VirtualRoomView()
         case .help: HelpPageView()
+#if DEBUG
+        case .motionLab: MotionLabView()
+#endif
         }
     }
 

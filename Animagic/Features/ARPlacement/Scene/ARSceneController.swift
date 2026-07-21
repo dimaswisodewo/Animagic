@@ -245,6 +245,10 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
     }
 
+    func flipSelectedObjectAnimalFacing() {
+        sceneEditor.flipSelectedObjectAnimalFacing()
+    }
+
     var placedObjectSelection: PlacedObjectSelection? {
         sceneEditor.placedObjectSelection
     }

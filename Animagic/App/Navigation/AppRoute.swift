@@ -16,6 +16,9 @@ enum AppRoute: Hashable, Identifiable {
     case cutoutLibrary
     case virtualRoom
     case help
+#if DEBUG
+    case motionLab
+#endif
 
     var id: Self { self }
 }
