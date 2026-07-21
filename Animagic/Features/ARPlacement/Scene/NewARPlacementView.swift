@@ -227,7 +227,15 @@ struct NewARPlacementView: View {
                         mainIconCollapsed: "rectangle.3.group.fill",
                         mainColor: AnimagicTheme.orange,
                         items: [
-                            ExpandableButtonItem(icon: "questionmark", backgroundColor: .green, innerBorderColor: .clear, action: { /* Help action */ }),
+                            ExpandableButtonItem(
+                                icon: "questionmark",
+                                backgroundColor: .green,
+                                innerBorderColor: .clear,
+                                action: {
+                                    isTopMenuExpanded = false
+                                    router.push(.help)
+                                }
+                            ),
                             ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: .clear, action: { enterImmersive() }),
                             ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: .clear, action: { /* Camera action */ })
                         ]
@@ -243,7 +251,8 @@ struct NewARPlacementView: View {
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.vertical, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 24)
             
             if shouldShowStatus {
                 NewARStatusPill(status: placementStatus)
@@ -1551,4 +1560,3 @@ struct ARLoadingOverlayView: View {
         }
     }
 }
-

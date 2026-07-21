@@ -1,3 +1,10 @@
+//
+//  AnimagicDesignSystem.swift
+//  AniMagic
+//
+//  Created by MorpKnight on 21/07/26.
+//
+
 import SwiftUI
 
 enum AnimagicTheme {
@@ -121,9 +128,14 @@ struct AnimagicTextField: View {
                     .foregroundStyle(textColor.opacity(0.65))
             }
             
-            TextField(placeholder, text: $text)
+            TextField(
+                placeholder,
+                text: $text,
+                prompt: Text(placeholder)
+                    .foregroundColor(textColor.opacity(0.75))
+            )
                 .font(.custom("Belanosima-Regular", size: 30))
-                .foregroundStyle(textColor)
+                .foregroundColor(textColor)
                 
             if iconPosition == .trailing {
                 Image(systemName: icon)
@@ -273,4 +285,3 @@ struct AnimagicSideTabButton: View {
         .buttonStyle(.animagicPress)
     }
 }
-

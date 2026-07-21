@@ -13,10 +13,9 @@ struct ContentView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
     @State private var isBreathing = false
-    @State private var showHelp = false
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             // Background Color
             Color.Token.Background.primary
                 .ignoresSafeArea()
@@ -86,22 +85,21 @@ struct ContentView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            AnimagicIconButton(
+                icon: "questionmark",
+                backgroundColor: Color.Token.Button.success
+            ) {
+                router.push(.help)
+            }
+            .accessibilityLabel("Help")
+            .accessibilityHint("Opens the AniMagix guide")
+            .padding(24)
             
             // Floating Bottom Buttons
             VStack {
                 Spacer()
                 HStack {
-                    AnimagicIconButton(
-                        icon: "questionmark",
-                        backgroundColor: Color(Color.Palette.n20),
-                        iconColor: Color(Color.Palette.n70),
-                        innerBorderColor: .clear
-                    ) {
-                        showHelp = true
-                    }
-                    .padding(.leading, 32)
-                    .padding(.bottom, 32)
-                    
                     Spacer()
                     
                     AnimagicIconButton(
@@ -116,10 +114,6 @@ struct ContentView: View {
                     .padding(.bottom, 32)
                 }
             }
-        }
-        .sheet(isPresented: $showHelp) {
-            GuidePopupView(isPresented: $showHelp, selectedAnimal: .constant(nil))
-                .presentationBackground(.clear)
         }
         .withAppRouter()
         .alert(
