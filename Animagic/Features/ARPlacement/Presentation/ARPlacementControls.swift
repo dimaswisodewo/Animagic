@@ -378,77 +378,175 @@ struct NewAREditCard: View {
     let onDone: () -> Void
     let onDelete: () -> Void
 
+    @State private var isMovementPickerExpanded = false
+
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 20) {
+        VStack(spacing: 14) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Magic placed!")
+                        .font(.custom("Belanosima-SemiBold", size: 24))
+                        .foregroundStyle(Color.Palette.n70)
+                    Text(selection.title)
+                        .font(.custom("Belanosima-Regular", size: 20))
+                        .foregroundStyle(Color.Palette.n60)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                AnimagicIconButton(
+                    icon: "checkmark",
+                    backgroundColor: Color.Token.Button.success,
+                    innerBorderColor: .black.opacity(0.2),
+                    action: onDone
+                )
+                .accessibilityLabel("Done editing \(selection.title)")
+
+                AnimagicIconButton(
+                    icon: "trash.fill",
+                    backgroundColor: Color(Color.Palette.r300),
+                    innerBorderColor: .black.opacity(0.2),
+                    action: onDelete
+                )
+                .accessibilityLabel("Delete \(selection.title)")
+            }
+
+            HStack(spacing: 12) {
                 gestureHint(icon: "hand.draw.fill", title: "Drag to move")
                 gestureHint(icon: "arrow.up.left.and.arrow.down.right", title: "Pinch to resize")
                 gestureHint(icon: "rotate.3d", title: "Twist to turn")
             }
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color.Palette.n10)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .strokeBorder(Color.Palette.n20, lineWidth: 3)
+                    }
+            )
 
-            Divider().opacity(0.4)
-
-            HStack(spacing: 10) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.blue)
-                Text(selection.title)
-                    .font(.callout.bold())
-                    .lineLimit(1)
-
-                if selection.animalArchetype != nil {
-                    Menu {
-                        Picker("Moves like", selection: $animalArchetype) {
-                            ForEach(AnimalArchetype.allCases) { archetype in
-                                Label(archetype.title, systemImage: archetype.systemImageName)
-                                    .tag(archetype)
-                            }
+            if selection.animalArchetype != nil {
+                VStack(spacing: 10) {
+                    Button {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            isMovementPickerExpanded.toggle()
                         }
                     } label: {
-                        Label("Moves like \(animalArchetype.title)", systemImage: animalArchetype.systemImageName)
-                            .font(.caption.bold())
-                            .padding(.horizontal, 10)
-                            .frame(minHeight: 44)
-                            .background(Color.blue.opacity(0.12), in: Capsule())
+                        HStack(spacing: 8) {
+                            Image(systemName: animalArchetype.systemImageName)
+                            Text("Moves like \(animalArchetype.title)")
+                            Spacer()
+                            Image(systemName: isMovementPickerExpanded ? "chevron.up" : "chevron.down")
+                        }
+                        .font(.custom("Belanosima-SemiBold", size: 20))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 18)
+                        .frame(minHeight: 52)
+                        .background(
+                            Capsule()
+                                .fill(Color.Token.Button.secondary)
+                                .overlay {
+                                    Capsule()
+                                        .strokeBorder(.black.opacity(0.2), lineWidth: 4)
+                                }
+                        )
+                        .padding(8)
+                        .background(Capsule().fill(Color.white))
                     }
+                    .buttonStyle(.animagicPress)
                     .accessibilityLabel("Movement behavior, \(animalArchetype.title)")
+
+                    if isMovementPickerExpanded {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(AnimalArchetype.allCases) { archetype in
+                                    ARMovementChoiceButton(
+                                        archetype: archetype,
+                                        isSelected: animalArchetype == archetype
+                                    ) {
+                                        animalArchetype = archetype
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                                            isMovementPickerExpanded = false
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                        }
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
-
-                Spacer(minLength: 8)
-
-                Button("Done", action: onDone)
-                    .font(.callout.bold())
-                    .foregroundStyle(.black)
-                    .padding(.horizontal, 18)
-                    .frame(minHeight: 44)
-                    .background(Color.yellow, in: Capsule())
-                    .buttonStyle(ARPressButtonStyle())
-
-                Button(role: .destructive, action: onDelete) {
-                    Image(systemName: "trash.fill")
-                        .frame(width: 44, height: 44)
-                        .background(Color.red.opacity(0.12), in: Circle())
-                }
-                .buttonStyle(ARPressButtonStyle())
-                .accessibilityLabel("Delete \(selection.title)")
             }
         }
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(.white.opacity(0.4), lineWidth: 1)
-        }
-        .shadow(color: .black.opacity(0.2), radius: 14, y: 5)
+        .padding(16)
+        .background(Color.Token.Background.surface, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(Color.white)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .strokeBorder(Color.Palette.n70, lineWidth: 4)
+                }
+        )
+        .shadow(color: Color.Palette.n70.opacity(0.18), radius: 14, y: 5)
     }
 
     private func gestureHint(icon: String, title: String) -> some View {
-        Label(title, systemImage: icon)
-            .font(.caption.bold())
-            .foregroundStyle(.primary)
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
-            .accessibilityLabel(title)
+        VStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .bold))
+            Text(title)
+                .font(.custom("Belanosima-Regular", size: 16))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .foregroundStyle(Color.Palette.n70)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+    }
+}
+
+private struct ARMovementChoiceButton: View {
+    let archetype: AnimalArchetype
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: archetype.systemImageName)
+                    .font(.system(size: 22, weight: .bold))
+                Text(archetype.title)
+                    .font(.custom("Belanosima-Regular", size: 15))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isSelected ? .white : Color.Palette.n70)
+            .frame(width: 76, height: 68)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(isSelected ? Color.Token.Button.secondary : Color.Palette.n20)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .strokeBorder(
+                                isSelected ? Color.black.opacity(0.2) : Color.Palette.n30,
+                                lineWidth: 4
+                            )
+                    }
+            )
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color.white)
+            )
+        }
+        .buttonStyle(.animagicPress)
+        .accessibilityLabel(archetype.title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
