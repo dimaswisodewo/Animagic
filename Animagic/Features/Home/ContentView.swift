@@ -38,6 +38,8 @@ struct ContentView: View {
                     .offset(y: isAnimatingGraphics ? 30 : -20)
                     .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
                     .position(x: 50, y: geometry.size.height - 50)
+
+                HomeFloatingDecorations()
             }
             .ignoresSafeArea()
             .onAppear {
@@ -68,7 +70,7 @@ struct ContentView: View {
                             .font(.custom("Belanosima-SemiBold", size: titleSize, relativeTo: .largeTitle))
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
-                            .foregroundColor(Color.Token.Text.primary)
+                            .foregroundColor(Color(Color.Palette.n70))
                     }
 
                     AnimagicIconButton(
@@ -91,8 +93,8 @@ struct ContentView: View {
                 HStack {
                     AnimagicIconButton(
                         icon: "questionmark",
-                        backgroundColor: .white,
-                        iconColor: Color.Token.Icon.primary,
+                        backgroundColor: Color(Color.Palette.n20),
+                        iconColor: Color(Color.Palette.n70),
                         innerBorderColor: .clear
                     ) {
                         showHelp = true
@@ -104,8 +106,8 @@ struct ContentView: View {
                     
                     AnimagicIconButton(
                         icon: "backpack.fill",
-                        backgroundColor: .white,
-                        iconColor: Color.Token.Icon.primary,
+                        backgroundColor: Color(Color.Palette.n20),
+                        iconColor: Color(Color.Palette.n70),
                         innerBorderColor: .clear
                     ) {
                         router.push(.backpack)

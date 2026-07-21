@@ -25,7 +25,13 @@ struct BackpackHeader: View {
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 12) {
-                AnimagicIconButton(icon: "chevron.left", backgroundColor: AnimagicTheme.orange, action: onBack)
+                AnimagicIconButton(
+                    icon: "chevron.left",
+                    backgroundColor: Color(Color.Palette.n20),
+                    iconColor: Color(Color.Palette.n70),
+                    innerBorderColor: .clear,
+                    action: onBack
+                )
                 Text("My Backpack")
                     .font(.custom("Belanosima-SemiBold", size: 32, relativeTo: .title))
                     .minimumScaleFactor(0.7)
@@ -35,8 +41,8 @@ struct BackpackHeader: View {
             Spacer()
             AnimagicTextField(placeholder: "Search.....", text: $searchText)
                 .frame(minWidth: 120, maxWidth: 300)
-            AnimagicIconButton(icon: "paintbrush.fill", backgroundColor: AnimagicTheme.orange, action: onDrawMore)
-            AnimagicIconButton(icon: "camera.fill", backgroundColor: AnimagicTheme.orange, action: onOpenAR)
+            AnimagicIconButton(icon: "paintbrush.fill", backgroundColor: Color.Token.Button.primary, action: onDrawMore)
+            AnimagicIconButton(icon: "camera.fill", backgroundColor: Color.Token.Button.secondary, action: onOpenAR)
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
@@ -60,12 +66,16 @@ struct BackpackCategoryBar: View {
                     } label: {
                         Text(title)
                             .font(.custom("Belanosima-SemiBold", size: 28))
-                            .foregroundStyle(isSelected ? .white : AnimagicTheme.blue)
+                            .foregroundStyle(isSelected ? .white : Color.Token.Button.secondary)
                             .padding(.horizontal, 32)
                             .padding(.vertical, 12)
                             .background(
                                 Capsule()
-                                    .fill(isSelected ? AnimagicTheme.blue : AnimagicTheme.blue.opacity(0.15))
+                                    .fill(isSelected ? Color.Token.Button.secondary : Color.Token.Button.secondary.opacity(0.15))
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(.black.opacity(0.2), lineWidth: 4)
+                                    )
                             )
                             .padding(6)
                             .background(

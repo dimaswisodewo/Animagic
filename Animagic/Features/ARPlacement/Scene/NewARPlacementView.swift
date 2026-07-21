@@ -212,8 +212,8 @@ struct NewARPlacementView: View {
             HStack(alignment: .top) {
                 AnimagicIconButton(
                     icon: "chevron.left",
-                    backgroundColor: .white,
-                    iconColor: AnimagicTheme.orange,
+                    backgroundColor: Color(Color.Palette.n20),
+                    iconColor: Color(Color.Palette.n70),
                     innerBorderColor: .clear,
                     action: { router.popToRoot() }
                 )
@@ -1506,7 +1506,7 @@ struct ARLoadingOverlayView: View {
         ZStack {
             Image(systemName: icon)
                 .font(.system(size: 80))
-                .foregroundColor(Color.Token.Text.primary)
+                .foregroundColor(Color(Color.Palette.n70))
             
             Image(systemName: secondaryIcon)
                 .font(.system(size: 50))
@@ -1530,7 +1530,7 @@ struct ARLoadingOverlayView: View {
             }
             Text(text)
                 .font(.custom("Belanosima-SemiBold", size: textTitleSize))
-                .foregroundColor(Color.Token.Text.primary)
+                .foregroundColor(Color(Color.Palette.n70))
         }
     }
     
