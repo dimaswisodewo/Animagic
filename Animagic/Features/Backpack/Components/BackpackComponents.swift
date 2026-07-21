@@ -74,6 +74,7 @@ struct BackpackCategoryBar: View {
                     let title = category?.title ?? "All"
                     
                     Button {
+                        AudioManager.shared.playTap()
                         selectedCategory = category
                     } label: {
                         Text(title)

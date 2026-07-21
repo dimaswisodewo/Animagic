@@ -13,7 +13,7 @@ struct CustomButton: View {
     
     var body: some View {
         Button {
-            AudioManager.shared.playSFX(.tap)
+            AudioManager.shared.playTap()
             action()
         } label: {
             Text(title)
