@@ -13,6 +13,7 @@
 		0BEF7B51300F637400DC61B2 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B50300F637400DC61B2 /* Cloud.usdz */; };
 		0BEF7B53300F67F600DC61B2 /* Croissant.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B52300F67F600DC61B2 /* Croissant.usdz */; };
 		0BEF7B55300F6A2200DC61B2 /* Broccoli.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B54300F6A2200DC61B2 /* Broccoli.usdz */; };
+		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };

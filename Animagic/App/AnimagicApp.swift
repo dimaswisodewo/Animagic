@@ -11,10 +11,12 @@ import SwiftUI
 @main
 @MainActor
 struct AnimagicApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     private let modelContainer: ModelContainer
     @State private var router = NavigationRouter()
     @State private var drawingSession = DrawingSessionManager()
     @StateObject private var artworkStore: ArtworkLibraryStore
+    @State private var hasStartedMusic = false
 
     init() {
         do {
@@ -39,7 +41,29 @@ struct AnimagicApp: App {
                 .environment(router)
                 .environment(drawingSession)
                 .environmentObject(artworkStore)
+                .onAppear(perform: startMusicIfNeeded)
+                .onChange(of: scenePhase) { _, phase in
+                    switch phase {
+                    case .active:
+                        if hasStartedMusic {
+                            AudioManager.shared.resumeMusic()
+                        } else {
+                            startMusicIfNeeded()
+                        }
+                    case .inactive, .background:
+                        AudioManager.shared.pauseMusic()
+                    @unknown default:
+                        break
+                    }
+                }
         }
         .modelContainer(modelContainer)
+    }
+
+    private func startMusicIfNeeded() {
+        guard !hasStartedMusic else { return }
+        AudioManager.shared.setup()
+        AudioManager.shared.playMusic(.bgmHome)
+        hasStartedMusic = true
     }
 }

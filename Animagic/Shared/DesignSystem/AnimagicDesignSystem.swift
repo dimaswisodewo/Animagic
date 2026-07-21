@@ -39,7 +39,10 @@ struct AnimagicIconButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             Image(systemName: icon)
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(iconColor)
@@ -74,7 +77,10 @@ struct AnimagicLabelButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             HStack(spacing: 12) {
                 Text(title)
                     .font(.custom("Belanosima-SemiBold", size: 32))
@@ -266,7 +272,10 @@ struct AnimagicSideTabButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             Image(systemName: icon)
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(iconColor)
