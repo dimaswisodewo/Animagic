@@ -38,6 +38,8 @@ struct ContentView: View {
                     .offset(y: isAnimatingGraphics ? 30 : -20)
                     .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
                     .position(x: 50, y: geometry.size.height - 50)
+
+                HomeFloatingDecorations()
             }
             .ignoresSafeArea()
             .onAppear {

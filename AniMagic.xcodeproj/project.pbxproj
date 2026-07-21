@@ -65,6 +65,7 @@
 		C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */; };
 		C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */; };
 		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
+		CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */; };
 		D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */; };
 		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
 		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
@@ -163,6 +164,7 @@
 		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
 		EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
 		F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionOrientationStore.swift; sourceTree = "<group>"; };
+		F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFloatingDecorations.swift; sourceTree = "<group>"; };
 		F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutSceneEditor.swift; sourceTree = "<group>"; };
 		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
 		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				E67231FD4CC90120FA5A8816 /* CustomButton.swift */,
+				F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -659,6 +662,7 @@
 				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
 				69424C50300E19B200DF7CFA /* ColorToken.swift in Sources */,
 				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
+				CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */,
 				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
 				B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */,
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
