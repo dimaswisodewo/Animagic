@@ -10,9 +10,12 @@ import RealityKit
 import UIKit
 
 enum DenseCutoutMesh {
-    static let subdivisions = 20
-
-    static func generate(width: Float, height: Float) throws -> MeshResource {
+    static func generate(
+        width: Float,
+        height: Float,
+        subdivisions: Int = 20,
+        textureBounds: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)
+    ) throws -> MeshResource {
         let columns = subdivisions + 1
         let rows = subdivisions + 1
         var positions: [SIMD3<Float>] = []
@@ -31,7 +34,10 @@ enum DenseCutoutMesh {
                 let u = Float(column) / Float(subdivisions)
                 positions.append([(u - 0.5) * width, (0.5 - v) * height, 0])
                 normals.append([0, 0, 1])
-                textureCoordinates.append([u, v])
+                textureCoordinates.append([
+                    Float(textureBounds.minX) + u * Float(textureBounds.width),
+                    Float(textureBounds.minY) + v * Float(textureBounds.height)
+                ])
             }
         }
 
@@ -57,10 +63,17 @@ enum DenseCutoutMesh {
     }
 }
 
+enum CutoutRenderQuality: Int, CaseIterable {
+    case economy = 12
+    case balanced = 20
+    case hero = 32
+}
+
 enum CutoutDeformationMaterial {
     static func make(
         texture: TextureResource,
-        archetype: AnimalArchetype,
+        bodyStyle: AnimalBodyStyle,
+        locomotion: AnimalLocomotion,
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
@@ -74,22 +87,34 @@ enum CutoutDeformationMaterial {
         var material = try CustomMaterial(
             surfaceShader: surfaceShader,
             geometryModifier: geometryModifier,
-            lightingModel: .unlit
+            lightingModel: .lit
         )
         material.custom.texture = .init(texture)
-        material.custom.value = [archetype.shaderIndex, 1, phase, faceDirection]
+        material.custom.value = [
+            bodyStyle.shaderIndex + locomotion.shaderIndex * 0.01,
+            1,
+            phase,
+            faceDirection
+        ]
         material.blending = .transparent(opacity: .init(floatLiteral: 1))
         return material
     }
 
     static func make(
         from image: CGImage,
-        archetype: AnimalArchetype,
+        bodyStyle: AnimalBodyStyle,
+        locomotion: AnimalLocomotion,
         phase: Float,
         faceDirection: Float
     ) throws -> CustomMaterial {
         let texture = try TextureResource(image: image, options: .init(semantic: .color))
-        return try make(texture: texture, archetype: archetype, phase: phase, faceDirection: faceDirection)
+        return try make(
+            texture: texture,
+            bodyStyle: bodyStyle,
+            locomotion: locomotion,
+            phase: phase,
+            faceDirection: faceDirection
+        )
     }
 
 }

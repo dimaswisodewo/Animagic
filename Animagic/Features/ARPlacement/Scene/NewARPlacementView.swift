@@ -14,8 +14,12 @@ enum NewARSceneCommand: Equatable {
     case place(UUID)
     case clearSelection(UUID)
     case delete(UUID)
+    case flipFacing(UUID)
     case undoDelete(UUID)
     case discardUndo(UUID)
+    case cancelPencilInteraction(UUID)
+    case pauseSession(UUID)
+    case resumeSession(UUID)
 }
 
 @MainActor
@@ -24,53 +28,68 @@ protocol ARPlacementFeedbackProviding: AnyObject {
     func dragStarted()
     func placementSucceeded()
     func boundaryReached()
+    func detent()
+    func pencilTargetAcquired()
+    func pencilRotationCommitted()
     func warning()
     func error()
 }
 
 @MainActor
-final class SystemARPlacementFeedback: ARPlacementFeedbackProviding {
-    static let shared = SystemARPlacementFeedback()
-
-    private init() {}
-
+extension HapticFeedbackManager: ARPlacementFeedbackProviding {
     func selectionChanged() {
-        UISelectionFeedbackGenerator().selectionChanged()
+        play(.selection)
     }
 
     func dragStarted() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.7)
+        play(.dragStarted)
     }
 
     func placementSucceeded() {
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        play(.placementCompleted)
     }
 
     func boundaryReached() {
-        UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: 0.65)
+        play(.boundaryReached)
+    }
+
+    func detent() {
+        play(.detent)
+    }
+
+    func pencilTargetAcquired() {
+        play(.pencilTargetAcquired)
+    }
+
+    func pencilRotationCommitted() {
+        play(.pencilRotationCompleted)
     }
 
     func warning() {
-        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        play(.warning)
     }
 
     func error() {
-        UINotificationFeedbackGenerator().notificationOccurred(.error)
+        play(.error)
     }
 }
 
 struct NewARPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(HapticFeedbackManager.self) private var haptics
 
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedCutoutID: CutoutAsset.ID?
     @State private var selectedModelID = PlaceableUSDZModel.all.first?.id
-    @State private var selectedAnimalArchetype = AnimalArchetype.fish
+    @State private var selectedAnimalLocomotion = AnimalLocomotion.generic
     @State private var placementStatus: ARPlacementStatus = .searching
     @State private var placedObjectSelection: PlacedObjectSelection?
+    @State private var selectedObjectElevationMeters: Float = 0
+    @State private var isAdjustingObjectElevation = false
     @State private var sceneCommand: NewARSceneCommand?
     @State private var objectCount = 0
     @State private var undoAvailable = false
@@ -82,6 +101,9 @@ struct NewARPlacementView: View {
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
     @State private var isBackpackExpanded = false
+    @AppStorage("hasCompletedARPencilRotation") private var hasCompletedPencilRotation = false
+    @State private var pencilHint: String?
+    @State private var pencilHintTask: Task<Void, Never>?
 
     private enum CameraPermissionState {
         case checking
@@ -91,20 +113,10 @@ struct NewARPlacementView: View {
 
     private let initialCutoutID: CutoutAsset.ID?
     private let maximumObjectCount = 20
-    private let feedback: any ARPlacementFeedbackProviding
+    private var feedback: any ARPlacementFeedbackProviding { haptics }
 
     init(initialCutoutID: CutoutAsset.ID? = nil) {
         self.initialCutoutID = initialCutoutID
-        feedback = SystemARPlacementFeedback.shared
-        _selectedCutoutID = State(initialValue: initialCutoutID)
-    }
-
-    init(
-        initialCutoutID: CutoutAsset.ID? = nil,
-        feedback: any ARPlacementFeedbackProviding
-    ) {
-        self.initialCutoutID = initialCutoutID
-        self.feedback = feedback
         _selectedCutoutID = State(initialValue: initialCutoutID)
     }
 
@@ -129,7 +141,13 @@ struct NewARPlacementView: View {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 checkCameraPermission()
+            } else {
+                sceneCommand = .cancelPencilInteraction(UUID())
             }
+        }
+        .onChange(of: router.presentedFullScreenCovers.contains(.canvas)) { wasPresented, isPresented in
+            guard wasPresented, !isPresented else { return }
+            restoreAfterCanvas()
         }
     }
 
@@ -139,17 +157,22 @@ struct NewARPlacementView: View {
             ARRealityViewRepresentable(
                 cutoutAssets: artworkStore.cutoutLibrary,
                 selectedCutoutID: selectedCutoutID,
-                spawnAnimalArchetype: selectedAnimalArchetype,
-                selectedObjectAnimalArchetype: placedObjectSelection?.animalArchetype,
+                spawnAnimalLocomotion: selectedAnimalLocomotion,
+                selectedObjectAnimalLocomotion: placedObjectSelection?.animalLocomotion,
                 selectedContentType: selectedContentType,
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
+                selectedObjectElevationMeters: $selectedObjectElevationMeters,
+                isAdjustingObjectElevation: $isAdjustingObjectElevation,
                 placementStatus: $placementStatus,
                 objectCount: $objectCount,
                 undoAvailable: $undoAvailable,
                 command: sceneCommand,
                 isImmersive: isImmersive,
                 onExitImmersive: exitImmersive,
+                onPencilTargetHovered: showPencilCoachMark,
+                onPencilTargetMissing: showPencilTargetHint,
+                onPencilRotationCompleted: completePencilCoachMark,
                 feedback: feedback
             )
             .ignoresSafeArea()
@@ -158,24 +181,27 @@ struct NewARPlacementView: View {
                 controlsOverlay
             }
 
-            if showsImmersiveHint {
-                Text("Tap empty space to show controls")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .padding(.bottom, 24)
-                    .allowsHitTesting(false)
-                    .accessibilityAddTraits(.isStaticText)
-                    .transition(.opacity)
+            if isImmersive, showsImmersiveHint || pencilHint != nil {
+                VStack(spacing: 8) {
+                    if let pencilHint {
+                        ARTransientHint(message: pencilHint)
+                            .transition(transientScaleTransition)
+                    }
+
+                    if showsImmersiveHint {
+                        ARTransientHint(message: "Tap empty space to show controls")
+                            .transition(transientScaleTransition)
+                    }
+                }
+                .padding(.bottom, 24)
             }
             
             ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
-        .animation(.easeOut(duration: 0.2), value: placementStatus)
-        .animation(.easeOut(duration: 0.2), value: undoAvailable)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: undoAvailable)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: pencilHint)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: showsImmersiveHint)
         .navigationBarHidden(true)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -188,8 +214,8 @@ struct NewARPlacementView: View {
         .onChange(of: selectedCutoutID) { _, newID in
             guard placedObjectSelection == nil,
                   let asset = artworkStore.cutoutLibrary.first(where: { $0.id == newID }),
-                  let suggested = suggestedArchetype(for: asset) else { return }
-            selectedAnimalArchetype = suggested
+                  let suggested = suggestedLocomotion(for: asset) else { return }
+            selectedAnimalLocomotion = suggested
         }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
@@ -203,136 +229,196 @@ struct NewARPlacementView: View {
         .onDisappear {
             undoDismissTask?.cancel()
             immersiveHintTask?.cancel()
+            pencilHintTask?.cancel()
+        }
+    }
+
+    private func showPencilCoachMark() {
+        guard !hasCompletedPencilRotation else { return }
+        showPencilHint("Squeeze and roll to rotate", duration: .seconds(3))
+    }
+
+    private func showPencilTargetHint() {
+        showPencilHint("Hover over an object", duration: .milliseconds(1_800))
+    }
+
+    private func completePencilCoachMark() {
+        hasCompletedPencilRotation = true
+        pencilHintTask?.cancel()
+        pencilHint = nil
+    }
+
+    private func showPencilHint(_ message: String, duration: Duration) {
+        pencilHintTask?.cancel()
+        pencilHint = message
+        pencilHintTask = Task {
+            try? await Task.sleep(for: duration)
+            guard !Task.isCancelled else { return }
+            pencilHint = nil
         }
     }
 
     private var controlsOverlay: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 12) {
-                // Top Row
-                HStack(alignment: .top) {
-                    AnimagicIconButton(
-                        icon: "chevron.left",
-                        backgroundColor: Color(Color.Palette.n20),
-                        iconColor: Color(Color.Palette.n70),
-                        innerBorderColor: .black.opacity(0.2),
-                        action: { router.popToRoot() }
+        VStack(spacing: 12) {
+            // Top Row
+            HStack(alignment: .top) {
+                AnimagicIconButton(
+                    icon: "chevron.left",
+                    backgroundColor: Color(Color.Palette.n20),
+                    iconColor: Color(Color.Palette.n70),
+                    innerBorderColor: .black.opacity(0.2),
+                    action: { router.popToRoot() }
+                )
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    AnimagicExpandableButtonGroup(
+                        isExpanded: $isTopMenuExpanded,
+                        mainIconExpanded: "xmark",
+                        mainIconCollapsed: "rectangle.3.group.fill",
+                        mainColor: AnimagicTheme.orange,
+                        items: [
+                            ExpandableButtonItem(
+                                id: "help",
+                                icon: "questionmark",
+                                backgroundColor: .green,
+                                innerBorderColor: Color.Palette.g400,
+                                action: {
+                                    isTopMenuExpanded = false
+                                    router.push(.help)
+                                }
+                            ),
+                            ExpandableButtonItem(
+                                id: "immersive",
+                                icon: "eye.fill",
+                                backgroundColor: AnimagicTheme.orange,
+                                innerBorderColor: Color.Palette.o400,
+                                action: { enterImmersive() }
+                            ),
+                            ExpandableButtonItem(
+                                id: "camera",
+                                icon: "camera.fill",
+                                backgroundColor: .blue,
+                                innerBorderColor: Color.Palette.b400,
+                                action: { /* Camera action */ }
+                            )
+                        ]
                     )
-
-                    Spacer()
-
-                    HStack(spacing: 8) {
-                        AnimagicExpandableButtonGroup(
-                            isExpanded: $isTopMenuExpanded,
-                            mainIconExpanded: "xmark",
-                            mainIconCollapsed: "rectangle.3.group.fill",
-                            mainColor: AnimagicTheme.orange,
-                            items: [
-                                ExpandableButtonItem(
-                                    icon: "questionmark",
-                                    backgroundColor: .green,
-                                    innerBorderColor: Color.Palette.g400,
-                                    action: {
-                                        isTopMenuExpanded = false
-                                        router.push(.help)
-                                    }
-                                ),
-                                ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: Color.Palette.o400, action: { enterImmersive() }),
-                                ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: Color.Palette.b400, action: { /* Camera action */ })
-                            ]
-                        )
-
-                        AnimagicIconButton(
-                            icon: "paintbrush.fill",
-                            backgroundColor: .yellow,
-                            innerBorderColor: Color.Palette.y400,
-                            isSelected: selectedContentType == .doodle,
-                            action: { router.push(.canvas) }
-                        )
-                    }
+                    
+                    AnimagicIconButton(
+                        icon: "paintbrush.fill",
+                        backgroundColor: .yellow,
+                        innerBorderColor: Color.Palette.y400,
+                        isSelected: selectedContentType == .doodle,
+                        action: presentCanvas
+                    )
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
-
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
+            .padding(.bottom, 24)
+            
+            VStack(spacing: 8) {
                 if shouldShowStatus {
                     NewARStatusPill(status: placementStatus)
-                        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                        .animation(
+                            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                            value: placementStatus
+                        )
+                        .transition(transientScaleTransition)
                 }
 
-                Spacer()
-
-                if undoAvailable {
-                    ARDeleteUndoToast {
-                        undoDismissTask?.cancel()
-                        sceneCommand = .undoDelete(UUID())
-                    }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                if let pencilHint {
+                    ARTransientHint(message: pencilHint)
+                        .transition(transientScaleTransition)
                 }
+            }
 
-                // Bottom Row
-                HStack(alignment: .bottom) {
-                    Group {
-                        if let placedObjectSelection {
-                            NewAREditCard(
-                                selection: placedObjectSelection,
-                                animalArchetype: archetypeSelection,
-                                onDone: {
-                                    sceneCommand = .clearSelection(UUID())
-                                },
-                                onDelete: {
-                                    sceneCommand = .delete(UUID())
-                                }
-                            )
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                        } else {
-                            AnimagicLabelButton(
-                                title: placeButtonTitle,
-                                backgroundColor: AnimagicTheme.blue,
+            Spacer()
+
+            if undoAvailable {
+                ARDeleteUndoToast {
+                    undoDismissTask?.cancel()
+                    sceneCommand = .undoDelete(UUID())
+                }
+                .transition(transientBottomTransition)
+            }
+
+            // Bottom Row
+            HStack(alignment: .bottom) {
+                Group {
+                    if let placedObjectSelection {
+                        NewAREditCard(
+                            selection: placedObjectSelection,
+                            animalLocomotion: locomotionSelection,
+                            elevationMeters: $selectedObjectElevationMeters,
+                            onElevationEditingChanged: { isEditing in
+                                isAdjustingObjectElevation = isEditing
+                            },
+                            onElevationGrounded: feedback.selectionChanged,
+                            onElevationMaximumReached: feedback.boundaryReached,
+                            onFlip: { sceneCommand = .flipFacing(UUID()) },
+                            onDone: {
+                                sceneCommand = .clearSelection(UUID())
+                            },
+                            onDelete: {
+                                sceneCommand = .delete(UUID())
+                            }
+                        )
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    } else {
+                        AnimagicLabelButton(
+                            title: placeButtonTitle,
+                            backgroundColor: AnimagicTheme.blue,
                             innerBorderColor: Color.Palette.b400,
-                                isDisabled: !canPlace,
-                                isDimmed: !canPlace,
-                                action: { sceneCommand = .place(UUID()) }
-                            )
-                        }
+                            isDisabled: !canPlace,
+                            isDimmed: !canPlace,
+                            action: { sceneCommand = .place(UUID()) }
+                        )
                     }
-                    .padding(.leading, 24)
-                    .padding(.vertical, 24)
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 12) {
-                        if isBackpackExpanded {
-                            VerticalARObjectShelf(
-                                contentType: $selectedContentType,
-                                cutoutAssets: artworkStore.cutoutLibrary,
-                                selectedCutoutID: $selectedCutoutID,
-                                selectedModelID: $selectedModelID,
-                                shelfHeight: backpackShelfHeight(for: geometry.size.height),
-                                canPlace: canPlace,
-                                placeButtonTitle: placeButtonTitle,
-                                onCollapse: {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                                        isBackpackExpanded = false
-                                    }
-                                },
-                                onPlace: { sceneCommand = .place(UUID()) },
-                                onSelectionFeedback: feedback.selectionChanged
-                            )
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
-                        } else {
-                            AnimagicSideTabButton(
-                                icon: "backpack.fill",
-                                backgroundColor: AnimagicTheme.orange,
-                                action: {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                                        isBackpackExpanded = true
-                                    }
+                }
+                .padding(.leading, 24)
+                .padding(.vertical, 24)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 12) {
+                    if isBackpackExpanded {
+                        VerticalARObjectShelf(
+                            contentType: $selectedContentType,
+                            cutoutAssets: artworkStore.cutoutLibrary,
+                            titleForCutout: titleForCutout,
+                            selectedCutoutID: $selectedCutoutID,
+                            selectedModelID: $selectedModelID,
+                            shelfHeight: 620,
+                            canPlace: canPlace,
+                            placeButtonTitle: placeButtonTitle,
+                            onCollapse: {
+                                withAnimation(
+                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelExit
+                                ) {
+                                    isBackpackExpanded = false
                                 }
-                            )
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
-                            .padding(.bottom, 32)
-                        }
+                            },
+                            onPlace: { sceneCommand = .place(UUID()) },
+                            onSelectionFeedback: feedback.selectionChanged
+                        )
+                        .transition(sidePanelTransition)
+                    } else {
+                        AnimagicSideTabButton(
+                            icon: "backpack.fill",
+                            backgroundColor: AnimagicTheme.orange,
+                            action: {
+                                withAnimation(
+                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance
+                                ) {
+                                    isBackpackExpanded = true
+                                }
+                            }
+                        )
+                        .transition(sidePanelTransition)
+                        .padding(.bottom, 32)
                     }
                 }
             }
@@ -340,17 +426,39 @@ struct NewARPlacementView: View {
         .padding(.horizontal, 0)
         .padding(.vertical, 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity) // Allow reaching edges
-        .ignoresSafeArea(.container, edges: [.top, .trailing]) // Keep the top row fixed while the backpack sits flush on the right edge
+        .ignoresSafeArea(.all, edges: .trailing) // Ignore trailing safe area to sit flush on right edge
     }
 
-    private func backpackShelfHeight(for availableHeight: CGFloat) -> CGFloat {
-        if availableHeight < 500 {
-            return min(360, max(280, availableHeight - 32))
+    private var sidePanelTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .move(edge: .trailing).combined(with: .opacity)
+    }
+
+    private var transientScaleTransition: AnyTransition {
+        guard !reduceMotion else {
+            return .opacity.animation(AnimagicMotion.reduced)
         }
 
-        // Leave a small breathing space below the top controls while keeping
-        // the shelf inside the bottom safe-area padding on taller layouts.
-        return min(availableHeight - 32, max(620, availableHeight - 140))
+        return .asymmetric(
+            insertion: .scale(scale: 0.96).combined(with: .opacity)
+                .animation(AnimagicMotion.panelEntrance),
+            removal: .scale(scale: 0.96).combined(with: .opacity)
+                .animation(AnimagicMotion.panelExit)
+        )
+    }
+
+    private var transientBottomTransition: AnyTransition {
+        guard !reduceMotion else {
+            return .opacity.animation(AnimagicMotion.reduced)
+        }
+
+        return .asymmetric(
+            insertion: .move(edge: .bottom).combined(with: .opacity)
+                .animation(AnimagicMotion.panelEntrance),
+            removal: .move(edge: .bottom).combined(with: .opacity)
+                .animation(AnimagicMotion.panelExit)
+        )
     }
 
     private func enterImmersive() {
@@ -392,6 +500,15 @@ struct NewARPlacementView: View {
         }
     }
 
+    private func titleForCutout(_ cutout: CutoutAsset) -> String {
+        guard let drawing = artworkStore.drawing(id: cutout.sourceDrawingID) else {
+            return "My Doodle"
+        }
+
+        let title = drawing.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return title.isEmpty ? "My Doodle" : title
+    }
+
     private var placeButtonTitle: String {
         if objectCount >= maximumObjectCount {
             return "Scene Full"
@@ -406,15 +523,16 @@ struct NewARPlacementView: View {
         }
     }
 
-    private var archetypeSelection: Binding<AnimalArchetype> {
+    private var locomotionSelection: Binding<AnimalLocomotion> {
         Binding(
-            get: { placedObjectSelection?.animalArchetype ?? selectedAnimalArchetype },
-            set: { archetype in
+            get: { placedObjectSelection?.animalLocomotion ?? selectedAnimalLocomotion },
+            set: { locomotion in
                 guard let selection = placedObjectSelection,
-                      selection.animalArchetype != nil else { return }
+                      selection.animalLocomotion != nil else { return }
                 placedObjectSelection = PlacedObjectSelection(
                     objectID: selection.objectID,
-                    content: .doodle(archetype)
+                    content: .doodle(locomotion),
+                    elevationMeters: selection.elevationMeters
                 )
                 feedback.selectionChanged()
             }
@@ -437,17 +555,31 @@ struct NewARPlacementView: View {
             artworkStore.cutoutLibrary.first(where: { $0.id == id })
         } ?? artworkStore.cutoutLibrary.first
         selectedCutoutID = initialAsset?.id
-        if let suggested = suggestedArchetype(for: initialAsset) {
-            selectedAnimalArchetype = suggested
+        if let suggested = suggestedLocomotion(for: initialAsset) {
+            selectedAnimalLocomotion = suggested
         }
     }
 
-    private func suggestedArchetype(for asset: CutoutAsset?) -> AnimalArchetype? {
-        guard let asset, let label = asset.resolvedDoodleLabel else { return nil }
-        return AnimalArchetype(
-            doodleLabel: label,
-            confidence: asset.doodleOverrideLabel == nil ? asset.doodleClassification?.confidence ?? 0 : 1
-        )
+    private func presentCanvas() {
+        drawingSession.clearPendingARCutout()
+        sceneCommand = .pauseSession(UUID())
+        router.presentFullScreenCover(.canvas)
+    }
+
+    private func restoreAfterCanvas() {
+        if let cutoutID = drawingSession.consumeARCutout(),
+           let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
+            selectedCutoutID = cutoutID
+            selectedContentType = .doodle
+            if let suggested = suggestedLocomotion(for: asset) {
+                selectedAnimalLocomotion = suggested
+            }
+        }
+        sceneCommand = .resumeSession(UUID())
+    }
+
+    private func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
+        AnimalMotionProfileResolver.profile(for: asset).locomotion
     }
 
     private func checkCameraPermission() {
@@ -519,24 +651,29 @@ struct NewARPlacementView: View {
 struct ARRealityViewRepresentable: UIViewRepresentable {
     let cutoutAssets: [CutoutAsset]
     let selectedCutoutID: CutoutAsset.ID?
-    let spawnAnimalArchetype: AnimalArchetype
-    let selectedObjectAnimalArchetype: AnimalArchetype?
+    let spawnAnimalLocomotion: AnimalLocomotion
+    let selectedObjectAnimalLocomotion: AnimalLocomotion?
     let selectedContentType: PlacementContentType
     let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var selectedObjectElevationMeters: Float
+    @Binding var isAdjustingObjectElevation: Bool
     @Binding var placementStatus: ARPlacementStatus
     @Binding var objectCount: Int
     @Binding var undoAvailable: Bool
     let command: NewARSceneCommand?
     let isImmersive: Bool
     let onExitImmersive: () -> Void
+    let onPencilTargetHovered: () -> Void
+    let onPencilTargetMissing: () -> Void
+    let onPencilRotationCompleted: () -> Void
     let feedback: any ARPlacementFeedbackProviding
 
     func makeCoordinator() -> NewARSceneController {
         NewARSceneController(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
             feedback: feedback,
@@ -544,7 +681,10 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onPlacementStatusChanged: updateStatus,
             onObjectCountChanged: updateObjectCount,
             onUndoAvailabilityChanged: updateUndoAvailability,
-            onExitImmersive: onExitImmersive
+            onExitImmersive: onExitImmersive,
+            onPencilTargetHovered: onPencilTargetHovered,
+            onPencilTargetMissing: onPencilTargetMissing,
+            onPencilRotationCompleted: onPencilRotationCompleted
         )
     }
 
@@ -559,7 +699,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         let controller = context.coordinator
         controller.cutoutAssets = cutoutAssets
         controller.selectedCutoutID = selectedCutoutID
-        controller.selectedAnimalArchetype = spawnAnimalArchetype
+        controller.selectedAnimalLocomotion = spawnAnimalLocomotion
         controller.selectedContentType = selectedContentType
         controller.selectedModelID = selectedModelID
         controller.onSelectionChanged = updateSelection
@@ -567,11 +707,22 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onObjectCountChanged = updateObjectCount
         controller.onUndoAvailabilityChanged = updateUndoAvailability
         controller.onExitImmersive = onExitImmersive
+        controller.onPencilTargetHovered = onPencilTargetHovered
+        controller.onPencilTargetMissing = onPencilTargetMissing
+        controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.setImmersive(isImmersive)
 
-        if let selectedObjectAnimalArchetype,
-           controller.placedObjectSelection?.animalArchetype != selectedObjectAnimalArchetype {
-            controller.setSelectedObjectAnimalArchetype(selectedObjectAnimalArchetype)
+        if let selectedObjectAnimalLocomotion,
+           controller.placedObjectSelection?.animalLocomotion != selectedObjectAnimalLocomotion {
+            controller.setSelectedObjectAnimalLocomotion(selectedObjectAnimalLocomotion)
+        }
+
+        if let selectedObjectID = placedObjectSelection?.objectID {
+            controller.synchronizeSelectedObjectElevation(
+                selectedObjectElevationMeters,
+                for: selectedObjectID,
+                isEditing: isAdjustingObjectElevation
+            )
         }
 
         if let command, controller.handledCommand != command {
@@ -582,6 +733,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
 
     static func dismantleUIView(_ arView: ARView, coordinator: NewARSceneController) {
         coordinator.stopAnimationLoop()
+        coordinator.cleanupLighting()
         coordinator.cleanupFocusIndicator()
         coordinator.cleanupPlaneAnchors()
         arView.session.pause()
@@ -589,8 +741,15 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
 
     private func updateSelection(_ selection: PlacedObjectSelection?) {
         Task { @MainActor in
+            if placedObjectSelection?.objectID != selection?.objectID {
+                isAdjustingObjectElevation = false
+            }
             if placedObjectSelection != selection {
                 placedObjectSelection = selection
+            }
+            if let selection,
+               selectedObjectElevationMeters != selection.elevationMeters {
+                selectedObjectElevationMeters = selection.elevationMeters
             }
         }
     }
@@ -620,6 +779,13 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     }
 }
 
+private struct PencilRotationSession {
+    let object: any PlacedSceneObject
+    let initialOrientation: simd_quatf
+    var lastRollAngle: Float
+    var accumulatedAngle: Float = 0
+}
+
 @MainActor
 final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
@@ -630,9 +796,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         get { sceneEditor.selectedCutoutID }
         set { sceneEditor.selectedCutoutID = newValue }
     }
-    var selectedAnimalArchetype: AnimalArchetype {
-        get { sceneEditor.selectedAnimalArchetype }
-        set { sceneEditor.selectedAnimalArchetype = newValue }
+    var selectedAnimalLocomotion: AnimalLocomotion {
+        get { sceneEditor.selectedAnimalLocomotion }
+        set { sceneEditor.selectedAnimalLocomotion = newValue }
     }
     var selectedContentType: PlacementContentType {
         get { sceneEditor.selectedContentType }
@@ -648,17 +814,25 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private weak var arView: ARView?
     private static var hasRegisteredSystem = false
     private var interactionAdapter: NewARViewInteractionAdapter?
-    private var lastSelectedObject: (any PlacedSceneObject)?
+    private var pencilInteractionAdapter: ApplePencilARInteractionAdapter?
+    private var selectionGroundIndicator: Entity?
+    private var heightGuide: Entity?
+    private var elevationAdjustmentObjectID: UUID?
+    private weak var pencilHoverTarget: (any PlacedSceneObject)?
+    private var pencilRotationSession: PencilRotationSession?
     private var pendingDeletion: DeletedSceneObject?
     private var planeAnchors: [UUID: AnchorEntity] = [:]
     private var focusIndicator: Entity?
     private var focusAnchor: AnchorEntity?
+    private var lightingAnchor: AnchorEntity?
     private var statusResetTask: Task<Void, Never>?
     private var isTargetAcquired = false
+    private var hasProvidedSurfaceReadyFeedback = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
     private var hasPlacedObject = false
     private var isImmersive = false
+    private(set) var isSessionPaused = false
 
     var handledCommand: NewARSceneCommand?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
@@ -666,16 +840,20 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var onObjectCountChanged: ((Int) -> Void)?
     var onUndoAvailabilityChanged: ((Bool) -> Void)?
     var onExitImmersive: (() -> Void)?
+    var onPencilTargetHovered: (() -> Void)?
+    var onPencilTargetMissing: (() -> Void)?
+    var onPencilRotationCompleted: (() -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
     var placedObjectSelection: PlacedObjectSelection? { sceneEditor.placedObjectSelection }
     var isShowingImmersiveUI: Bool { isImmersive }
+    var isPencilRotating: Bool { pencilRotationSession != nil }
 
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
         feedback: any ARPlacementFeedbackProviding,
@@ -683,12 +861,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
         onObjectCountChanged: ((Int) -> Void)? = nil,
         onUndoAvailabilityChanged: ((Bool) -> Void)? = nil,
-        onExitImmersive: (() -> Void)? = nil
+        onExitImmersive: (() -> Void)? = nil,
+        onPencilTargetHovered: (() -> Void)? = nil,
+        onPencilTargetMissing: (() -> Void)? = nil,
+        onPencilRotationCompleted: (() -> Void)? = nil
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedAnimalLocomotion: selectedAnimalLocomotion,
             selectedSpawnMode: .plane,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID
@@ -699,10 +880,16 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.onObjectCountChanged = onObjectCountChanged
         self.onUndoAvailabilityChanged = onUndoAvailabilityChanged
         self.onExitImmersive = onExitImmersive
+        self.onPencilTargetHovered = onPencilTargetHovered
+        self.onPencilTargetMissing = onPencilTargetMissing
+        self.onPencilRotationCompleted = onPencilRotationCompleted
         super.init()
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
             guard let self else { return }
+            if selection?.objectID != self.elevationAdjustmentObjectID {
+                self.elevationAdjustmentObjectID = nil
+            }
             self.updateSelectionIndicator(for: selection)
             self.updateFocusVisibility()
             self.onSelectionChanged?(selection)
@@ -725,10 +912,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             Self.hasRegisteredSystem = true
         }
 
+        setupLighting(in: arView)
         setupFocusIndicator(in: arView)
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal]
-        configureOcclusion(on: arView, with: configuration)
+        let configuration = makeWorldTrackingConfiguration(for: arView)
         arView.session.delegate = self
         arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         arView.renderOptions.insert(.disableGroundingShadows)
@@ -737,8 +923,52 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         let adapter = NewARViewInteractionAdapter(controller: self, feedback: feedback)
         adapter.attach(to: arView)
         interactionAdapter = adapter
+        let pencilAdapter = ApplePencilARInteractionAdapter(controller: self)
+        pencilAdapter.attach(to: arView)
+        pencilInteractionAdapter = pencilAdapter
         updateStatus(.searching)
         onObjectCountChanged?(0)
+    }
+
+    private func setupLighting(in arView: ARView) {
+        cleanupLighting()
+
+        let anchor = AnchorEntity(.camera)
+        addDirectionalLight(
+            color: UIColor(red: 1.0, green: 0.97, blue: 0.92, alpha: 1.0),
+            intensity: 1_000,
+            position: [-1.0, 1.4, 0.8],
+            to: anchor
+        )
+        addDirectionalLight(
+            color: UIColor(red: 0.90, green: 0.95, blue: 1.0, alpha: 1.0),
+            intensity: 1_000,
+            position: [1.2, 0.7, 0.6],
+            to: anchor
+        )
+        arView.scene.addAnchor(anchor)
+        lightingAnchor = anchor
+    }
+
+    private func addDirectionalLight(
+        color: UIColor,
+        intensity: Float,
+        position: SIMD3<Float>,
+        to anchor: AnchorEntity
+    ) {
+        let light = Entity()
+        var component = DirectionalLightComponent()
+        component.color = color
+        component.intensity = intensity
+        light.components.set(component)
+        anchor.addChild(light)
+        light.look(at: [0, 0, -1], from: position, relativeTo: anchor)
+    }
+
+    func cleanupLighting() {
+        guard let lightingAnchor else { return }
+        arView?.scene.removeAnchor(lightingAnchor)
+        self.lightingAnchor = nil
     }
 
     func handle(_ command: NewARSceneCommand) {
@@ -748,11 +978,14 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .clearSelection:
             clearSelection()
         case .delete:
+            cancelPencilRotation()
             pendingDeletion = deleteSelectedObject()
             let hasUndo = pendingDeletion != nil
             if hasUndo { feedback.warning() }
             onUndoAvailabilityChanged?(hasUndo)
             onObjectCountChanged?(sceneEditor.objectCount)
+        case .flipFacing:
+            flipSelectedObjectAnimalFacing()
         case .undoDelete:
             guard let pendingDeletion else { return }
             restoreDeletedObject(pendingDeletion)
@@ -763,7 +996,35 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .discardUndo:
             pendingDeletion = nil
             onUndoAvailabilityChanged?(false)
+        case .cancelPencilInteraction:
+            cancelPencilRotation()
+        case .pauseSession:
+            pauseSession()
+        case .resumeSession:
+            resumeSession()
         }
+    }
+
+    private func pauseSession() {
+        guard !isSessionPaused else { return }
+        cancelPencilRotation()
+        isSessionPaused = true
+        arView?.session.pause()
+    }
+
+    private func resumeSession() {
+        guard isSessionPaused, let arView else { return }
+        arView.session.run(makeWorldTrackingConfiguration(for: arView))
+        isSessionPaused = false
+        updateStatus(.searching)
+    }
+
+    private func makeWorldTrackingConfiguration(for arView: ARView) -> ARWorldTrackingConfiguration {
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal]
+        configuration.environmentTexturing = .automatic
+        configureOcclusion(on: arView, with: configuration)
+        return configuration
     }
 
     private func configureOcclusion(on arView: ARView, with configuration: ARWorldTrackingConfiguration) {
@@ -834,6 +1095,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         lastValidNormal = normal
         if !isTargetAcquired {
             isTargetAcquired = true
+            if !hasProvidedSurfaceReadyFeedback {
+                hasProvidedSurfaceReadyFeedback = true
+                feedback.selectionChanged()
+            }
             updateStatusIfScanning(.ready)
         }
         updateFocusVisibility()
@@ -875,6 +1140,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 arView?.scene.removeAnchor(anchorEntity)
             }
         }
+    }
+
+    func sessionWasInterrupted(_ session: ARSession) {
+        cancelPencilRotation()
+        clearPencilHoverTarget()
     }
 
     private func makePlaneVisualization(for planeAnchor: ARPlaneAnchor) -> AnchorEntity {
@@ -970,6 +1240,125 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         return handled
     }
 
+    func setPencilHoverTarget(at point: CGPoint) {
+        guard !isPencilRotating, let arView else { return }
+        let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
+        let target = sceneEditor.object(containing: entity)
+        guard target?.id != pencilHoverTarget?.id else { return }
+
+        removePencilHoverIndicator()
+        pencilHoverTarget = target
+        guard let target else { return }
+
+        let bounds = target.interactionRoot.visualBounds(relativeTo: target.interactionRoot)
+        let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.72, 0.14)
+        let indicator = PencilHoverIndicatorFactory.make(radius: radius)
+        target.interactionRoot.addChild(indicator)
+        if !UIAccessibility.isReduceMotionEnabled {
+            indicator.scale = SIMD3(repeating: 0.9)
+            var targetTransform = indicator.transform
+            targetTransform.scale = .one
+            indicator.move(
+                to: targetTransform,
+                relativeTo: target.interactionRoot,
+                duration: 0.16,
+                timingFunction: .easeOut
+            )
+        }
+        onPencilTargetHovered?()
+    }
+
+    func clearPencilHoverTarget() {
+        guard !isPencilRotating else { return }
+        removePencilHoverIndicator()
+        pencilHoverTarget = nil
+    }
+
+    func beginPencilRotation(at point: CGPoint?, rollAngle: Float) {
+        guard pencilRotationSession == nil else { return }
+        if let point {
+            setPencilHoverTarget(at: point)
+        }
+        guard let object = pencilHoverTarget else {
+            feedback.warning()
+            onPencilTargetMissing?()
+            return
+        }
+
+        interactionAdapter?.setPencilInteractionActive(true)
+        removePencilHoverIndicator()
+        pencilHoverTarget = nil
+        sceneEditor.selectObject(withID: object.id)
+        object.setInteractionPaused(true)
+        pencilRotationSession = PencilRotationSession(
+            object: object,
+            initialOrientation: object.interactionRoot.orientation(relativeTo: nil),
+            lastRollAngle: rollAngle
+        )
+        addPencilRotationIndicator(to: object)
+        feedback.pencilTargetAcquired()
+    }
+
+    func updatePencilRotation(rollAngle: Float) {
+        guard var session = pencilRotationSession else { return }
+        var delta = rollAngle - session.lastRollAngle
+        if delta > .pi {
+            delta -= 2 * .pi
+        } else if delta < -.pi {
+            delta += 2 * .pi
+        }
+        session.accumulatedAngle += delta
+        session.lastRollAngle = rollAngle
+        let axis = simd_normalize(session.object.supportSurfaceNormal)
+        let rotation = simd_quatf(angle: -session.accumulatedAngle, axis: axis)
+        session.object.interactionRoot.setOrientation(
+            rotation * session.initialOrientation,
+            relativeTo: nil
+        )
+        pencilRotationSession = session
+    }
+
+    func commitPencilRotation() {
+        guard let session = pencilRotationSession else { return }
+        finishPencilRotation(session: session, restoringOrientation: false)
+        feedback.pencilRotationCommitted()
+        onPencilRotationCompleted?()
+    }
+
+    func cancelPencilRotation() {
+        guard let session = pencilRotationSession else {
+            interactionAdapter?.setPencilInteractionActive(false)
+            return
+        }
+        finishPencilRotation(session: session, restoringOrientation: true)
+    }
+
+    private func finishPencilRotation(
+        session: PencilRotationSession,
+        restoringOrientation: Bool
+    ) {
+        if restoringOrientation {
+            session.object.interactionRoot.setOrientation(session.initialOrientation, relativeTo: nil)
+        }
+        session.object.interactionRoot.findEntity(named: "pencil_rotation_indicator")?.removeFromParent()
+        session.object.setInteractionPaused(false)
+        pencilRotationSession = nil
+        interactionAdapter?.setPencilInteractionActive(false)
+    }
+
+    private func addPencilRotationIndicator(to object: any PlacedSceneObject) {
+        object.interactionRoot.findEntity(named: "pencil_rotation_indicator")?.removeFromParent()
+        let bounds = object.interactionRoot.visualBounds(relativeTo: object.interactionRoot)
+        let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.82, 0.16)
+        object.interactionRoot.addChild(PencilRotationIndicatorFactory.make(radius: radius))
+    }
+
+    private func removePencilHoverIndicator() {
+        pencilHoverTarget?.interactionRoot
+            .findEntity(named: "pencil_hover_indicator")?
+            .removeFromParent()
+    }
+
     func selectedObjectInteractionRegion(in arView: ARView) -> CGRect? {
         guard let selectedObject else { return nil }
         let bounds = selectedObject.interactionRoot.visualBounds(relativeTo: nil)
@@ -1009,7 +1398,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func setSelectionIndicatorDragging(_ isDragging: Bool) {
-        guard let ring = selectedObject?.interactionRoot.findEntity(named: "selection_ring") else { return }
+        guard let ring = selectionGroundIndicator else { return }
         var target = ring.transform
         target.scale = SIMD3(repeating: isDragging ? 1.08 : 1)
         ring.components.set(OpacityComponent(opacity: isDragging ? 1 : 0.9))
@@ -1026,30 +1415,87 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     private func updateSelectionIndicator(for selection: PlacedObjectSelection?) {
-        if let lastSelectedObject {
-            lastSelectedObject.interactionRoot.findEntity(named: "selection_ring")?.removeFromParent()
-        }
+        selectionGroundIndicator?.removeFromParent()
+        selectionGroundIndicator = nil
+        heightGuide = nil
 
         guard selection != nil, let selectedObject else {
-            lastSelectedObject = nil
             return
         }
 
         let bounds = selectedObject.interactionRoot.visualBounds(relativeTo: selectedObject.interactionRoot)
         let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.65, 0.12)
         let ring = SelectionRingFactory.make(radius: radius)
-        selectedObject.interactionRoot.addChild(ring)
-        lastSelectedObject = selectedObject
+        let guide = HeightGuideFactory.make()
+        ring.addChild(guide)
+        selectedObject.anchor.addChild(ring)
+        selectionGroundIndicator = ring
+        heightGuide = guide
+        updateSelectionGroundReference()
 
         guard !UIAccessibility.isReduceMotionEnabled else { return }
         ring.scale = [0.84, 0.84, 0.84]
         var target = ring.transform
         target.scale = .one
-        ring.move(to: target, relativeTo: selectedObject.interactionRoot, duration: 0.22, timingFunction: .easeOut)
+        ring.move(to: target, relativeTo: selectedObject.anchor, duration: 0.22, timingFunction: .easeOut)
     }
 
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        sceneEditor.setSelectedObjectAnimalArchetype(archetype)
+    func updateSelectionGroundReference() {
+        guard let selectedObject, let selectionGroundIndicator else { return }
+        let objectPosition = selectedObject.interactionRoot.position(relativeTo: selectedObject.anchor)
+        selectionGroundIndicator.position = [objectPosition.x, 0, objectPosition.z]
+
+        let elevation = max(selectedObject.elevationMeters, 0)
+        heightGuide?.position = [0, elevation / 2, 0]
+        heightGuide?.scale = [1, max(elevation, 0.001), 1]
+    }
+
+    func synchronizeSelectedObjectElevation(
+        _ elevationMeters: Float,
+        for objectID: UUID,
+        isEditing: Bool
+    ) {
+        guard selectedObject?.id == objectID else { return }
+
+        if isEditing {
+            if elevationAdjustmentObjectID != objectID {
+                sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+                elevationAdjustmentObjectID = objectID
+            }
+            sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+        } else {
+            sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+            if elevationAdjustmentObjectID == objectID {
+                sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
+                elevationAdjustmentObjectID = nil
+            }
+        }
+
+        updateSelectionGroundReference()
+        heightGuide?.components.set(
+            OpacityComponent(opacity: isEditing && elevationMeters > 0 ? 0.72 : 0)
+        )
+    }
+
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+        updateSelectionGroundReference()
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
+    }
+
+    func flipSelectedObjectAnimalFacing() {
+        sceneEditor.flipSelectedObjectAnimalFacing()
     }
 
     @discardableResult
@@ -1062,6 +1508,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func clearSelection() {
+        cancelPencilRotation()
         sceneEditor.clearSelection()
     }
 
@@ -1069,6 +1516,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         statusResetTask?.cancel()
         statusResetTask = nil
         setSelectionIndicatorDragging(false)
+        pencilInteractionAdapter?.detach()
+        pencilInteractionAdapter = nil
         interactionAdapter?.detach()
         interactionAdapter = nil
         pendingDeletion = nil
@@ -1205,6 +1654,23 @@ struct SelectionRingFactory {
     }
 }
 
+struct HeightGuideFactory {
+    static func make() -> Entity {
+        let guide = Entity()
+        guide.name = "height_guide"
+
+        var material = UnlitMaterial()
+        material.color = .init(tint: UIColor(Color.Palette.b200))
+        let model = ModelEntity(
+            mesh: .generateCylinder(height: 1, radius: 0.004),
+            materials: [material]
+        )
+        guide.addChild(model)
+        guide.components.set(OpacityComponent(opacity: 0))
+        return guide
+    }
+}
+
 struct ARPlacementComponent: Component {
     weak var arView: ARView?
     weak var controller: NewARSceneController?
@@ -1220,7 +1686,8 @@ final class ARPlacementSystem: System {
         context.scene.performQuery(Self.query).forEach { entity in
             guard let component = entity.components[ARPlacementComponent.self],
                   let arView = component.arView,
-                  let controller = component.controller else { return }
+                  let controller = component.controller,
+                  !controller.isSessionPaused else { return }
             controller.updateSimulation(deltaTime: deltaTime)
             controller.updateFocusIndicator(in: arView, focusAnchor: entity)
         }
@@ -1247,6 +1714,9 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     private var initialOrientation = simd_quatf()
     private var didReachLowerScaleBound = false
     private var didReachUpperScaleBound = false
+    private var previousScaleForDetents: Float?
+    private var lastRotationDetent = 0
+    private var isPencilInteractionActive = false
 
     init(controller: NewARSceneController, feedback: any ARPlacementFeedbackProviding) {
         self.controller = controller
@@ -1280,7 +1750,23 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         self.arView = nil
     }
 
+    func setPencilInteractionActive(_ isActive: Bool) {
+        guard isPencilInteractionActive != isActive else { return }
+        if isActive {
+            recognizers.forEach {
+                $0.isEnabled = false
+                $0.isEnabled = true
+            }
+            activeManipulations.removeAll()
+            resetDragState()
+            controller?.setSelectionIndicatorDragging(false)
+            controller?.selectedObject?.setInteractionPaused(false)
+        }
+        isPencilInteractionActive = isActive
+    }
+
     @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let arView, let controller else { return }
         let point = recognizer.location(in: arView)
         let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
@@ -1296,6 +1782,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handlePan(_ recognizer: InitialTouchPanGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let arView, let controller else { return }
         let point = recognizer.location(in: arView)
 
@@ -1342,6 +1829,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 ],
                 relativeTo: nil
             )
+            controller.updateSelectionGroundReference()
             begin(.translation)
             controller.setSelectionIndicatorDragging(true)
             feedback.dragStarted()
@@ -1365,6 +1853,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 ],
                 relativeTo: nil
             )
+            controller.updateSelectionGroundReference()
         case .ended, .cancelled, .failed:
             end(.translation)
             resetDragState()
@@ -1375,21 +1864,25 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:
             initialScale = selectedObject.interactionRoot.scale
             didReachLowerScaleBound = false
             didReachUpperScaleBound = false
+            previousScaleForDetents = initialScale.x
             begin(.scale)
         case .changed:
             let rawScale = initialScale.x * Float(recognizer.scale)
             let displayedScale = rubberBandedScale(rawScale)
             selectedObject.interactionRoot.scale = SIMD3(repeating: displayedScale)
             provideBoundaryFeedback(for: rawScale)
+            provideScaleDetentFeedback(for: rawScale)
         case .ended, .cancelled, .failed:
             let clamped = min(max(selectedObject.interactionRoot.scale.x, 0.25), 4)
             selectedObject.interactionRoot.scale = SIMD3(repeating: clamped)
+            previousScaleForDetents = nil
             end(.scale)
         default:
             break
@@ -1397,15 +1890,18 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     }
 
     @objc private func handleRotation(_ recognizer: UIRotationGestureRecognizer) {
+        guard !isPencilInteractionActive else { return }
         guard let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:
             initialOrientation = selectedObject.interactionRoot.orientation(relativeTo: nil)
+            lastRotationDetent = 0
             begin(.rotation)
         case .changed:
             let axis = simd_normalize(selectedObject.supportSurfaceNormal)
-            let rotation = simd_quatf(angle: Float(recognizer.rotation), axis: axis)
+            let rotation = simd_quatf(angle: -Float(recognizer.rotation), axis: axis)
             selectedObject.interactionRoot.setOrientation(rotation * initialOrientation, relativeTo: nil)
+            provideRotationDetentFeedback(for: Float(recognizer.rotation))
         case .ended, .cancelled, .failed:
             end(.rotation)
         default:
@@ -1453,6 +1949,31 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         } else if rawScale <= 4 {
             didReachUpperScaleBound = false
         }
+    }
+
+    private func provideScaleDetentFeedback(for rawScale: Float) {
+        guard let previousScaleForDetents else {
+            self.previousScaleForDetents = rawScale
+            return
+        }
+
+        let milestones: [Float] = [0.5, 1, 2]
+        let crossedMilestone = milestones.contains { milestone in
+            (previousScaleForDetents < milestone && rawScale >= milestone)
+                || (previousScaleForDetents > milestone && rawScale <= milestone)
+        }
+        if crossedMilestone {
+            feedback.detent()
+        }
+        self.previousScaleForDetents = rawScale
+    }
+
+    private func provideRotationDetentFeedback(for rotation: Float) {
+        let radiansPerDetent = Float.pi / 12
+        let detent = Int((rotation / radiansPerDetent).rounded(.towardZero))
+        guard detent != lastRotationDetent else { return }
+        lastRotationDetent = detent
+        feedback.detent()
     }
 
     private func cancel(_ recognizer: UIGestureRecognizer) {

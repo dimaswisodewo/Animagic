@@ -1,11 +1,41 @@
+//
+//  CanvasPageView.swift
+//  AniMagic
+//
+//  Created by Meynabel Dimas Wisodewo on 22/07/26.
+//
+
 import PencilKit
 import SwiftUI
 
+enum CanvasCompletionBehavior {
+    case returnToPresentingAR
+    case openNewAR
+
+    @MainActor
+    func complete(
+        cutoutID: UUID,
+        router: NavigationRouter,
+        drawingSession: DrawingSessionManager
+    ) {
+        switch self {
+        case .returnToPresentingAR:
+            drawingSession.publishARCutout(cutoutID)
+            router.dismissFullScreenCover()
+        case .openNewAR:
+            router.push(.arView(initialCutoutID: cutoutID))
+        }
+    }
+}
+
 struct CanvasPageView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.displayScale) private var displayScale
+    @Environment(HapticFeedbackManager.self) private var haptics
 
     @State private var documentTitle = ""
     @State private var canvasView = PKCanvasView()
@@ -19,6 +49,12 @@ struct CanvasPageView: View {
     @State private var classificationCoordinator = DoodleClassificationCoordinator()
     @State private var classificationError: String?
     @State private var failedCutoutID: UUID?
+    @State private var hasPlayedFirstStrokeFeedback = false
+    private let completionBehavior: CanvasCompletionBehavior
+
+    init(completionBehavior: CanvasCompletionBehavior = .openNewAR) {
+        self.completionBehavior = completionBehavior
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -30,7 +66,7 @@ struct CanvasPageView: View {
                         .zIndex(2)
                 }
             }
-            .animation(.easeInOut, value: isGuidePresented)
+            .animation(guideAnimation, value: isGuidePresented)
             .navigationBarHidden(true)
             .ignoresSafeArea(.keyboard)
             .alert("Your canvas is empty", isPresented: $showEmptyCanvasMessage) {
@@ -74,6 +110,7 @@ struct CanvasPageView: View {
                 isClassifyingDoodle: $isClassifyingDoodle,
                 hasDrawing: $hasDrawing,
                 isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited,
+                onClear: clearCanvas,
                 onSave: saveAndClassify,
                 onTitleChanged: scheduleDraftAutosave
             )
@@ -94,7 +131,15 @@ struct CanvasPageView: View {
             DrawingView(
                 canvasView: $canvasView,
                 isToolPickerVisible: !isGuidePresented,
-                onDrawingChanged: { hasDrawing = $0; drawingDidChange() }
+                onDrawingChanged: { drawingIsPresent in
+                    let wasEmpty = !hasDrawing
+                    hasDrawing = drawingIsPresent
+                    if wasEmpty, drawingIsPresent, !hasPlayedFirstStrokeFeedback {
+                        hasPlayedFirstStrokeFeedback = true
+                        haptics.play(.firstStroke)
+                    }
+                    drawingDidChange()
+                }
             )
         }
     }
@@ -111,9 +156,22 @@ struct CanvasPageView: View {
                 .frame(width: width)
                 .shadow(radius: 10)
             }
-            .transition(.move(edge: .trailing))
+            .transition(guideTransition)
             .zIndex(1)
         }
+    }
+
+    private var guideAnimation: Animation {
+        if reduceMotion {
+            return AnimagicMotion.reduced
+        }
+        return isGuidePresented ? AnimagicMotion.panelEntrance : AnimagicMotion.panelExit
+    }
+
+    private var guideTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .move(edge: .trailing).combined(with: .opacity)
     }
 
     private func loadDrawing() {
@@ -127,6 +185,7 @@ struct CanvasPageView: View {
                 : drawingSession.drawing
         }
         hasDrawing = !canvasView.drawing.strokes.isEmpty
+        hasPlayedFirstStrokeFeedback = hasDrawing
         if let activeDrawingID = drawingSession.activeDrawingID,
            let cutout = artworkStore.cutout(forDrawingID: activeDrawingID),
            let error = cutout.doodleClassificationError {
@@ -149,6 +208,28 @@ struct CanvasPageView: View {
     private func drawingDidChange() {
         drawingSession.drawing = canvasView.drawing
         scheduleDraftAutosave()
+    }
+
+    private func clearCanvas() {
+        autosaveTask?.cancel()
+        autosaveTask = nil
+
+        let emptyDrawing = PKDrawing()
+        canvasView.drawing = emptyDrawing
+        drawingSession.drawing = emptyDrawing
+        hasDrawing = false
+        hasPlayedFirstStrokeFeedback = false
+        classificationError = nil
+        failedCutoutID = nil
+        haptics.play(.drawingCleared)
+
+        guard let activeDrawingID = drawingSession.activeDrawingID else { return }
+        artworkStore.saveActiveDrawing(
+            id: activeDrawingID,
+            name: documentTitle.trimmingCharacters(in: .whitespacesAndNewlines),
+            drawing: emptyDrawing,
+            isNameManuallyEdited: isDocumentTitleManuallyEdited
+        ) { _ in }
     }
 
     private func scheduleDraftAutosave() {
@@ -186,10 +267,12 @@ struct CanvasPageView: View {
         guard !isClassifyingDoodle else { return }
         let drawing = canvasView.drawing
         guard !drawing.strokes.isEmpty, !drawing.bounds.isEmpty else {
+            haptics.play(.warning)
             showEmptyCanvasMessage = true
             return
         }
 
+        haptics.play(.canvasStarted)
         autosaveTask?.cancel()
         classificationError = nil
         failedCutoutID = nil
@@ -210,7 +293,8 @@ struct CanvasPageView: View {
         isClassifyingDoodle = true
         classificationCoordinator.start(
             drawing: drawing,
-            sourceDrawingID: sourceDrawingID
+            sourceDrawingID: sourceDrawingID,
+            renderScale: displayScale
         ) { cutout in
             artworkStore.persistClassifiedCutout(
                 cutout,
@@ -218,6 +302,7 @@ struct CanvasPageView: View {
                 replacingExistingCutouts: true,
                 onFailure: {
                     isClassifyingDoodle = false
+                    haptics.play(.error)
                 }
             ) { updatedDrawing in
                 documentTitle = updatedDrawing.name
@@ -226,8 +311,10 @@ struct CanvasPageView: View {
                 if let error = cutout.doodleClassificationError {
                     failedCutoutID = cutout.id
                     classificationError = error
+                    haptics.play(.error)
                 } else {
-                    router.push(.arView(initialCutoutID: cutout.id))
+                    haptics.play(.transformationCompleted)
+                    complete(with: cutout.id)
                 }
             }
         }
@@ -236,7 +323,16 @@ struct CanvasPageView: View {
     private func openGenericAR() {
         guard let failedCutoutID else { return }
         classificationError = nil
-        router.push(.arView(initialCutoutID: failedCutoutID))
+        haptics.play(.success)
+        complete(with: failedCutoutID)
+    }
+
+    private func complete(with cutoutID: UUID) {
+        completionBehavior.complete(
+            cutoutID: cutoutID,
+            router: router,
+            drawingSession: drawingSession
+        )
     }
 }
 
@@ -270,6 +366,7 @@ private struct DoodleClassificationOverlay: View {
     CanvasPageView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
+        .environment(HapticFeedbackManager(defaults: UserDefaults(suiteName: "CanvasPreview")!))
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
 #endif

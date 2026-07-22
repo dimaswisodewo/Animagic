@@ -28,9 +28,9 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         get { sceneEditor.selectedCutoutID }
         set { sceneEditor.selectedCutoutID = newValue }
     }
-    var selectedAnimalArchetype: AnimalArchetype {
-        get { sceneEditor.selectedAnimalArchetype }
-        set { sceneEditor.selectedAnimalArchetype = newValue }
+    var selectedAnimalLocomotion: AnimalLocomotion {
+        get { sceneEditor.selectedAnimalLocomotion }
+        set { sceneEditor.selectedAnimalLocomotion = newValue }
     }
     var selectedSpawnMode: SpawnMode {
         get { sceneEditor.selectedSpawnMode }
@@ -60,7 +60,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
@@ -71,7 +71,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: selectedAnimalArchetype,
+            selectedAnimalLocomotion: selectedAnimalLocomotion,
             selectedSpawnMode: selectedSpawnMode,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
@@ -241,8 +241,24 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         onPlacementStatusChanged?(status)
     }
 
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        sceneEditor.setSelectedObjectAnimalArchetype(archetype)
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
+    }
+
+    func flipSelectedObjectAnimalFacing() {
+        sceneEditor.flipSelectedObjectAnimalFacing()
     }
 
     var placedObjectSelection: PlacedObjectSelection? {

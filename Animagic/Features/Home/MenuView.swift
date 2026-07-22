@@ -39,6 +39,16 @@ struct MenuView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+
+#if DEBUG
+                    Button {
+                        router.push(.motionLab)
+                    } label: {
+                        Label("Motion Lab", systemImage: "waveform.path.ecg")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+#endif
                 }
                 .padding(.top, 12)
             }

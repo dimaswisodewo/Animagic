@@ -63,6 +63,7 @@ struct BackpackHeader: View {
 }
 
 struct BackpackCategoryBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var selectedCategory: ArtworkCategory?
     private let categories: [ArtworkCategory?] = [nil, .underwater, .land, .skies]
 
@@ -74,6 +75,7 @@ struct BackpackCategoryBar: View {
                     let title = category?.title ?? "All"
                     
                     Button {
+                        AudioManager.shared.playTap()
                         selectedCategory = category
                     } label: {
                         Text(title)
@@ -94,8 +96,12 @@ struct BackpackCategoryBar: View {
                                 Capsule()
                                     .fill(Color.white)
                             )
+                            .animation(
+                                reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                                value: isSelected
+                            )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.animagicPress)
                 }
             }
             .padding(.horizontal, 24)
@@ -106,6 +112,8 @@ struct BackpackCategoryBar: View {
 
 
 struct BackpackDrawingCard: View {
+    @Environment(\.displayScale) private var displayScale
+
     let drawing: SavedDrawing
     let classificationError: String?
 
@@ -117,7 +125,12 @@ struct BackpackDrawingCard: View {
                         .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
                         .foregroundStyle(.gray)
                 } else {
-                    Image(uiImage: drawing.drawing.image(from: drawing.drawing.bounds, scale: 1))
+                    Image(
+                        uiImage: drawing.drawing.image(
+                            from: drawing.drawing.bounds,
+                            scale: displayScale
+                        )
+                    )
                         .resizable()
                         .scaledToFit()
                 }

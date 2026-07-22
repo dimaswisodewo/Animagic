@@ -1,3 +1,10 @@
+//
+//  CustomButton.swift
+//  AniMagic
+//
+//  Created by fajari bagas on 21/07/26.
+//
+
 import SwiftUI
 
 struct CustomButton: View {
@@ -5,7 +12,10 @@ struct CustomButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             Text(title)
                 .font(.custom("Belanosima-SemiBold", size: 30, relativeTo: .title2))
                 .minimumScaleFactor(0.75)

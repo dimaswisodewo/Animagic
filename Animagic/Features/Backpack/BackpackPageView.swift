@@ -65,7 +65,7 @@ struct BackpackPageView: View {
                             classificationError: artworkStore.classificationError(forDrawingID: drawing.id)
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.animagicPress)
                 }
             }
             .padding(.horizontal, 24)

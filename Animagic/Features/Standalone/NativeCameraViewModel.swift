@@ -64,6 +64,11 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
     private var recordingTimerTask: Task<Void, Never>?
     private var isPreparing = false
     private var isViewActive = false
+    private weak var haptics: (any HapticFeedbackProviding)?
+
+    func configure(haptics: any HapticFeedbackProviding) {
+        self.haptics = haptics
+    }
 
     var canCapture: Bool {
         authorizationState == .authorized
@@ -216,13 +221,14 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
         movieOutput.startRecording(to: outputURL, recordingDelegate: delegate)
         isRecording = true
         startRecordingTimer()
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        haptics?.play(.recordingStarted)
         return true
     }
 
     func stopRecording() {
         guard movieOutput.isRecording else { return }
         stopRecordingTimer()
+        haptics?.play(.recordingStopped)
         movieOutput.stopRecording()
     }
 
@@ -250,7 +256,7 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
                     self.capturedMedia = nil
                     self.isSaving = false
                     self.feedbackMessage = "Saved to Photos"
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    self.haptics?.play(.success)
                     self.resumeSession()
                 }
             } catch {
@@ -258,7 +264,7 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
                     guard let self else { return }
                     self.isSaving = false
                     self.errorMessage = error.localizedDescription
-                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    self.haptics?.play(.error)
                 }
             }
         }
@@ -459,6 +465,7 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
             pauseSession()
         } catch {
             errorMessage = error.localizedDescription
+            haptics?.play(.error)
         }
     }
 
@@ -471,11 +478,13 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
             if let url { removeTemporaryFile(at: url) }
             currentRecordingURL = nil
             errorMessage = error.localizedDescription
+            haptics?.play(.error)
             return
         }
 
         guard let url else {
             errorMessage = NativeCameraError.recordingUnavailable.localizedDescription
+            haptics?.play(.error)
             return
         }
 
@@ -510,7 +519,7 @@ final class NativeCameraViewModel: NSObject, ObservableObject {
     }
 
     private func triggerCaptureFeedback() {
-        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        haptics?.play(.cameraShutter)
         isShowingCaptureFlash = true
         captureFlashTask?.cancel()
         captureFlashTask = Task { @MainActor [weak self] in

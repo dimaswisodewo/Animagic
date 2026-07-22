@@ -15,14 +15,22 @@ enum AnimagicTheme {
     static let darkNavy = Color(red: 0.08, green: 0.14, blue: 0.28)
 }
 
+enum AnimagicMotion {
+    static let press = Animation.easeOut(duration: 0.14)
+    static let selection = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.2)
+    static let panelEntrance = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.24)
+    static let panelExit = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.18)
+    static let reduced = Animation.easeOut(duration: 0.16)
+}
+
 struct AnimagicPressButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.9 : 1)
-            .animation(
-                .spring(response: 0.3, dampingFraction: 0.5),
-                value: configuration.isPressed
-            )
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.96 : 1)
+            .opacity(configuration.isPressed && reduceMotion ? 0.82 : 1)
+            .animation(AnimagicMotion.press, value: configuration.isPressed)
     }
 }
 
@@ -31,6 +39,8 @@ extension ButtonStyle where Self == AnimagicPressButtonStyle {
 }
 
 struct AnimagicIconButton: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let icon: String
     let backgroundColor: Color
     var iconColor: Color = .white
@@ -39,7 +49,10 @@ struct AnimagicIconButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             Image(systemName: icon)
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(iconColor)
@@ -59,8 +72,12 @@ struct AnimagicIconButton: View {
                 )
         }
         .buttonStyle(.animagicPress)
-        .scaleEffect(isSelected ? 1.0 : 0.85)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        .scaleEffect(isSelected || reduceMotion ? 1 : 0.96)
+        .opacity(isSelected ? 1 : 0.72)
+        .animation(
+            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+            value: isSelected
+        )
     }
 }
 
@@ -74,7 +91,10 @@ struct AnimagicLabelButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             HStack(spacing: 12) {
                 Text(title)
                     .font(.custom("Belanosima-SemiBold", size: 32))
@@ -203,7 +223,7 @@ struct AnimagicCard<Content: View>: View {
 }
 
 public struct ExpandableButtonItem: Identifiable {
-    public let id = UUID()
+    public let id: String
     let icon: String
     let backgroundColor: Color
     var iconColor: Color = .white
@@ -213,6 +233,7 @@ public struct ExpandableButtonItem: Identifiable {
 }
 
 struct AnimagicExpandableButtonGroup: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var isExpanded: Bool
     
     let mainIconExpanded: String
@@ -233,18 +254,22 @@ struct AnimagicExpandableButtonGroup: View {
                             isSelected: item.isSelected,
                             action: item.action
                         )
-                        .transition(.scale.combined(with: .opacity))
                     }
                 }
                 .padding(.leading, 8)
                 .padding(.trailing, 8)
+                .transition(expandedContentTransition)
             }
             
             AnimagicIconButton(
                 icon: isExpanded ? mainIconExpanded : mainIconCollapsed,
                 backgroundColor: mainColor,
                 action: {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                    withAnimation(
+                        reduceMotion
+                            ? AnimagicMotion.reduced
+                            : (isExpanded ? AnimagicMotion.panelExit : AnimagicMotion.panelEntrance)
+                    ) {
                         isExpanded.toggle()
                     }
                 }
@@ -256,6 +281,12 @@ struct AnimagicExpandableButtonGroup: View {
                 .shadow(color: isExpanded ? .black.opacity(0.1) : .clear, radius: 5)
         )
     }
+
+    private var expandedContentTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .scale(scale: 0.96, anchor: .trailing).combined(with: .opacity)
+    }
 }
 
 struct AnimagicSideTabButton: View {
@@ -266,7 +297,10 @@ struct AnimagicSideTabButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            AudioManager.shared.playTap()
+            action()
+        } label: {
             Image(systemName: icon)
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(iconColor)

@@ -40,6 +40,12 @@ Classification runs locally on the device. The drawing raster keeps transparent 
 | Motion | GameplayKit, Core Motion |
 | Project generation | XcodeGen |
 
+## 3D asset pipeline
+
+Blender-derived RealityKit assets follow the documented [AR asset pipeline](docs/asset-pipeline/README.md). The pipeline defines compact mobile budgets, non-destructive Blender optimization, reliable USDC-to-USDZ packaging, and mandatory texture and Apple Metal render validation.
+
+See the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) for conversion steps and [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md) for delivery gates and known failure modes.
+
 ## Requirements
 
 - macOS with **Xcode 16 or newer**

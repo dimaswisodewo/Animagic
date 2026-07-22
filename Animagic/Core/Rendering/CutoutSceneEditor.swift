@@ -31,7 +31,7 @@ enum CutoutPlacementResult: Equatable {
 final class CutoutSceneEditor: SceneEditing {
     var cutoutAssets: [CutoutAsset]
     var selectedCutoutID: CutoutAsset.ID?
-    var selectedAnimalArchetype: AnimalArchetype
+    var selectedAnimalLocomotion: AnimalLocomotion
     var selectedSpawnMode: SpawnMode
     var selectedContentType: PlacementContentType
     var selectedModelID: PlaceableUSDZModel.ID?
@@ -59,7 +59,7 @@ final class CutoutSceneEditor: SceneEditing {
     init(
         cutoutAssets: [CutoutAsset],
         selectedCutoutID: CutoutAsset.ID?,
-        selectedAnimalArchetype: AnimalArchetype,
+        selectedAnimalLocomotion: AnimalLocomotion,
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType = .doodle,
         selectedModelID: PlaceableUSDZModel.ID? = nil,
@@ -71,7 +71,7 @@ final class CutoutSceneEditor: SceneEditing {
         let registry = SceneObjectRegistry()
         self.cutoutAssets = cutoutAssets
         self.selectedCutoutID = selectedCutoutID
-        self.selectedAnimalArchetype = selectedAnimalArchetype
+        self.selectedAnimalLocomotion = selectedAnimalLocomotion
         self.selectedSpawnMode = selectedSpawnMode
         self.selectedContentType = selectedContentType
         self.selectedModelID = selectedModelID ?? PlaceableUSDZModel.all.first?.id
@@ -146,6 +146,7 @@ final class CutoutSceneEditor: SceneEditing {
 
     func update(deltaTime: Float) {
         guard !registry.isEmpty else { return }
+        deliverCameraProximityStimuli()
         guard let simulationInterval = configuration.simulationInterval else {
             registry.forEach { $0.update(deltaTime: deltaTime) }
             return
@@ -157,6 +158,18 @@ final class CutoutSceneEditor: SceneEditing {
         registry.forEach { $0.update(deltaTime: step) }
     }
 
+    private func deliverCameraProximityStimuli() {
+        guard let cameraPosition = arView?.cameraTransform.translation else { return }
+        registry.forEach { object in
+            let objectPosition = object.animatedWorldPosition
+            let distance = simd_distance(cameraPosition, objectPosition)
+            object.setViewerDistance(distance)
+            if distance < 1.2 {
+                object.receiveMotionStimulus(.proximity(distance))
+            }
+        }
+    }
+
     var placedObjectSelection: PlacedObjectSelection? {
         interactionManager.selection
     }
@@ -165,12 +178,36 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.selectedObject
     }
 
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)? {
+        interactionManager.object(containing: entity)
+    }
+
+    func selectObject(withID id: UUID) {
+        interactionManager.selectObject(withID: id)
+    }
+
     func handleTap(on entity: Entity?) -> Bool {
         interactionManager.handleTap(on: entity)
     }
 
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype) {
-        interactionManager.setSelectedAnimalArchetype(archetype)
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        interactionManager.beginElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        interactionManager.setElevationMeters(elevationMeters, for: objectID)
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        interactionManager.endElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        interactionManager.setSelectedAnimalLocomotion(locomotion)
+    }
+
+    func flipSelectedObjectAnimalFacing() {
+        interactionManager.flipSelectedAnimalFacing()
     }
 
     @discardableResult
@@ -218,7 +255,6 @@ final class CutoutSceneEditor: SceneEditing {
         case .model:
             return placeModel(
                 at: transform,
-                cameraTransform: cameraTransform,
                 supportSurfaceNormal: supportSurfaceNormal
             )
         }
@@ -236,7 +272,7 @@ final class CutoutSceneEditor: SceneEditing {
         }
         guard let cutout = try? entityFactory.makeEntity(
                   from: cutoutAsset,
-                  archetype: selectedAnimalArchetype,
+                  locomotion: selectedAnimalLocomotion,
                   objectID: objectID,
                   physicalWidth: configuration.physicalWidthOverride,
                   showsShadow: configuration.showsShadow
@@ -259,7 +295,7 @@ final class CutoutSceneEditor: SceneEditing {
                 id: objectID,
                 anchor: anchor,
                 parts: cutout,
-                archetype: selectedAnimalArchetype,
+                locomotion: selectedAnimalLocomotion,
                 spawnMode: spawnMode,
                 initialYaw: spawnOrientation.yaw,
                 initialRoll: spawnOrientation.roll,
@@ -272,7 +308,6 @@ final class CutoutSceneEditor: SceneEditing {
 
     private func placeModel(
         at transform: simd_float4x4,
-        cameraTransform: simd_float4x4?,
         supportSurfaceNormal: SIMD3<Float>
     ) -> CutoutPlacementResult {
         guard !isLoadingModel else {
@@ -305,29 +340,21 @@ final class CutoutSceneEditor: SceneEditing {
             case .success(let loadedEntity):
                 let objectID = UUID()
                 let anchor = AnchorEntity(world: transform)
-                do {
-                    let placedModel = try PlacedUSDZModel(
-                        id: objectID,
-                        anchor: anchor,
-                        model: model,
-                        loadedEntity: loadedEntity,
-                        supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
-                    )
-                    if let cameraTransform {
-                        placedModel.interactionRoot.orientation = simd_quatf(
-                            angle: cameraTransform.yawFacingCamera(from: transform.translation),
-                            axis: [0, 1, 0]
-                        )
-                    }
-                    arView.scene.addAnchor(anchor)
-                    self.registry.register(placedModel)
-                    self.interactionManager.selectObject(withID: objectID)
-                    self.onPlacementResult?(.placed)
-                } catch {
-                    self.onPlacementResult?(
-                        .creationFailed(error.localizedDescription)
-                    )
-                }
+                let placedModel = PlacedUSDZModel(
+                    id: objectID,
+                    anchor: anchor,
+                    model: model,
+                    loadedEntity: loadedEntity,
+                    supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
+                )
+                placedModel.interactionRoot.orientation = simd_quatf(
+                    angle: Float.random(in: (-.pi / 30)...(.pi / 30)),
+                    axis: [0, 1, 0]
+                )
+                arView.scene.addAnchor(anchor)
+                self.registry.register(placedModel)
+                self.interactionManager.selectObject(withID: objectID)
+                self.onPlacementResult?(.placed)
             }
         }
         return .loading("Loading \(model.title)…")

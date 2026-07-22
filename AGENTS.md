@@ -44,11 +44,20 @@ AniMagic is an iOS SwiftUI application. Follow the existing SwiftUI, Observation
 
 ## SwiftUI view composition
 
+- When creating UI, first inspect and reuse components, colors, typography, and motion tokens from `Animagic/Shared/DesignSystem`.
+- Prefer extending an existing design-system component with a focused, reusable variant over duplicating its styling inside a feature.
+- Create a feature-local UI component only when no design-system component fits and the component is genuinely specific to that feature.
 - Keep `body` concise and easy to scan.
 - Extract meaningful sections into `@ViewBuilder` functions, computed subviews, or private `Subview` types.
 - Keep business logic and side effects out of `body`.
 - Make state ownership and environment dependencies explicit.
 - Preserve accessibility, previews, and existing visual behavior when refactoring.
+
+## Blender and USDZ assets
+
+- Follow the authoritative [AR asset pipeline](docs/asset-pipeline/README.md) when adding or replacing Blender-derived USDZ resources.
+- Use the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) and complete every check in [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md).
+- Never overwrite an artist's source Blend or accept a USDZ based only on successful export; dependency validation and an Apple Metal render are required.
 
 ## File headers and authorship
 

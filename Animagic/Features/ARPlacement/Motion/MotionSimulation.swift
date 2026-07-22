@@ -18,6 +18,13 @@ struct MotionSample {
     var behavior: AnimalBehavior
     var deformationActivity: Float
     var deformationPhase: Float
+    var contact: Float
+    var attention: Float
+}
+
+enum AnimalMotionStimulus {
+    case tapped
+    case proximity(Float)
 }
 
 private struct OrganicNoiseField {
@@ -60,6 +67,10 @@ struct MotionSimulator {
     private var hasLaneTarget = false
     private var isTurning = false
     private var turnElapsed: Float = 0
+    private var reactionElapsed: Float = 0
+    private var reactionDuration: Float = 0
+    private var reactionStrength: Float = 0
+    private var proximityCooldown: Float = 0
     private let random: GKRandomSource
     private let noise: OrganicNoiseField
 
@@ -77,17 +88,37 @@ struct MotionSimulator {
         noise = OrganicNoiseField(seed: configuration.noiseSeed)
     }
 
+    mutating func receive(_ stimulus: AnimalMotionStimulus) {
+        switch stimulus {
+        case .tapped:
+            reactionDuration = 0.9
+            reactionStrength = 1
+        case .proximity(let distance):
+            guard reactionElapsed >= reactionDuration, proximityCooldown <= 0 else { return }
+            reactionDuration = 0.65
+            reactionStrength = min(max((1.2 - distance) / 0.8, 0), 0.65)
+            proximityCooldown = 2.5
+        }
+        reactionElapsed = 0
+    }
+
     mutating func update(
         deltaTime rawDeltaTime: Float,
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         configuration: MotionInstanceConfiguration,
         initialYaw: Float
     ) -> MotionSample {
         let deltaTime = min(max(rawDeltaTime, 0), 1.0 / 15.0)
+        reactionElapsed += deltaTime
+        proximityCooldown = max(proximityCooldown - deltaTime, 0)
+        let reactionProgress = min(reactionElapsed / max(reactionDuration, 0.001), 1)
+        let reactionEnvelope = reactionElapsed < reactionDuration
+            ? sin(reactionProgress * .pi) * reactionStrength
+            : 0
         behaviorElapsed += deltaTime
         motionPhase += deltaTime * configuration.gaitFrequency * cadenceMultiplier
         if behaviorElapsed >= behaviorDuration {
-            beginNextBehavior(archetype: archetype, configuration: configuration)
+            beginNextBehavior(locomotion: locomotion, configuration: configuration)
         }
 
         let noiseOffset = noise.offset(
@@ -114,16 +145,16 @@ struct MotionSimulator {
         }
 
         let direction = safeNormalize(toTarget, fallback: [laneDirection, 0, 0])
-        let desiredSpeed = isTurning ? 0 : speed(configuration: configuration)
+        let desiredSpeed = isTurning ? 0 : speed(configuration: configuration) * (1 + reactionEnvelope * 0.7)
         let targetVelocity = direction * desiredSpeed
         let velocityBlend = 1 - exp(-configuration.acceleration * deltaTime * 4)
         velocity += (targetVelocity - velocity) * velocityBlend
         position += velocity * deltaTime
 
-        velocity += pathForce(archetype: archetype) * deltaTime * (isTurning ? 0.15 : 1)
+        velocity += pathForce(locomotion: locomotion) * deltaTime * (isTurning ? 0.15 : 1)
         applyLaneLeash(configuration: configuration, deltaTime: deltaTime)
         applyVerticalMotion(
-            archetype: archetype,
+            locomotion: locomotion,
             configuration: configuration,
             noiseOffset: noiseOffset,
             deltaTime: deltaTime
@@ -141,14 +172,14 @@ struct MotionSimulator {
         let gait = sin(motionPhase)
         let footfall = abs(gait)
         let desiredRoll = rollIntent(
-            archetype: archetype,
+            locomotion: locomotion,
             configuration: configuration,
             gait: gait,
             turnDifference: turnDifference,
             normalizedSpeed: normalizedSpeed
         )
-        let verticalIntent = archetype.verticalStyle == .grounded ? -footfall : cos(motionPhase * 0.31)
-        let behaviorPitch: Float = archetype == .cow && behavior == .resting ? 0.12 : 0
+        let verticalIntent = locomotion.verticalStyle == .grounded ? -footfall : cos(motionPhase * 0.31)
+        let behaviorPitch: Float = locomotion == .stomp && behavior == .resting ? 0.12 : 0
         let desiredPitch = min(max(
             verticalIntent * configuration.pitchAmount * normalizedSpeed + behaviorPitch,
             -.pi / 60
@@ -158,7 +189,7 @@ struct MotionSimulator {
         pitch += (desiredPitch - pitch) * min(deltaTime * 7, 1)
 
         let stateProgress = min(behaviorElapsed / max(behaviorDuration, 0.001), 1)
-        let compression = archetype == .rabbit && behavior == .energetic
+        let compression = locomotion == .hop && behavior == .energetic
             ? sin(stateProgress * .pi) * configuration.pulseAmount
             : footfall * configuration.pulseAmount * normalizedSpeed
         let turnScale: Float
@@ -173,25 +204,27 @@ struct MotionSimulator {
             yaw: yaw,
             pitch: pitch,
             roll: roll,
-            scaleX: (1 + compression * 0.55) * turnScale,
-            scaleY: (1 - compression) * (1 + (1 - turnScale) * 0.12),
+            scaleX: (1 + compression * 0.55 + reactionEnvelope * 0.035) * turnScale,
+            scaleY: (1 - compression - reactionEnvelope * 0.055) * (1 + (1 - turnScale) * 0.12),
             behavior: behavior,
             deformationActivity: deformationActivity * configuration.personality,
-            deformationPhase: motionPhase
+            deformationPhase: motionPhase,
+            contact: locomotion.verticalStyle == .grounded ? 1 - min(footfall, 1) : 0,
+            attention: reactionEnvelope
         )
     }
 
     private mutating func applyVerticalMotion(
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         configuration: MotionInstanceConfiguration,
         noiseOffset: SIMD3<Float>,
         deltaTime: Float
     ) {
         let stateProgress = min(behaviorElapsed / max(behaviorDuration, 0.001), 1)
         let footfall = abs(sin(motionPhase))
-        switch archetype.verticalStyle {
+        switch locomotion.verticalStyle {
         case .floating, .flying:
-            let verticalFrequency: Float = archetype == .bird ? 0.22 : 0.31
+            let verticalFrequency: Float = locomotion == .fly ? 0.22 : 0.31
             let oscillation = sin(motionPhase * verticalFrequency) * configuration.verticalAmplitude
                 + noiseOffset.y
             let desiredAltitude = min(max(
@@ -200,11 +233,11 @@ struct MotionSimulator {
             ), configuration.altitudeBounds.upperBound)
             position.y += (desiredAltitude - position.y) * min(deltaTime * 3.2, 1)
         case .grounded:
-            if (archetype == .rabbit || archetype == .cat), behavior == .energetic {
-                let jumpScale: Float = archetype == .cat ? 4 : 1
+            if (locomotion == .hop || locomotion == .walk), behavior == .energetic {
+                let jumpScale: Float = locomotion == .walk ? 4 : 1
                 position.y = sin(stateProgress * .pi) * configuration.bobAmount * jumpScale
             } else {
-                position.y = archetype == .snake
+                position.y = locomotion == .slither
                     ? max(noiseOffset.y * 0.08, 0)
                     : footfall * configuration.bobAmount
             }
@@ -226,36 +259,39 @@ struct MotionSimulator {
         }
     }
 
-    private func pathForce(archetype: AnimalArchetype) -> SIMD3<Float> {
+    private func pathForce(locomotion: AnimalLocomotion) -> SIMD3<Float> {
         let phase = motionPhase
-        return switch archetype {
-        case .fish: [0, 0, sin(phase * 0.72) * 0.055]
-        case .bird: [0, 0, sin(phase * 0.77) * 0.09]
-        case .butterfly: [sin(phase * 1.9) * 0.32, 0, sin(phase * 2.7) * 0.08]
-        case .cat: [sin(phase * 0.55) * 0.25, 0, 0]
-        case .cow: [sin(phase * 0.28) * 0.1, 0, 0]
-        case .rabbit: [sin(phase * 0.9) * 0.2, 0, 0]
-        case .snake: [sin(phase * 1.25) * 0.45, 0, 0]
-        case .crab: [sin(phase * 0.8) * 0.16, 0, sin(phase * 0.8) * 0.025]
+        return switch locomotion {
+        case .swim: [0, 0, sin(phase * 0.72) * 0.055]
+        case .fly: [0, 0, sin(phase * 0.77) * 0.09]
+        case .flutter: [sin(phase * 1.9) * 0.32, 0, sin(phase * 2.7) * 0.08]
+        case .walk: [sin(phase * 0.55) * 0.25, 0, 0]
+        case .stomp: [sin(phase * 0.28) * 0.1, 0, 0]
+        case .hop: [sin(phase * 0.9) * 0.2, 0, 0]
+        case .slither: [sin(phase * 1.25) * 0.45, 0, 0]
+        case .scuttle: [sin(phase * 0.8) * 0.16, 0, sin(phase * 0.8) * 0.025]
+        case .crawl: [sin(phase * 0.7) * 0.12, 0, sin(phase * 0.9) * 0.012]
+        case .waddle: [sin(phase * 0.5) * 0.08, 0, 0]
+        case .generic: [sin(phase * 0.35) * 0.035, 0, 0]
         }
     }
 
     private func rollIntent(
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         configuration: MotionInstanceConfiguration,
         gait: Float,
         turnDifference: Float,
         normalizedSpeed: Float
     ) -> Float {
-        if archetype == .bird {
+        if locomotion == .fly {
             let turnBank = min(max(turnDifference / (.pi / 2), -1), 1)
             return -turnBank * configuration.bankAmount * normalizedSpeed
                 - gait * configuration.bankAmount * 0.12 * normalizedSpeed
         }
-        if archetype == .fish {
+        if locomotion == .swim {
             return -gait * configuration.bankAmount * 0.35 * normalizedSpeed
         }
-        return archetype.verticalStyle == .grounded
+        return locomotion.verticalStyle == .grounded
             ? gait * configuration.bankAmount * 0.3
             : -gait * configuration.bankAmount * normalizedSpeed
     }
@@ -288,27 +324,30 @@ struct MotionSimulator {
     }
 
     private mutating func beginNextBehavior(
-        archetype: AnimalArchetype,
+        locomotion: AnimalLocomotion,
         configuration: MotionInstanceConfiguration
     ) {
-        let sequences: [AnimalArchetype: [AnimalBehavior]] = [
-            .fish: [.moving, .moving, .coasting, .energetic],
-            .bird: [.moving, .coasting, .moving, .energetic],
-            .butterfly: [.energetic, .moving, .resting, .energetic],
-            .cat: [.coasting, .resting, .moving, .energetic],
-            .cow: [.moving, .resting, .coasting, .resting],
-            .rabbit: [.resting, .energetic, .resting, .energetic],
-            .snake: [.moving, .coasting, .resting, .moving],
-            .crab: [.energetic, .resting, .moving, .energetic]
+        let sequences: [AnimalLocomotion: [AnimalBehavior]] = [
+            .swim: [.moving, .moving, .coasting, .energetic],
+            .fly: [.moving, .coasting, .moving, .energetic],
+            .flutter: [.energetic, .moving, .resting, .energetic],
+            .walk: [.coasting, .resting, .moving, .energetic],
+            .stomp: [.moving, .resting, .coasting, .resting],
+            .hop: [.resting, .energetic, .resting, .energetic],
+            .slither: [.moving, .coasting, .resting, .moving],
+            .scuttle: [.energetic, .resting, .moving, .energetic],
+            .crawl: [.moving, .coasting, .resting, .moving],
+            .waddle: [.moving, .resting, .moving, .coasting],
+            .generic: [.moving, .coasting, .resting, .moving]
         ]
-        let sequence = sequences[archetype] ?? [.moving]
+        let sequence = sequences[locomotion] ?? [.moving]
         transitionIndex = (transitionIndex + 1) % sequence.count
         behavior = sequence[transitionIndex]
         behaviorElapsed = 0
         let durationRange: ClosedRange<Float>
         switch behavior {
         case .moving: durationRange = 1.8...4.0
-        case .energetic: durationRange = archetype == .rabbit ? 0.55...0.85 : 0.7...1.6
+        case .energetic: durationRange = locomotion == .hop ? 0.55...0.85 : 0.7...1.6
         case .coasting: durationRange = 1.2...3.0
         case .resting: durationRange = 0.8...2.6
         }
@@ -348,7 +387,9 @@ func blend(from: MotionSample, to: MotionSample, amount: Float) -> MotionSample 
         scaleY: mix(from.scaleY, to.scaleY, t: amount),
         behavior: to.behavior,
         deformationActivity: mix(from.deformationActivity, to.deformationActivity, t: amount),
-        deformationPhase: mix(from.deformationPhase, to.deformationPhase, t: amount)
+        deformationPhase: mix(from.deformationPhase, to.deformationPhase, t: amount),
+        contact: mix(from.contact, to.contact, t: amount),
+        attention: mix(from.attention, to.attention, t: amount)
     )
 }
 

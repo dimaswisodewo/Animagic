@@ -1,14 +1,23 @@
+//
+//  CanvasTopBarView.swift
+//  AniMagic
+//
+//  Created by Amelia Putri Aftiana on 15/07/26.
+//
+
 import SwiftUI
 import PencilKit
 
 struct CanvasTopBarView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(HapticFeedbackManager.self) private var haptics
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
     @Binding var showGuidePopup: Bool
     @Binding var isClassifyingDoodle: Bool
     @Binding var hasDrawing: Bool
     @Binding var isDocumentTitleManuallyEdited: Bool
+    let onClear: () -> Void
     let onSave: () -> Void
     let onTitleChanged: () -> Void
     
@@ -24,15 +33,25 @@ struct CanvasTopBarView: View {
                 icon: "pencil",
                 iconPosition: .leading
             )
-            .frame(maxWidth: 290)
+            .frame(maxWidth: 360)
+            .layoutPriority(1)
             .accessibilityHint("Tap to name your drawing")
             
             Spacer()
             
             AnimagicLabelButton(title: "Guide", icon: "book.fill", backgroundColor: AnimagicTheme.orange) {
-                withAnimation {
-                    showGuidePopup = true
-                }
+                haptics.play(.selection)
+                showGuidePopup = true
+            }
+
+            AnimagicLabelButton(
+                title: "Clear",
+                icon: "trash.fill",
+                backgroundColor: AnimagicTheme.pink,
+                isDisabled: isClassifyingDoodle || !hasDrawing,
+                isDimmed: !hasDrawing
+            ) {
+                onClear()
             }
             
             AnimagicLabelButton(title: "Save", icon: "checkmark", backgroundColor: AnimagicTheme.orange, isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {
@@ -55,4 +74,3 @@ struct CanvasTopBarView: View {
         )
     }
 }
-
