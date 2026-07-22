@@ -11,6 +11,7 @@ import RealityKit
 @MainActor
 final class PlacedCutout: PlacedSceneObject {
     let id: UUID
+    let cutoutAssetID: CutoutAsset.ID
     let anchor: AnchorEntity
     let interactionRoot: Entity
     let animatedRoot: Entity
@@ -48,6 +49,7 @@ final class PlacedCutout: PlacedSceneObject {
 
     init(
         id: UUID,
+        cutoutAssetID: CutoutAsset.ID,
         anchor: AnchorEntity,
         parts: CutoutEntityParts,
         locomotion: AnimalLocomotion,
@@ -57,6 +59,7 @@ final class PlacedCutout: PlacedSceneObject {
         supportSurfaceNormal: SIMD3<Float> = [0, 1, 0]
     ) {
         self.id = id
+        self.cutoutAssetID = cutoutAssetID
         self.anchor = anchor
         interactionRoot = parts.root
         animatedRoot = parts.body

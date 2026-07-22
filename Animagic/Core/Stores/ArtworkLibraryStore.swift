@@ -121,6 +121,7 @@ final class ArtworkLibraryStore: ObservableObject {
         do {
             try repository.deleteDrawing(id: id)
             savedDrawings.removeAll { $0.id == id }
+            cutoutLibrary.removeAll { $0.sourceDrawingID == id }
             persistenceAlert = nil
             onSuccess()
         } catch {
@@ -368,6 +369,7 @@ final class PreviewArtworkRepository: ArtworkRepository {
 
     func deleteDrawing(id: UUID) throws {
         drawings.removeAll { $0.id == id }
+        cutouts.removeAll { $0.sourceDrawingID == id }
     }
 
     func persistClassifiedCutout(

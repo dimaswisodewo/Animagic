@@ -14,12 +14,14 @@ enum ArtworkFilter {
         searchText: String,
         category: ArtworkCategory?
     ) -> [SavedDrawing] {
-        drawings.filter { drawing in
+        let filteredDrawings = drawings.filter { drawing in
             let matchesSearch = searchText.isEmpty
-                || drawing.name.localizedCaseInsensitiveContains(searchText)
+                || ArtworkLibraryPresentation.displayName(for: drawing)
+                    .localizedCaseInsensitiveContains(searchText)
             let matchesCategory = category == nil || drawing.category == category
             return matchesSearch && matchesCategory
         }
+        return ArtworkLibraryPresentation.sortedDrawings(filteredDrawings)
     }
 }
 
@@ -119,7 +121,7 @@ struct BackpackDrawingCard: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            AnimagicCard(title: drawing.name.isEmpty ? "Untitled" : drawing.name) {
+            AnimagicCard(title: ArtworkLibraryPresentation.displayName(for: drawing)) {
                 if drawing.drawing.bounds.isEmpty {
                     Text("Empty Drawing")
                         .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))

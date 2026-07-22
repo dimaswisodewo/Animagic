@@ -186,7 +186,7 @@ struct NewARPlacementView: View {
     private var arContent: some View {
         ZStack(alignment: .bottom) {
             ARRealityViewRepresentable(
-                cutoutAssets: artworkStore.cutoutLibrary,
+                cutoutAssets: arCutoutAssets,
                 selectedCutoutID: selectedCutoutID,
                 spawnAnimalLocomotion: selectedAnimalLocomotion,
                 selectedObjectAnimalLocomotion: placedObjectSelection?.animalLocomotion,
@@ -253,12 +253,12 @@ struct NewARPlacementView: View {
         .onAppear {
             synchronizeInitialSelection()
         }
-        .onChange(of: artworkStore.cutoutLibrary.map(\.id)) { _, _ in
+        .onChange(of: arCutoutItems.map(\.id)) { _, _ in
             synchronizeInitialSelection()
         }
         .onChange(of: selectedCutoutID) { _, newID in
             guard placedObjectSelection == nil,
-                  let asset = artworkStore.cutoutLibrary.first(where: { $0.id == newID }),
+                  let asset = arCutoutAssets.first(where: { $0.id == newID }),
                   let suggested = suggestedLocomotion(for: asset) else { return }
             selectedAnimalLocomotion = suggested
         }
@@ -508,7 +508,7 @@ struct NewARPlacementView: View {
 
     private var backpackItems: [String: [String]] {
         [
-            "Doodle": artworkStore.cutoutLibrary.map { "doodle:\($0.id.uuidString)" },
+            "Doodle": arCutoutItems.map { "doodle:\($0.id.uuidString)" },
             "3D Model": PlaceableUSDZModel.all.map { "model:\($0.id.rawValue)" }
         ]
     }
@@ -542,13 +542,13 @@ struct NewARPlacementView: View {
         if let rawID = itemID.split(separator: ":", maxSplits: 1).last,
            itemID.hasPrefix("doodle:"),
            let cutoutID = UUID(uuidString: String(rawID)),
-           let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
+           let item = arCutoutItems.first(where: { $0.id == cutoutID }) {
             return AnyView(
                 ARSelectionCard(
-                    title: titleForCutout(asset),
-                    isSelected: selectedCutoutID == asset.id
+                    title: item.title,
+                    isSelected: selectedCutoutID == item.id
                 ) {
-                    Image(uiImage: asset.image)
+                    Image(uiImage: item.cutout.image)
                         .resizable()
                         .scaledToFit()
                         .padding(6)
@@ -629,19 +629,22 @@ struct NewARPlacementView: View {
 
         switch selectedContentType {
         case .doodle:
-            return selectedCutoutID != nil && !artworkStore.cutoutLibrary.isEmpty
+            return selectedCutoutID != nil && !arCutoutItems.isEmpty
         case .model:
             return selectedModelID != nil
         }
     }
 
-    private func titleForCutout(_ cutout: CutoutAsset) -> String {
-        guard let drawing = artworkStore.drawing(id: cutout.sourceDrawingID) else {
-            return "My Doodle"
-        }
+    private var arCutoutItems: [BackpackCutoutItem] {
+        ArtworkLibraryPresentation.backpackCutoutItems(
+            drawings: artworkStore.savedDrawings,
+            cutouts: artworkStore.cutoutLibrary,
+            temporaryCutoutID: initialCutoutID
+        )
+    }
 
-        let title = drawing.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return title.isEmpty ? "My Doodle" : title
+    private var arCutoutAssets: [CutoutAsset] {
+        arCutoutItems.map(\.cutout)
     }
 
     private var placeButtonTitle: String {
@@ -675,20 +678,20 @@ struct NewARPlacementView: View {
     }
 
     private func synchronizeInitialSelection() {
-        if artworkStore.cutoutLibrary.isEmpty {
+        if arCutoutAssets.isEmpty {
             selectedCutoutID = nil
             selectedContentType = .model
             return
         }
 
         if let selectedCutoutID,
-           artworkStore.cutoutLibrary.contains(where: { $0.id == selectedCutoutID }) {
+           arCutoutAssets.contains(where: { $0.id == selectedCutoutID }) {
             return
         }
 
         let initialAsset = initialCutoutID.flatMap { id in
-            artworkStore.cutoutLibrary.first(where: { $0.id == id })
-        } ?? artworkStore.cutoutLibrary.first
+            arCutoutAssets.first(where: { $0.id == id })
+        } ?? arCutoutAssets.first
         selectedCutoutID = initialAsset?.id
         if let suggested = suggestedLocomotion(for: initialAsset) {
             selectedAnimalLocomotion = suggested
@@ -767,7 +770,7 @@ struct NewARPlacementView: View {
 
     private func restoreAfterCanvas() {
         if let cutoutID = drawingSession.consumeARCutout(),
-           let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
+           let asset = arCutoutAssets.first(where: { $0.id == cutoutID }) {
             selectedCutoutID = cutoutID
             selectedContentType = .doodle
             if let suggested = suggestedLocomotion(for: asset) {
@@ -992,7 +995,23 @@ private struct PencilRotationSession {
 final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
-        set { sceneEditor.cutoutAssets = newValue }
+        set {
+            let removedObjectIDs = sceneEditor.updateCutoutAssets(newValue)
+            if let pencilRotationSession,
+               removedObjectIDs.contains(pencilRotationSession.object.id) {
+                cancelPencilRotation()
+            }
+            if !removedObjectIDs.isEmpty {
+                onObjectCountChanged?(sceneEditor.objectCount)
+            }
+
+            let availableAssetIDs = Set(newValue.map(\.id))
+            if let pendingCutout = pendingDeletion?.object as? PlacedCutout,
+               !availableAssetIDs.contains(pendingCutout.cutoutAssetID) {
+                pendingDeletion = nil
+                onUndoAvailabilityChanged?(false)
+            }
+        }
     }
     var selectedCutoutID: CutoutAsset.ID? {
         get { sceneEditor.selectedCutoutID }
