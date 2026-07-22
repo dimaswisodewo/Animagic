@@ -135,7 +135,7 @@ struct NewARPlacementView: View {
     }
 
     private enum Layout {
-        static let topControlInset: CGFloat = 12
+        static let topControlInset: CGFloat = 24
         static let iconButtonDiameter: CGFloat = 84
         static let backpackTopGap: CGFloat = 12
         static let backpackMinimumHeight: CGFloat = 220
@@ -166,6 +166,8 @@ struct NewARPlacementView: View {
                 arContent
             }
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             checkCameraPermission()
         }
@@ -800,50 +802,26 @@ struct NewARPlacementView: View {
     }
 
     private var cameraDeniedView: some View {
-        ZStack {
-            Color.black.opacity(0.35)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                Image(systemName: "camera.fill")
-                    .font(.system(size: 40, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .padding()
-                    .background(Color.secondary.opacity(0.12), in: Circle())
-                
-                VStack(spacing: 8) {
-                    Text("Camera Access Required")
-                        .font(.title3.weight(.bold))
-                    Text("AniMagic needs camera access to place your doodles in AR. Please enable it in Settings.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 16)
-                }
-                
-                VStack(spacing: 12) {
-                    Button("Open Settings") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    
-                    Button("Back to Canvas") {
-                        dismiss()
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
+        ContentUnavailableView {
+            Label("Camera Access Required", systemImage: "camera.fill")
+        } description: {
+            Text("AniMagix needs camera access to place your doodles in AR. Please enable it in Settings.")
+        } actions: {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
                 }
             }
-            .padding(32)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: .black.opacity(0.15), radius: 15)
-            .padding(24)
-            .frame(maxWidth: 360)
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+
+            Button("Back to Canvas", role: .cancel) {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
+        .tint(.orange)
     }
 }
 
