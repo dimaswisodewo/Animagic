@@ -33,6 +33,7 @@ struct CanvasPageView: View {
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.displayScale) private var displayScale
 
     @State private var documentTitle = ""
     @State private var canvasView = PKCanvasView()
@@ -242,7 +243,8 @@ struct CanvasPageView: View {
         isClassifyingDoodle = true
         classificationCoordinator.start(
             drawing: drawing,
-            sourceDrawingID: sourceDrawingID
+            sourceDrawingID: sourceDrawingID,
+            renderScale: displayScale
         ) { cutout in
             artworkStore.persistClassifiedCutout(
                 cutout,

@@ -5,6 +5,7 @@ struct HanddrawnDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(NavigationRouter.self) private var router
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
+    @Environment(\.displayScale) private var displayScale
 
     let drawingID: UUID
 
@@ -64,7 +65,10 @@ struct HanddrawnDetailView: View {
 
     private var renderedImage: UIImage? {
         guard !drawing.drawing.bounds.isEmpty else { return nil }
-        return drawing.drawing.image(from: drawing.drawing.bounds, scale: 1)
+        return drawing.drawing.image(
+            from: drawing.drawing.bounds,
+            scale: displayScale
+        )
     }
 
     private func classifyAndOpenAR() {
@@ -76,7 +80,8 @@ struct HanddrawnDetailView: View {
         failedCutoutID = nil
         classificationCoordinator.start(
             drawing: drawing.drawing,
-            sourceDrawingID: drawing.id
+            sourceDrawingID: drawing.id,
+            renderScale: displayScale
         ) { cutout in
             artworkStore.persistClassifiedCutout(
                 cutout,

@@ -58,6 +58,8 @@ struct HanddrawnDetailHeader: View {
 }
 
 struct HanddrawnArtworkView: View {
+    @Environment(\.displayScale) private var displayScale
+
     let drawing: PKDrawing
 
     var body: some View {
@@ -68,7 +70,7 @@ struct HanddrawnArtworkView: View {
                     .font(.custom("Belanosima-Regular", size: 24))
                     .foregroundStyle(.gray)
             } else {
-                Image(uiImage: drawing.image(from: drawing.bounds, scale: 1))
+                Image(uiImage: drawing.image(from: drawing.bounds, scale: displayScale))
                     .resizable()
                     .scaledToFit()
                     .padding(40)

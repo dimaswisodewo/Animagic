@@ -31,7 +31,7 @@ enum DrawingRasterizerError: LocalizedError {
 enum DrawingRasterizer {
     static func rasterize(
         _ drawing: PKDrawing,
-        scale: CGFloat = 2
+        scale: CGFloat
     ) throws -> DrawingRaster {
         let bounds = drawing.bounds
         guard !drawing.strokes.isEmpty, !bounds.isEmpty else {
