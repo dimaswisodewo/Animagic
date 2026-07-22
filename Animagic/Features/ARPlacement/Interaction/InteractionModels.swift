@@ -46,6 +46,7 @@ enum PlacedObjectContent: Equatable {
 struct PlacedObjectSelection: Equatable {
     let objectID: UUID
     let content: PlacedObjectContent
+    let elevationMeters: Float
 
     var animalLocomotion: AnimalLocomotion? { content.animalLocomotion }
     var title: String { content.title }
@@ -54,6 +55,11 @@ struct PlacedObjectSelection: Equatable {
 struct SurfaceProjection {
     let position: SIMD3<Float>
     let normal: SIMD3<Float>
+}
+
+enum ARObjectElevation {
+    static let range: ClosedRange<Float> = 0...2
+    static let groundingThreshold: Float = 0.05
 }
 
 /// Retains the exact RealityKit object removed from a scene so deletion can be undone.
@@ -86,6 +92,9 @@ protocol ObjectInteractionManaging: AnyObject {
     func beginRotation(on hitEntity: Entity?) -> Bool
     func rotateSelected(by angle: Float)
     func endRotation()
+    func beginElevationAdjustment(for objectID: UUID)
+    func setElevationMeters(_ elevationMeters: Float, for objectID: UUID)
+    func endElevationAdjustment(for objectID: UUID)
     func setSelectedAnimalLocomotion(_ locomotion: AnimalLocomotion)
     @discardableResult
     func deleteSelected() -> DeletedSceneObject?
@@ -103,6 +112,7 @@ protocol PlacedSceneObject: AnyObject {
     var supportSurfaceNormal: SIMD3<Float> { get set }
     var selection: PlacedObjectSelection { get }
     var animatedWorldPosition: SIMD3<Float> { get }
+    var elevationMeters: Float { get }
 
     func update(deltaTime: Float)
     func setSelected(_ isSelected: Bool)
@@ -111,21 +121,31 @@ protocol PlacedSceneObject: AnyObject {
     func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus)
     func flipFacing()
     func setViewerDistance(_ distance: Float)
+    func setElevationMeters(_ elevationMeters: Float)
 }
 
 extension PlacedSceneObject {
     var animatedWorldPosition: SIMD3<Float> { interactionRoot.position(relativeTo: nil) }
+    var elevationMeters: Float { interactionRoot.position(relativeTo: anchor).y }
     func update(deltaTime: Float) {}
     func setInteractionPaused(_ isPaused: Bool) {}
     func setAnimalLocomotion(_ locomotion: AnimalLocomotion) {}
     func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus) {}
     func flipFacing() {}
     func setViewerDistance(_ distance: Float) {}
+    func setElevationMeters(_ elevationMeters: Float) {
+        var position = interactionRoot.position(relativeTo: anchor)
+        position.y = elevationMeters
+        interactionRoot.setPosition(position, relativeTo: anchor)
+    }
 }
 
 @MainActor
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID)
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID)
+    func endSelectedObjectElevationAdjustment(for objectID: UUID)
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion)
     func flipSelectedObjectAnimalFacing()
     @discardableResult

@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
+    @Environment(HapticFeedbackManager.self) private var haptics
+    @Environment(BackgroundMusicController.self) private var backgroundMusic
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
-    @State private var isBreathing = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -25,25 +27,29 @@ struct ContentView: View {
                 let scale = min(geometry.size.width, geometry.size.height) / 1024
 
                 TopRightGraphic(scale: scale)
-                    .offset(x: isAnimatingGraphics ? -30 : 20)
-                    .animation(.easeInOut(duration: 3.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                    .offset(y: isAnimatingGraphics ? -20 : 25)
-                    .animation(.easeInOut(duration: 4.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(
+                        x: reduceMotion ? 0 : (isAnimatingGraphics ? -12 : 12),
+                        y: reduceMotion ? 0 : (isAnimatingGraphics ? -10 : 10)
+                    )
+                    .animation(backgroundAnimation(duration: 4.2), value: isAnimatingGraphics)
                     .position(x: geometry.size.width - 50, y: 50)
                 
                 BottomLeftGraphic(scale: scale)
-                    .offset(x: isAnimatingGraphics ? 25 : -15)
-                    .animation(.easeInOut(duration: 3.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                    .offset(y: isAnimatingGraphics ? 30 : -20)
-                    .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(
+                        x: reduceMotion ? 0 : (isAnimatingGraphics ? 12 : -12),
+                        y: reduceMotion ? 0 : (isAnimatingGraphics ? 10 : -10)
+                    )
+                    .animation(backgroundAnimation(duration: 4.8), value: isAnimatingGraphics)
                     .position(x: 50, y: geometry.size.height - 50)
 
                 HomeFloatingDecorations()
             }
             .ignoresSafeArea()
             .onAppear {
-                isAnimatingGraphics = true
-                isBreathing = true
+                isAnimatingGraphics = !reduceMotion
+            }
+            .onChange(of: reduceMotion) { _, shouldReduceMotion in
+                isAnimatingGraphics = !shouldReduceMotion
             }
             
             // Main Content
@@ -85,6 +91,33 @@ struct ContentView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            HStack(spacing: 8) {
+                AnimagicIconButton(
+                    icon: backgroundMusic.isEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill",
+                    backgroundColor: Color.Palette.b300,
+                    innerBorderColor: Color.Palette.b400,
+                    isSelected: backgroundMusic.isEnabled
+                ) {
+                    backgroundMusic.toggle()
+                    haptics.play(.selection)
+                }
+                .accessibilityLabel("Background music")
+                .accessibilityValue(backgroundMusic.isEnabled ? "On" : "Off")
+                .accessibilityHint("Turns background music on or off")
+
+                AnimagicIconButton(
+                    icon: haptics.isEnabled ? "waveform" : "waveform.slash",
+                    backgroundColor: AnimagicTheme.pink,
+                    isSelected: haptics.isEnabled,
+                    action: toggleHaptics
+                )
+                .accessibilityLabel("Haptics")
+                .accessibilityValue(haptics.isEnabled ? "On" : "Off")
+                .accessibilityHint("Turns touch feedback on or off")
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             AnimagicIconButton(
                 icon: "questionmark",
@@ -143,6 +176,21 @@ struct ContentView: View {
             }
         )
     }
+
+    private func backgroundAnimation(duration: Double) -> Animation? {
+        guard !reduceMotion else { return nil }
+        return .easeInOut(duration: duration).repeatForever(autoreverses: true)
+    }
+
+    private func toggleHaptics() {
+        if haptics.isEnabled {
+            haptics.play(.selection)
+            haptics.isEnabled = false
+        } else {
+            haptics.isEnabled = true
+            haptics.play(.selection)
+        }
+    }
 }
 
 struct TopRightGraphic: View {
@@ -200,6 +248,8 @@ struct BottomLeftGraphic: View {
     ContentView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
+        .environment(HapticFeedbackManager(defaults: UserDefaults(suiteName: "ContentHapticsPreview")!))
+        .environment(BackgroundMusicController(defaults: UserDefaults(suiteName: "ContentMusicPreview")!))
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
 #endif

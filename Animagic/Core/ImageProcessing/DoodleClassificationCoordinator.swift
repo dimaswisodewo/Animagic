@@ -34,6 +34,7 @@ final class DoodleClassificationCoordinator {
     func start(
         drawing: PKDrawing,
         sourceDrawingID: UUID,
+        renderScale: CGFloat,
         completion: @escaping @MainActor (CutoutAsset) -> Void
     ) {
         cancel(markAsCancelled: false)
@@ -43,9 +44,12 @@ final class DoodleClassificationCoordinator {
 
         let raster: DrawingRaster
         do {
-            raster = try DrawingRasterizer.rasterize(drawing)
+            raster = try DrawingRasterizer.rasterize(drawing, scale: renderScale)
         } catch {
-            let fallbackImage = drawing.image(from: drawing.bounds, scale: 1)
+            let fallbackImage = drawing.image(
+                from: drawing.bounds,
+                scale: max(renderScale, 1)
+            )
             let fallback = CutoutAsset(
                 sourceDrawingID: sourceDrawingID,
                 image: fallbackImage,

@@ -39,7 +39,11 @@ final class PlacedCutout: PlacedSceneObject {
     var supportSurfaceNormal: SIMD3<Float>
 
     var selection: PlacedObjectSelection {
-        PlacedObjectSelection(objectID: id, content: .doodle(animalLocomotion))
+        PlacedObjectSelection(
+            objectID: id,
+            content: .doodle(animalLocomotion),
+            elevationMeters: elevationMeters
+        )
     }
 
     init(
@@ -76,6 +80,10 @@ final class PlacedCutout: PlacedSceneObject {
         )
         self.configuration = configuration
         simulator = MotionSimulator(yaw: initialYaw, configuration: configuration)
+
+        var initialPosition = interactionRoot.position(relativeTo: anchor)
+        initialPosition.y += configuration.baseAltitude
+        interactionRoot.setPosition(initialPosition, relativeTo: anchor)
     }
 
     func update(deltaTime: Float) {
@@ -109,22 +117,32 @@ final class PlacedCutout: PlacedSceneObject {
 
     func setAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         guard locomotion != animalLocomotion else { return }
-        transitionSample = previousSample
         transitionElapsed = 0
         animalLocomotion = locomotion
         lastMaterialLocomotion = nil
 
+        let previousConfiguration = configuration
         let nextConfiguration = MotionInstanceConfiguration.make(
             for: locomotion,
             spawnMode: spawnMode,
             physicalWidth: physicalWidth
         )
+        let altitudeRebase = nextConfiguration.baseAltitude - previousConfiguration.baseAltitude
+        var rebasedTransitionSample = previousSample
+        rebasedTransitionSample?.position.y += altitudeRebase
+        transitionSample = rebasedTransitionSample
         configuration = nextConfiguration
+
         let previousYaw = previousSample?.yaw ?? initialYaw
         let yawOffset = atan2(sin(previousYaw - initialYaw), cos(previousYaw - initialYaw))
         let currentDirection: Float = abs(yawOffset) > .pi / 2 ? -1 : 1
+        var rebasedPosition = previousSample?.position ?? animatedRoot.position
+        if previousSample == nil {
+            rebasedPosition.y += previousConfiguration.baseAltitude
+        }
+        rebasedPosition.y += altitudeRebase
         simulator = MotionSimulator(
-            position: animatedRoot.position,
+            position: rebasedPosition,
             yaw: previousYaw,
             configuration: nextConfiguration,
             initialLaneDirection: -currentDirection
@@ -157,7 +175,11 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     private func apply(_ sample: MotionSample) {
-        animatedRoot.position = sample.position
+        var relativePosition = sample.position
+        relativePosition.y -= configuration.baseAltitude
+        let interactionScale = max(abs(interactionRoot.scale.y), 0.001)
+        relativePosition.y = max(relativePosition.y, -elevationMeters / interactionScale)
+        animatedRoot.position = relativePosition
         animatedRoot.orientation = simd_quatf(angle: sample.yaw, axis: [0, 1, 0])
             * simd_quatf(angle: sample.pitch, axis: [1, 0, 0])
             * simd_quatf(angle: sample.roll + initialRoll, axis: [0, 0, 1])
@@ -172,10 +194,14 @@ final class PlacedCutout: PlacedSceneObject {
             configuration.baseAltitude + configuration.verticalAmplitude,
             0.12
         )
-        let height = min(max(sample.position.y, 0) / referenceHeight, 1)
+        let relativeAltitude = sample.position.y - configuration.baseAltitude
+        let interactionScale = max(abs(interactionRoot.scale.y), 0.001)
+        let visibleAltitude = max(elevationMeters + relativeAltitude * interactionScale, 0)
+        let height = min(visibleAltitude / referenceHeight, 1)
         let easedHeight = height * height * (3 - 2 * height)
         let spread = 1 + easedHeight * 0.65
-        shadowEntity.position = [sample.position.x, 0.002, sample.position.z]
+        let shadowHeight = (0.002 - elevationMeters) / interactionScale
+        shadowEntity.position = [sample.position.x, shadowHeight, sample.position.z]
         shadowEntity.orientation = simd_quatf(angle: sample.yaw, axis: [0, 1, 0])
             * simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
         shadowEntity.scale = [sample.scaleX * spread, spread, 1]

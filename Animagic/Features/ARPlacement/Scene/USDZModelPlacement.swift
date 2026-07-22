@@ -46,13 +46,6 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
             resourceSubdirectory: nil
         ),
         Self(
-            id: .tree,
-            title: "Tree",
-            systemImageName: "tree.fill",
-            resourceName: "tree_1",
-            resourceSubdirectory: nil
-        ),
-        Self(
             id: .treeStump,
             title: "Tree Stump",
             systemImageName: "tree.fill",
@@ -64,13 +57,6 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
             title: "Tree Trunk",
             systemImageName: "tree.fill",
             resourceName: "TreeNoLeaf",
-            resourceSubdirectory: nil
-        ),
-        Self(
-            id: .fishSchool,
-            title: "Fish School",
-            systemImageName: "fish.fill",
-            resourceName: "fishs",
             resourceSubdirectory: nil
         ),
         Self(
@@ -192,7 +178,11 @@ final class PlacedUSDZModel: PlacedSceneObject {
     private var animationController: AnimationPlaybackController?
 
     var selection: PlacedObjectSelection {
-        PlacedObjectSelection(objectID: id, content: .model(catalogID))
+        PlacedObjectSelection(
+            objectID: id,
+            content: .model(catalogID),
+            elevationMeters: elevationMeters
+        )
     }
 
     init(

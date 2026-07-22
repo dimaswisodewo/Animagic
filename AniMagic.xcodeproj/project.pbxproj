@@ -7,15 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BEF7B47300F52D600DC61B2 /* TreeStump.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B46300F52D600DC61B2 /* TreeStump.usdz */; };
-		0BEF7B49300F55E200DC61B2 /* TreeNoLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B48300F55E200DC61B2 /* TreeNoLeaf.usdz */; };
-		0BEF7B4B300F5A5700DC61B2 /* GraniteRock.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B4A300F5A5700DC61B2 /* GraniteRock.usdz */; };
-		0BEF7B51300F637400DC61B2 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B50300F637400DC61B2 /* Cloud.usdz */; };
-		0BEF7B53300F67F600DC61B2 /* Croissant.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B52300F67F600DC61B2 /* Croissant.usdz */; };
-		0BEF7B55300F6A2200DC61B2 /* Broccoli.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7B54300F6A2200DC61B2 /* Broccoli.usdz */; };
 		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
+		13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */; };
+		13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
 		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
 		1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B760E43EEC00C31B3BC26C6E /* Cloud.usdz */; };
@@ -31,7 +27,6 @@
 		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
 		3B17930B7D49F78B8961394B /* NativeCameraPhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */; };
 		40CD2E69C46CBF46BBFBD627 /* NativeCameraComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */; };
-		42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D8131A446EE341BA3133E93A /* fishs.usdz */; };
 		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
 		4C8349D866957E8019D6DE44 /* TreeNoLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = CD417D9264660957F095FBF0 /* TreeNoLeaf.usdz */; };
 		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
@@ -47,6 +42,7 @@
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
 		5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526F6226738360D3BFA9F745 /* HelpPageView.swift */; };
 		60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67231FD4CC90120FA5A8816 /* CustomButton.swift */; };
+		6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */; };
 		6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */; };
 		6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 15945EA983940214C874F789 /* TreeStump.usdz */; };
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
@@ -64,18 +60,16 @@
 		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
 		861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */; };
 		87681B09FE24242A14664D7E /* CutoutLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */; };
-		881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A7F710F439BF8B2277743917 /* tree_1.usdz */; };
 		8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */; };
 		8C3CB096710C0F7ACEFE478F /* CutoutLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */; };
 		8F7C3A695681B127019DC85A /* NativeCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */; };
 		8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */; };
 		92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AE185F0D5C9434A5A272154D /* Croissant.usdz */; };
 		94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */; };
-		9A0C3C75857D4C4590A87A11 /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1D4D86868E4D56A1B98B22 /* ApplePencilARInteractionAdapter.swift */; };
+		9D439EC03C5A72F3802DE170 /* CutoutRigAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */; };
 		9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */; };
 		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
 		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
-		A7A61036452DC77BD8690965 /* GraniteRock.usdz in Resources */ = {isa = PBXBuildFile; fileRef = CA59273AFCC6CC1F11D80A39 /* GraniteRock.usdz */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
 		AB4D82FA26FAF5126F3A512F /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */; };
 		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
@@ -84,10 +78,10 @@
 		B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 777390A8652DBF52D2DA8707 /* WaterMelon.usdz */; };
 		B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */; };
 		B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8331F114D19F860980D9EF08 /* tap.mp3 */; };
-		B97D8E02120768278D065C53 /* bubbles.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 9AE036FFA5A33C658370D38B /* bubbles.usdz */; };
 		BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */; };
 		C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */; };
 		C5D9756043F6F67897DBB3F2 /* SidebarbarBackpack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F276AC999DC428A1F9AF535 /* SidebarbarBackpack.swift */; };
+		C6497AEB1DDBC615135BAD80 /* MotionLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */; };
 		C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */; };
 		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
 		CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */; };
@@ -117,12 +111,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA3000000000000000000002 /* MotionLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionLabView.swift; sourceTree = "<group>"; };
-		AA2000000000000000000003 /* CutoutRigAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalyzerTests.swift; sourceTree = "<group>"; };
-		AA2000000000000000000004 /* MotionSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulatorTests.swift; sourceTree = "<group>"; };
-		AA4000000000000000000002 /* CanvasCompletionBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCompletionBehaviorTests.swift; sourceTree = "<group>"; };
-		AA2000000000000000000005 /* AniMagicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AniMagicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA1000000000000000000002 /* CutoutRigAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalysis.swift; sourceTree = "<group>"; };
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
 		06573462B1119264F3AD812E /* ExpandableActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableActionMenu.swift; sourceTree = "<group>"; };
 		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
@@ -141,6 +129,7 @@
 		1F0850761218A200FA8B9746 /* ArtworkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkRepository.swift; sourceTree = "<group>"; };
 		1F3C60D05A8A680C5F5AC01A /* AudioAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAsset.swift; sourceTree = "<group>"; };
 		2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
+		2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalysis.swift; sourceTree = "<group>"; };
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
@@ -154,6 +143,8 @@
 		374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCategory.swift; sourceTree = "<group>"; };
 		3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TokyoSpringAmbience.mp3; sourceTree = "<group>"; };
 		3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPageView.swift; sourceTree = "<group>"; };
+		3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePencilARInteractionAdapter.swift; sourceTree = "<group>"; };
+		45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacedCutout.swift; sourceTree = "<group>"; };
 		4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
 		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -182,13 +173,12 @@
 		84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkPersistence.swift; sourceTree = "<group>"; };
 		8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomView.swift; sourceTree = "<group>"; };
 		9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObjectRegistry.swift; sourceTree = "<group>"; };
-		9A1D4D86868E4D56A1B98B22 /* ApplePencilARInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePencilARInteractionAdapter.swift; sourceTree = "<group>"; };
-		9AE036FFA5A33C658370D38B /* bubbles.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = bubbles.usdz; sourceTree = "<group>"; };
 		9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementView.swift; sourceTree = "<group>"; };
 		9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
+		9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicController.swift; sourceTree = "<group>"; };
+		A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionLabView.swift; sourceTree = "<group>"; };
 		A26A0FAF4B1151615789C36C /* InteractionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionModels.swift; sourceTree = "<group>"; };
 		A2F1CE7084EE88134E097B8C /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
-		A7F710F439BF8B2277743917 /* tree_1.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = tree_1.usdz; sourceTree = "<group>"; };
 		AAEF6055646F729702EE453A /* VirtualRoomModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomModels.swift; sourceTree = "<group>"; };
 		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
 		AE185F0D5C9434A5A272154D /* Croissant.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Croissant.usdz; sourceTree = "<group>"; };
@@ -202,11 +192,9 @@
 		C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
 		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
 		C865A342D8F33249F737C2E3 /* ColorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToken.swift; sourceTree = "<group>"; };
-		CA59273AFCC6CC1F11D80A39 /* GraniteRock.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = GraniteRock.usdz; sourceTree = "<group>"; };
 		CD417D9264660957F095FBF0 /* TreeNoLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = TreeNoLeaf.usdz; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		D6F9B88EF207E0F2806EB8A8 /* ButtonSfx.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ButtonSfx.mp3; sourceTree = "<group>"; };
-		D8131A446EE341BA3133E93A /* fishs.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = fishs.usdz; sourceTree = "<group>"; };
 		DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneController.swift; sourceTree = "<group>"; };
 		DB73231B83858CE30A584E76 /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
 		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
@@ -227,14 +215,6 @@
 		FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraPhotoLibrarySaver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXContainerItemProxy section */
-		AA2000000000000000000006 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */; proxyType = 1; remoteGlobalIDString = 602C903EE6969F7210360538; remoteInfo = AniMagic; };
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		AA2000000000000000000007 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
 		07C190AA7BC73B0516B6DC89 /* Fonts */ = {
 			isa = PBXGroup;
@@ -250,7 +230,6 @@
 			isa = PBXGroup;
 			children = (
 				2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */,
-				AA2000000000000000000005 /* AniMagicTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -349,6 +328,7 @@
 			isa = PBXGroup;
 			children = (
 				6CC91E044008BEAE67D45102 /* Audio */,
+				B67730A80F71BA26317A20F5 /* Haptics */,
 				C9257253F98C3E88C58B19EF /* ImageProcessing */,
 				C6262D8B1DCDACFD0B4E779A /* Models */,
 				AAEB6CEF83FF72CC7DF52A5A /* Persistence */,
@@ -392,6 +372,7 @@
 				1F3C60D05A8A680C5F5AC01A /* AudioAsset.swift */,
 				19D044F34FEBE90F2C670DAF /* AudioManager.swift */,
 				750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */,
+				9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -456,19 +437,8 @@
 			isa = PBXGroup;
 			children = (
 				3F370872313E0F6F949422A0 /* Animagic */,
-				AA2000000000000000000008 /* AnimagicTests */,
 				144AE8A48FDC59CD65F95DA7 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		AA2000000000000000000008 /* AnimagicTests */ = {
-			isa = PBXGroup;
-			children = (
-				AA4000000000000000000002 /* CanvasCompletionBehaviorTests.swift */,
-				AA2000000000000000000003 /* CutoutRigAnalyzerTests.swift */,
-				AA2000000000000000000004 /* MotionSimulatorTests.swift */,
-			);
-			path = AnimagicTests;
 			sourceTree = "<group>";
 		};
 		93FEA22E85B5715D3C5868D8 /* Models */ = {
@@ -490,8 +460,8 @@
 		9997B0E24658BAFA15BD0769 /* Motion */ = {
 			isa = PBXGroup;
 			children = (
-				AA3000000000000000000002 /* MotionLabView.swift */,
 				6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */,
+				A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */,
 				F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */,
 				497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */,
 			);
@@ -541,7 +511,7 @@
 		ACA070756A8D94BEEE3A974D /* Interaction */ = {
 			isa = PBXGroup;
 			children = (
-				9A1D4D86868E4D56A1B98B22 /* ApplePencilARInteractionAdapter.swift */,
+				3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */,
 				739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */,
 				A26A0FAF4B1151615789C36C /* InteractionModels.swift */,
 				C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */,
@@ -558,6 +528,14 @@
 				F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		B67730A80F71BA26317A20F5 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */,
+			);
+			path = Haptics;
 			sourceTree = "<group>";
 		};
 		C6262D8B1DCDACFD0B4E779A /* Models */ = {
@@ -644,17 +622,13 @@
 			children = (
 				14A60964229B227465EE8AD4 /* Birds.usdz */,
 				7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */,
-				9AE036FFA5A33C658370D38B /* bubbles.usdz */,
 				6AFC8C90940C224B712AAC52 /* CitrusOrchard.skybox */,
 				B760E43EEC00C31B3BC26C6E /* Cloud.usdz */,
 				AE185F0D5C9434A5A272154D /* Croissant.usdz */,
 				AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */,
-				D8131A446EE341BA3133E93A /* fishs.usdz */,
-				CA59273AFCC6CC1F11D80A39 /* GraniteRock.usdz */,
 				0CD2DE8B958AFA1FBFD38743 /* Land.skybox */,
 				4F33D5C4ECB695106958159D /* StatueRoom.usdz */,
 				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
-				A7F710F439BF8B2277743917 /* tree_1.usdz */,
 				CD417D9264660957F095FBF0 /* TreeNoLeaf.usdz */,
 				15945EA983940214C874F789 /* TreeStump.usdz */,
 				0E732AD75F0B14CC3DC9564D /* Underwater.skybox */,
@@ -666,9 +640,9 @@
 		E730617ACBD4EAE602F3215D /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
-				AA1000000000000000000002 /* CutoutRigAnalysis.swift */,
 				28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */,
 				F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */,
+				2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */,
 				F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */,
 				F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */,
 				FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */,
@@ -697,20 +671,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA2000000000000000000009 /* AniMagicTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = AA2000000000000000000010 /* Build configuration list for PBXNativeTarget "AniMagicTests" */;
-			buildPhases = (
-				AA2000000000000000000011 /* Sources */,
-				AA2000000000000000000007 /* Frameworks */,
-			);
-			buildRules = ();
-			dependencies = (AA2000000000000000000012 /* PBXTargetDependency */);
-			name = AniMagicTests;
-			productName = AniMagicTests;
-			productReference = AA2000000000000000000005 /* AniMagicTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		602C903EE6969F7210360538 /* AniMagic */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B18CB6BD29797FB56B4A6E31 /* Build configuration list for PBXNativeTarget "AniMagic" */;
@@ -738,10 +698,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					AA2000000000000000000009 = {
-						CreatedOnToolsVersion = 26.0;
-						TestTargetID = 602C903EE6969F7210360538;
-					};
 					602C903EE6969F7210360538 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -762,7 +718,6 @@
 			projectRoot = "";
 			targets = (
 				602C903EE6969F7210360538 /* AniMagic */,
-				AA2000000000000000000009 /* AniMagicTests */,
 			);
 		};
 /* End PBXProject section */
@@ -783,7 +738,6 @@
 				1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */,
 				92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */,
 				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
-				A7A61036452DC77BD8690965 /* GraniteRock.usdz in Resources */,
 				7362427944CD9F93F41B9849 /* Land.skybox in Resources */,
 				D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */,
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
@@ -792,33 +746,17 @@
 				EA3383C6DE17A2E9E1AFD13D /* Underwater.skybox in Resources */,
 				B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */,
 				2450F58C34EAD53998B320DF /* bgm_home.mp3 in Resources */,
-				B97D8E02120768278D065C53 /* bubbles.usdz in Resources */,
-				42E7D829999F0FBDD16A0C7E /* fishs.usdz in Resources */,
 				B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */,
-				881879E2D7D7DC28AE667EB9 /* tree_1.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AA2000000000000000000011 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA4000000000000000000001 /* CanvasCompletionBehaviorTests.swift in Sources */,
-				AA2000000000000000000001 /* CutoutRigAnalyzerTests.swift in Sources */,
-				AA2000000000000000000002 /* MotionSimulatorTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		0D022ED0551782D1764681EA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA3000000000000000000001 /* MotionLabView.swift in Sources */,
-				AA1000000000000000000001 /* CutoutRigAnalysis.swift in Sources */,
-				9A0C3C75857D4C4590A87A11 /* ApplePencilARInteractionAdapter.swift in Sources */,
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
@@ -829,6 +767,7 @@
 				0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */,
 				D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */,
 				AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */,
+				13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */,
 				4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */,
 				9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */,
 				EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */,
@@ -836,6 +775,7 @@
 				58B38D15B4AC93EC46B47599 /* AudioAsset.swift in Sources */,
 				770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */,
 				AB4D82FA26FAF5126F3A512F /* AudioSessionManager.swift in Sources */,
+				13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */,
 				FF835DCF8EF6498E779F0342 /* BackpackComponents.swift in Sources */,
 				5B65D23140A6A9FD8616DFD1 /* BackpackPageView.swift in Sources */,
 				52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */,
@@ -853,6 +793,7 @@
 				87681B09FE24242A14664D7E /* CutoutLibraryViewModel.swift in Sources */,
 				33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */,
 				DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */,
+				9D439EC03C5A72F3802DE170 /* CutoutRigAnalysis.swift in Sources */,
 				94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */,
 				B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */,
 				79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */,
@@ -863,11 +804,13 @@
 				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
 				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
 				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
+				6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */,
 				5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */,
 				CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */,
 				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
 				B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */,
 				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
+				C6497AEB1DDBC615135BAD80 /* MotionLabView.swift in Sources */,
 				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
 				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
 				40CD2E69C46CBF46BBFBD627 /* NativeCameraComponent.swift in Sources */,
@@ -900,45 +843,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		AA2000000000000000000012 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 602C903EE6969F7210360538 /* AniMagic */; targetProxy = AA2000000000000000000006 /* PBXContainerItemProxy */; };
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		AA2000000000000000000013 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AniMagic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AniMagic";
-			};
-			name = Debug;
-		};
-		AA2000000000000000000014 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AniMagic.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AniMagic";
-			};
-			name = Release;
-		};
 		0B75A26D3DCEA23B81CE5728 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1140,15 +1045,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA2000000000000000000010 /* Build configuration list for PBXNativeTarget "AniMagicTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				AA2000000000000000000013 /* Debug */,
-				AA2000000000000000000014 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
 		74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

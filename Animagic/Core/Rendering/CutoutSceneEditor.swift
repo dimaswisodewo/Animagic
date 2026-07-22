@@ -190,6 +190,18 @@ final class CutoutSceneEditor: SceneEditing {
         interactionManager.handleTap(on: entity)
     }
 
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        interactionManager.beginElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        interactionManager.setElevationMeters(elevationMeters, for: objectID)
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        interactionManager.endElevationAdjustment(for: objectID)
+    }
+
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         interactionManager.setSelectedAnimalLocomotion(locomotion)
     }
