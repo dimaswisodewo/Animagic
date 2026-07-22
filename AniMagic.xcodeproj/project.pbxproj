@@ -49,6 +49,7 @@
 		7362427944CD9F93F41B9849 /* Land.skybox in Resources */ = {isa = PBXBuildFile; fileRef = 0CD2DE8B958AFA1FBFD38743 /* Land.skybox */; };
 		770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D044F34FEBE90F2C670DAF /* AudioManager.swift */; };
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
+		D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
@@ -137,6 +138,7 @@
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
 		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
+		B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 			children = (
 				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
 				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
+				B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -760,6 +763,7 @@
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
+				D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */,
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,

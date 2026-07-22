@@ -50,8 +50,7 @@ struct HelpPageView: View {
                 get: { haptics.isEnabled },
                 set: { haptics.isEnabled = $0 }
             ))
-            .font(.custom("Belanosima-SemiBold", size: 22, relativeTo: .headline))
-            .tint(AnimagicTheme.orange)
+            .toggleStyle(.animagic)
             .accessibilityHint("Turns AniMagix touch feedback on or off")
 
             Text("Haptics add gentle touch feedback to drawing milestones, magical transformations, AR placement, and camera controls. All actions still have visual feedback when haptics are off or unavailable.")
