@@ -203,7 +203,6 @@ struct NewARPlacementView: View {
             ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
-        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: placementStatus)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: undoAvailable)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: pencilHint)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: showsImmersiveHint)
@@ -285,6 +284,7 @@ struct NewARPlacementView: View {
                         mainColor: AnimagicTheme.orange,
                         items: [
                             ExpandableButtonItem(
+                                id: "help",
                                 icon: "questionmark",
                                 backgroundColor: .green,
                                 innerBorderColor: Color.Palette.g400,
@@ -293,8 +293,20 @@ struct NewARPlacementView: View {
                                     router.push(.help)
                                 }
                             ),
-                            ExpandableButtonItem(icon: "eye.fill", backgroundColor: AnimagicTheme.orange, innerBorderColor: Color.Palette.o400, action: { enterImmersive() }),
-                            ExpandableButtonItem(icon: "camera.fill", backgroundColor: .blue, innerBorderColor: Color.Palette.b400, action: { /* Camera action */ })
+                            ExpandableButtonItem(
+                                id: "immersive",
+                                icon: "eye.fill",
+                                backgroundColor: AnimagicTheme.orange,
+                                innerBorderColor: Color.Palette.o400,
+                                action: { enterImmersive() }
+                            ),
+                            ExpandableButtonItem(
+                                id: "camera",
+                                icon: "camera.fill",
+                                backgroundColor: .blue,
+                                innerBorderColor: Color.Palette.b400,
+                                action: { /* Camera action */ }
+                            )
                         ]
                     )
                     
@@ -314,6 +326,10 @@ struct NewARPlacementView: View {
             VStack(spacing: 8) {
                 if shouldShowStatus {
                     NewARStatusPill(status: placementStatus)
+                        .animation(
+                            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                            value: placementStatus
+                        )
                         .transition(transientScaleTransition)
                 }
 

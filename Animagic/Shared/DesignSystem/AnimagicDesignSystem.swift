@@ -223,7 +223,7 @@ struct AnimagicCard<Content: View>: View {
 }
 
 public struct ExpandableButtonItem: Identifiable {
-    public let id = UUID()
+    public let id: String
     let icon: String
     let backgroundColor: Color
     var iconColor: Color = .white
