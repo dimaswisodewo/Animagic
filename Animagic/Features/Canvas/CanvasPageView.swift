@@ -108,6 +108,7 @@ struct CanvasPageView: View {
                 isClassifyingDoodle: $isClassifyingDoodle,
                 hasDrawing: $hasDrawing,
                 isDocumentTitleManuallyEdited: $isDocumentTitleManuallyEdited,
+                onClear: clearCanvas,
                 onSave: saveAndClassify,
                 onTitleChanged: scheduleDraftAutosave
             )
@@ -196,6 +197,26 @@ struct CanvasPageView: View {
     private func drawingDidChange() {
         drawingSession.drawing = canvasView.drawing
         scheduleDraftAutosave()
+    }
+
+    private func clearCanvas() {
+        autosaveTask?.cancel()
+        autosaveTask = nil
+
+        let emptyDrawing = PKDrawing()
+        canvasView.drawing = emptyDrawing
+        drawingSession.drawing = emptyDrawing
+        hasDrawing = false
+        classificationError = nil
+        failedCutoutID = nil
+
+        guard let activeDrawingID = drawingSession.activeDrawingID else { return }
+        artworkStore.saveActiveDrawing(
+            id: activeDrawingID,
+            name: documentTitle.trimmingCharacters(in: .whitespacesAndNewlines),
+            drawing: emptyDrawing,
+            isNameManuallyEdited: isDocumentTitleManuallyEdited
+        ) { _ in }
     }
 
     private func scheduleDraftAutosave() {

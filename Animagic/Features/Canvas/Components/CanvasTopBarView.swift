@@ -16,6 +16,7 @@ struct CanvasTopBarView: View {
     @Binding var isClassifyingDoodle: Bool
     @Binding var hasDrawing: Bool
     @Binding var isDocumentTitleManuallyEdited: Bool
+    let onClear: () -> Void
     let onSave: () -> Void
     let onTitleChanged: () -> Void
     
@@ -39,6 +40,16 @@ struct CanvasTopBarView: View {
             
             AnimagicLabelButton(title: "Guide", icon: "book.fill", backgroundColor: AnimagicTheme.orange) {
                 showGuidePopup = true
+            }
+
+            AnimagicLabelButton(
+                title: "Clear",
+                icon: "trash.fill",
+                backgroundColor: AnimagicTheme.pink,
+                isDisabled: isClassifyingDoodle || !hasDrawing,
+                isDimmed: !hasDrawing
+            ) {
+                onClear()
             }
             
             AnimagicLabelButton(title: "Save", icon: "checkmark", backgroundColor: AnimagicTheme.orange, isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {
