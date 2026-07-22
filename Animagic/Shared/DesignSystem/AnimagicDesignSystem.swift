@@ -128,6 +128,71 @@ struct AnimagicLabelButton: View {
     }
 }
 
+struct AnimagicEmptyState: View {
+    let icon: String
+    let title: String
+    let message: String
+    var actionTitle: String? = nil
+    var actionIcon: String? = nil
+    var actionColor: Color = AnimagicTheme.orange
+    var isCompact = false
+    var action: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(spacing: isCompact ? 14 : 20) {
+            Image(systemName: icon)
+                .font(.system(size: isCompact ? 34 : 44, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: isCompact ? 68 : 84, height: isCompact ? 68 : 84)
+                .background(AnimagicTheme.blue, in: Circle())
+                .overlay {
+                    Circle()
+                        .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+                }
+
+            VStack(spacing: 8) {
+                Text(title)
+                    .font(.custom(
+                        "Belanosima-SemiBold",
+                        size: isCompact ? 24 : 32,
+                        relativeTo: isCompact ? .title3 : .title2
+                    ))
+                    .foregroundStyle(AnimagicTheme.darkNavy)
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+
+                Text(message)
+                    .font(.custom(
+                        "Belanosima-Regular",
+                        size: isCompact ? 17 : 20,
+                        relativeTo: .body
+                    ))
+                    .foregroundStyle(Color.Token.Text.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let actionTitle, let action {
+                AnimagicLabelButton(
+                    title: actionTitle,
+                    icon: actionIcon,
+                    backgroundColor: actionColor,
+                    innerBorderColor: AnimagicTheme.darkNavy.opacity(0.3),
+                    action: action
+                )
+            }
+        }
+        .padding(isCompact ? 18 : 28)
+        .frame(maxWidth: 460)
+        .background(.white, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+        }
+        .shadow(color: AnimagicTheme.darkNavy.opacity(0.14), radius: 12, y: 5)
+    }
+}
+
 enum AnimagicTextFieldIconPosition {
     case leading
     case trailing

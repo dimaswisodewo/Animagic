@@ -11,6 +11,7 @@ struct BackpackSidebar: View {
     let items: [String: [String]]
     let initialTab: String?
     let itemContent: ((String) -> AnyView)?
+    let emptyContent: ((String) -> AnyView)?
     var onTabChanged: ((String) -> Void)? = nil
     var onItemTapped: ((String) -> Void)? = nil
 
@@ -27,12 +28,14 @@ struct BackpackSidebar: View {
         initialTab: String? = nil,
         onTabChanged: ((String) -> Void)? = nil,
         onItemTapped: ((String) -> Void)? = nil,
+        emptyContent: ((String) -> AnyView)? = nil,
         itemContent: ((String) -> AnyView)? = nil
     ) {
         self.tabs = tabs
         self.items = items
         self.initialTab = initialTab
         self.itemContent = itemContent
+        self.emptyContent = emptyContent
         self.onTabChanged = onTabChanged
         self.onItemTapped = onItemTapped
         _selectedTab = State(initialValue: initialTab ?? tabs.first ?? "")
@@ -40,34 +43,7 @@ struct BackpackSidebar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 6) {
-                ForEach(tabs, id: \.self) { tab in
-                    let isSelected = selectedTab == tab
-
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = tab
-                        }
-                        onTabChanged?(tab)
-                    } label: {
-                        Text(tab)
-                            .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.75)
-                            .foregroundStyle(isSelected ? .white : AnimagicTheme.blue.opacity(0.7))
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                Capsule()
-                                    .fill(isSelected ? AnimagicTheme.blue : Color(Color.Palette.b50))
-                            )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(tab)
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
-            }
+            tabPicker
             .padding(4)
             .background(Capsule().fill(Color.white))
             .overlay {
@@ -79,23 +55,7 @@ struct BackpackSidebar: View {
             .padding(.bottom, 8)
 
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(items[selectedTab] ?? [], id: \.self) { item in
-                        Button {
-                            onItemTapped?(item)
-                        } label: {
-                            if let itemContent {
-                                itemContent(item)
-                            } else {
-                                defaultItemContent
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(item)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                shelfContent
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -105,6 +65,78 @@ struct BackpackSidebar: View {
             shelfShape
                 .strokeBorder(Color.white, lineWidth: 6)
         }
+    }
+
+    private var tabPicker: some View {
+        HStack(spacing: 6) {
+            ForEach(tabs, id: \.self) { tab in
+                tabButton(tab)
+            }
+        }
+    }
+
+    private func tabButton(_ tab: String) -> some View {
+        let isSelected = selectedTab == tab
+
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                selectedTab = tab
+            }
+            onTabChanged?(tab)
+        } label: {
+            Text(tab)
+                .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .foregroundStyle(isSelected ? Color.white : AnimagicTheme.blue.opacity(0.7))
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? AnimagicTheme.blue : Color(Color.Palette.b50))
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(tab)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var shelfContent: some View {
+        if let selectedItems = items[selectedTab], !selectedItems.isEmpty {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(selectedItems, id: \.self) { item in
+                    itemButton(item)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+        } else if let emptyContent {
+            emptyContent(selectedTab)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        } else {
+            defaultEmptyContent
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        }
+    }
+
+    private func itemButton(_ item: String) -> some View {
+        Button {
+            onItemTapped?(item)
+        } label: {
+            if let itemContent {
+                itemContent(item)
+            } else {
+                defaultItemContent
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(item)
     }
 
     private var shelfShape: UnevenRoundedRectangle {
@@ -125,6 +157,15 @@ struct BackpackSidebar: View {
                     .font(.system(size: 40, weight: .medium))
                     .foregroundStyle(Color.Palette.n70)
             }
+    }
+
+    private var defaultEmptyContent: some View {
+        AnimagicEmptyState(
+            icon: "backpack.fill",
+            title: "Nothing Here Yet",
+            message: "Add something to your backpack to see it here.",
+            isCompact: true
+        )
     }
 }
 

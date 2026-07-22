@@ -495,11 +495,39 @@ struct NewARPlacementView: View {
                 feedback.selectionChanged()
             },
             onItemTapped: selectBackpackItem,
+            emptyContent: { tab in
+                backpackEmptyContent(for: tab)
+            },
             itemContent: { itemID in
                 backpackItemContent(for: itemID)
             }
         )
         .frame(width: backpackShelfWidth, height: height)
+    }
+
+    private func backpackEmptyContent(for tab: String) -> AnyView {
+        guard tab == "Doodle" else {
+            return AnyView(
+                AnimagicEmptyState(
+                    icon: "shippingbox.fill",
+                    title: "Nothing Here Yet",
+                    message: "There are no items in this section.",
+                    isCompact: true
+                )
+            )
+        }
+
+        return AnyView(
+            AnimagicEmptyState(
+                icon: "paintbrush.pointed.fill",
+                title: "No Doodles Yet",
+                message: "Draw a doodle for your backpack, or choose a 3D Model.",
+                actionTitle: "Draw a Doodle",
+                actionIcon: "paintbrush.fill",
+                isCompact: true,
+                action: presentCanvas
+            )
+        )
     }
 
     private var backpackTabs: [String] {
@@ -803,50 +831,73 @@ struct NewARPlacementView: View {
     }
 
     private var cameraDeniedView: some View {
-        ZStack {
-            Color.black.opacity(0.35)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                Image(systemName: "camera.fill")
-                    .font(.system(size: 40, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .padding()
-                    .background(Color.secondary.opacity(0.12), in: Circle())
-                
-                VStack(spacing: 8) {
-                    Text("Camera Access Required")
-                        .font(.title3.weight(.bold))
-                    Text("AniMagic needs camera access to place your doodles in AR. Please enable it in Settings.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 16)
-                }
-                
-                VStack(spacing: 12) {
-                    Button("Open Settings") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack {
+                    VStack(spacing: 22) {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 44, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 84, height: 84)
+                            .background(AnimagicTheme.orange, in: Circle())
+                            .overlay {
+                                Circle()
+                                    .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+                            }
+
+                        VStack(spacing: 8) {
+                            Text("Camera Access Required")
+                                .font(.custom("Belanosima-SemiBold", size: 32, relativeTo: .title2))
+                                .foregroundStyle(AnimagicTheme.darkNavy)
+                                .multilineTextAlignment(.center)
+                                .accessibilityAddTraits(.isHeader)
+
+                            Text("AniMagic needs camera access to place your doodles in AR. Enable it in Settings, then return to AniMagic.")
+                                .font(.custom("Belanosima-Regular", size: 20, relativeTo: .body))
+                                .foregroundStyle(Color.Token.Text.secondary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        VStack(spacing: 8) {
+                            AnimagicLabelButton(
+                                title: "Open Settings",
+                                icon: "gearshape.fill",
+                                backgroundColor: AnimagicTheme.orange,
+                                innerBorderColor: Color.Palette.o400,
+                                action: openAppSettings
+                            )
+
+                            AnimagicLabelButton(
+                                title: "Go Back",
+                                icon: "chevron.left",
+                                backgroundColor: AnimagicTheme.blue,
+                                innerBorderColor: Color.Palette.b400,
+                                action: dismiss.callAsFunction
+                            )
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    
-                    Button("Back to Canvas") {
-                        dismiss()
+                    .padding(28)
+                    .frame(maxWidth: 520)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
+                    .shadow(color: AnimagicTheme.darkNavy.opacity(0.18), radius: 16, y: 6)
+                    .padding(24)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: geometry.size.height)
             }
-            .padding(32)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: .black.opacity(0.15), radius: 15)
-            .padding(24)
-            .frame(maxWidth: 360)
+            .background(AnimagicTheme.yellow)
         }
+        .ignoresSafeArea()
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 
