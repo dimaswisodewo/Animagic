@@ -140,7 +140,6 @@ struct NewARPlacementView: View {
         static let iconButtonDiameter: CGFloat = 84
         static let backpackTopGap: CGFloat = 12
         static let backpackMinimumHeight: CGFloat = 220
-        static let backpackButtonBottomInset: CGFloat = 32
     }
 
     private let initialCutoutID: CutoutAsset.ID?
@@ -289,6 +288,10 @@ struct NewARPlacementView: View {
             if newStatus == .ready {
                 hasFoundInitialSurface = true
             }
+        }
+        .onChange(of: placedObjectSelection?.objectID) { _, selectedObjectID in
+            guard selectedObjectID != nil, isBackpackExpanded else { return }
+            setBackpackExpanded(false)
         }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
@@ -453,7 +456,7 @@ struct NewARPlacementView: View {
     private var bottomControlBar: some View {
         HStack(alignment: .bottom) {
             Group {
-                if let placedObjectSelection {
+                if let placedObjectSelection, !isBackpackExpanded {
                     NewAREditCard(
                         selection: placedObjectSelection,
                         animalLocomotion: locomotionSelection,
@@ -470,7 +473,7 @@ struct NewARPlacementView: View {
                     .allowsHitTesting(returnRecoveryState.readiness.allowsInteraction)
                     .opacity(returnRecoveryState.readiness.allowsInteraction ? 1 : 0.55)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                } else {
+                } else if placedObjectSelection == nil {
                     AnimagicLabelButton(
                         title: placeButtonTitle,
                         backgroundColor: AnimagicTheme.blue,
@@ -489,18 +492,37 @@ struct NewARPlacementView: View {
     }
 
     private func backpackControl(height: CGFloat) -> some View {
-        HStack(alignment: .bottom, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
             BackpackTabButton(
-                isOpen: $isBackpackExpanded,
+                isOpen: backpackExpansion,
                 backgroundColor: AnimagicTheme.orange,
                 innerBorderColor: Color.Palette.o400
             )
-            .padding(.bottom, Layout.backpackButtonBottomInset)
 
             if isBackpackExpanded {
                 backpackSidebar(height: height)
                     .transition(sidePanelTransition)
             }
+        }
+        .frame(height: height)
+    }
+
+    private var backpackExpansion: Binding<Bool> {
+        Binding(
+            get: { isBackpackExpanded },
+            set: { setBackpackExpanded($0) }
+        )
+    }
+
+    private func setBackpackExpanded(_ isExpanded: Bool) {
+        guard isBackpackExpanded != isExpanded else { return }
+
+        if isExpanded, placedObjectSelection != nil {
+            sceneCommand = .clearSelection(UUID())
+        }
+
+        withAnimation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.sidebar) {
+            isBackpackExpanded = isExpanded
         }
     }
 
