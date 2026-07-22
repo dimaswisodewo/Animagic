@@ -6,6 +6,7 @@
 //
 
 import ARKit
+import os
 import RealityKit
 import SwiftUI
 import UIKit
@@ -1143,6 +1144,11 @@ private struct PencilRotationSession {
 
 @MainActor
 final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
+    private static let signposter = OSSignposter(
+        subsystem: "com.DirouDough.AniMagic",
+        category: "AR Doodle Placement"
+    )
+
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
         set {
@@ -1161,11 +1167,17 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 pendingDeletion = nil
                 onUndoAvailabilityChanged?(false)
             }
+            scheduleSelectedDoodlePreparation()
         }
     }
     var selectedCutoutID: CutoutAsset.ID? {
         get { sceneEditor.selectedCutoutID }
-        set { sceneEditor.selectedCutoutID = newValue }
+        set {
+            guard sceneEditor.selectedCutoutID != newValue else { return }
+            sceneEditor.selectedCutoutID = newValue
+            preparedCutoutID = nil
+            scheduleSelectedDoodlePreparation()
+        }
     }
     var selectedAnimalLocomotion: AnimalLocomotion {
         get { sceneEditor.selectedAnimalLocomotion }
@@ -1173,7 +1185,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
     var selectedContentType: PlacementContentType {
         get { sceneEditor.selectedContentType }
-        set { sceneEditor.selectedContentType = newValue }
+        set {
+            guard sceneEditor.selectedContentType != newValue else { return }
+            sceneEditor.selectedContentType = newValue
+            scheduleSelectedDoodlePreparation()
+        }
     }
     var selectedModelID: PlaceableUSDZModel.ID? {
         get { sceneEditor.selectedModelID }
@@ -1197,6 +1213,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var focusAnchor: AnchorEntity?
     private var lightingAnchor: AnchorEntity?
     private var statusResetTask: Task<Void, Never>?
+    private var preparationTask: Task<Void, Never>?
+    private var preparationGeneration = 0
+    private var preparingCutoutID: CutoutAsset.ID?
+    private var preparedCutoutID: CutoutAsset.ID?
     private var isTargetAcquired = false
     private var isTrackingNormal = false
     private var isSessionInterrupted = false
@@ -1227,6 +1247,16 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var isPencilRotating: Bool { pencilRotationSession != nil }
     var isInteractionReady: Bool {
         isTrackingNormal && isTargetAcquired && !isSessionInterrupted && isAppSceneActive
+    }
+
+    private var isPlacementReady: Bool {
+        guard isInteractionReady else { return false }
+        switch selectedContentType {
+        case .doodle:
+            return selectedCutoutID != nil && preparedCutoutID == selectedCutoutID
+        case .model:
+            return true
+        }
     }
 
     init(
@@ -1314,6 +1344,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         updateStatus(.searching)
         onObjectCountChanged?(0)
         notifyReadinessChanged()
+        scheduleSelectedDoodlePreparation()
     }
 
     private func setupLighting(in arView: ARView) {
@@ -1360,7 +1391,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func handle(_ command: NewARSceneCommand) {
         switch command {
         case .place:
-            guard isInteractionReady else { return }
+            guard isPlacementReady else { return }
             placeAtFocus()
         case .clearSelection:
             guard isInteractionReady else { return }
@@ -1586,7 +1617,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     private func placeAtFocus() {
-        guard placedObjectSelection == nil,
+        guard isPlacementReady,
+              placedObjectSelection == nil,
               isTargetAcquired,
               let targetTransform = lastValidTransform,
               let targetNormal = lastValidNormal else {
@@ -1595,6 +1627,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             return
         }
 
+        let signpostState = Self.signposter.beginInterval("Place Doodle at Focus")
+        defer { Self.signposter.endInterval("Place Doodle at Focus", signpostState) }
         let result = sceneEditor.placeOnPlane(
             at: targetTransform.translation,
             normal: targetNormal,
@@ -1926,6 +1960,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func stopAnimationLoop() {
         statusResetTask?.cancel()
         statusResetTask = nil
+        preparationTask?.cancel()
+        preparationTask = nil
         setSelectionIndicatorDragging(false)
         pencilInteractionAdapter?.detach()
         pencilInteractionAdapter = nil
@@ -1957,8 +1993,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
 
     private func updateStatusIfScanning(_ newStatus: ARPlacementStatus) {
         switch placementStatus {
-        case .searching, .ready, .placed:
-            updateStatus(newStatus)
+        case .searching, .ready, .loading, .placed:
+            updateStatus(needsSelectedDoodlePreparation ? .loading("Preparing doodle…") : newStatus)
         default:
             break
         }
@@ -1969,7 +2005,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         case .normal:
             isTrackingNormal = true
             isSessionInterrupted = false
-            updateStatus(isTargetAcquired ? .ready : .searching)
+            updateStatus(
+                needsSelectedDoodlePreparation
+                    ? .loading("Preparing doodle…")
+                    : (isTargetAcquired ? .ready : .searching)
+            )
         case .limited(let reason):
             isTrackingNormal = false
             updateStatus(.limited(reason.trackingMessage))
@@ -1982,6 +2022,63 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             cancelActiveInteractions()
         }
         notifyReadinessChanged()
+    }
+
+    private var needsSelectedDoodlePreparation: Bool {
+        selectedContentType == .doodle
+            && selectedCutoutID != nil
+            && preparedCutoutID != selectedCutoutID
+    }
+
+    private func scheduleSelectedDoodlePreparation() {
+        guard arView != nil else { return }
+
+        guard selectedContentType == .doodle, let selectedCutoutID else {
+            preparationGeneration += 1
+            preparationTask?.cancel()
+            preparationTask = nil
+            preparingCutoutID = nil
+            if case .loading = placementStatus, isTrackingNormal {
+                updateStatus(isTargetAcquired ? .ready : .searching)
+            }
+            return
+        }
+        guard preparedCutoutID != selectedCutoutID,
+              preparingCutoutID != selectedCutoutID else { return }
+
+        preparationGeneration += 1
+        let generation = preparationGeneration
+        preparationTask?.cancel()
+        preparingCutoutID = selectedCutoutID
+        updateStatus(.loading("Preparing doodle…"))
+
+        preparationTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(100))
+            guard !Task.isCancelled,
+                  let self,
+                  self.preparationGeneration == generation,
+                  self.selectedContentType == .doodle,
+                  self.selectedCutoutID == selectedCutoutID else { return }
+
+            do {
+                let preparedID = try self.sceneEditor.prepareSelectedCutout()
+                guard self.preparationGeneration == generation,
+                      self.selectedCutoutID == preparedID else { return }
+                self.preparedCutoutID = preparedID
+                self.preparingCutoutID = nil
+                self.preparationTask = nil
+                if self.isTrackingNormal {
+                    self.updateStatus(self.isTargetAcquired ? .ready : .searching)
+                }
+            } catch {
+                guard self.preparationGeneration == generation else { return }
+                self.preparingCutoutID = nil
+                self.preparationTask = nil
+                self.updateStatus(.failed("This doodle could not be prepared."))
+                self.statusResetTask?.cancel()
+                self.statusResetTask = nil
+            }
+        }
     }
 
     private func notifyReadinessChanged() {

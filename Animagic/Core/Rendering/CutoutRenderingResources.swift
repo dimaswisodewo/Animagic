@@ -70,13 +70,7 @@ enum CutoutRenderQuality: Int, CaseIterable {
 }
 
 enum CutoutDeformationMaterial {
-    static func make(
-        texture: TextureResource,
-        bodyStyle: AnimalBodyStyle,
-        locomotion: AnimalLocomotion,
-        phase: Float,
-        faceDirection: Float
-    ) throws -> CustomMaterial {
+    static func makeTemplate() throws -> CustomMaterial {
         guard let device = MTLCreateSystemDefaultDevice(),
               let library = device.makeDefaultLibrary() else {
             throw CutoutDeformationError.metalLibraryUnavailable
@@ -89,6 +83,19 @@ enum CutoutDeformationMaterial {
             geometryModifier: geometryModifier,
             lightingModel: .lit
         )
+        material.blending = .transparent(opacity: .init(floatLiteral: 1))
+        return material
+    }
+
+    static func make(
+        from template: CustomMaterial,
+        texture: TextureResource,
+        bodyStyle: AnimalBodyStyle,
+        locomotion: AnimalLocomotion,
+        phase: Float,
+        faceDirection: Float
+    ) -> CustomMaterial {
+        var material = template
         material.custom.texture = .init(texture)
         material.custom.value = [
             bodyStyle.shaderIndex + locomotion.shaderIndex * 0.01,
@@ -96,27 +103,8 @@ enum CutoutDeformationMaterial {
             phase,
             faceDirection
         ]
-        material.blending = .transparent(opacity: .init(floatLiteral: 1))
         return material
     }
-
-    static func make(
-        from image: CGImage,
-        bodyStyle: AnimalBodyStyle,
-        locomotion: AnimalLocomotion,
-        phase: Float,
-        faceDirection: Float
-    ) throws -> CustomMaterial {
-        let texture = try TextureResource(image: image, options: .init(semantic: .color))
-        return try make(
-            texture: texture,
-            bodyStyle: bodyStyle,
-            locomotion: locomotion,
-            phase: phase,
-            faceDirection: faceDirection
-        )
-    }
-
 }
 
 private enum CutoutDeformationError: Error {

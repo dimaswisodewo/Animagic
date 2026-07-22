@@ -27,6 +27,10 @@ enum CutoutPlacementResult: Equatable {
     case creationFailed(String)
 }
 
+enum CutoutPreparationError: Error {
+    case missingAsset
+}
+
 @MainActor
 final class CutoutSceneEditor: SceneEditing {
     private(set) var cutoutAssets: [CutoutAsset]
@@ -253,6 +257,19 @@ final class CutoutSceneEditor: SceneEditing {
             return selectedAsset
         }
         return cutoutAssets.first
+    }
+
+    @discardableResult
+    func prepareSelectedCutout() throws -> CutoutAsset.ID {
+        guard let selectedCutoutID,
+              let cutoutAsset = cutoutAssets.first(where: { $0.id == selectedCutoutID }) else {
+            throw CutoutPreparationError.missingAsset
+        }
+        try entityFactory.prepareResources(
+            for: cutoutAsset,
+            physicalWidth: configuration.physicalWidthOverride
+        )
+        return cutoutAsset.id
     }
 
     private func place(

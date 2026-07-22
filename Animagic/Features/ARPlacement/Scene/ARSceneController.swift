@@ -64,7 +64,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
-        entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
+        entityFactory: CutoutEntityFactory? = nil,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
     ) {
