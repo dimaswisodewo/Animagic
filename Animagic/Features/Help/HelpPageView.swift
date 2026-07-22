@@ -149,6 +149,7 @@ struct HelpPageView: View {
                     "Switch between Doodles and 3D Models, then choose an item.",
                     "Tap a detected surface to place it there, or aim the placement guide and choose Place It.",
                     "Tap a placed item to select it. Drag to move it, pinch to resize it, and rotate with two fingers.",
+                    "With Apple Pencil Pro, hover over an item, then squeeze and roll the Pencil to rotate it.",
                     "Choose Done when you finish editing. Use Delete to remove the selected item, or Undo if you removed it by mistake."
                 ])
             }

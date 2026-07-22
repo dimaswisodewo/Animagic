@@ -58,13 +58,16 @@ struct FullScreenCoverStackModifier: ViewModifier {
 struct AppRouterView {
     @ViewBuilder static func handleNavigation(_ route: AppRoute) -> some View {
         switch route {
-        case .canvas: CanvasPageView()
+        case .canvas: CanvasPageView(completionBehavior: .openNewAR)
         case .arView(let initialCutoutID): ARRouteView(initialCutoutID: initialCutoutID)
         case .backpack: BackpackPageView()
         case .handdrawnDetail(let id): HanddrawnDetailView(drawingID: id)
         case .cutoutLibrary: CutoutLibraryView()
         case .virtualRoom: VirtualRoomView()
         case .help: HelpPageView()
+#if DEBUG
+        case .motionLab: MotionLabView()
+#endif
         }
     }
 
@@ -73,7 +76,12 @@ struct AppRouterView {
     }
 
     @ViewBuilder static func handleFullScreenCover(_ route: AppRoute) -> some View {
-        EmptyView()
+        switch route {
+        case .canvas:
+            CanvasPageView(completionBehavior: .returnToPresentingAR)
+        default:
+            EmptyView()
+        }
     }
 }
 

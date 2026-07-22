@@ -27,12 +27,12 @@ enum PlacementContentType: String, CaseIterable, Identifiable {
 }
 
 enum PlacedObjectContent: Equatable {
-    case doodle(AnimalArchetype)
+    case doodle(AnimalLocomotion)
     case model(PlaceableUSDZModel.ID)
 
-    var animalArchetype: AnimalArchetype? {
-        guard case .doodle(let archetype) = self else { return nil }
-        return archetype
+    var animalLocomotion: AnimalLocomotion? {
+        guard case .doodle(let locomotion) = self else { return nil }
+        return locomotion
     }
 
     var title: String {
@@ -47,7 +47,7 @@ struct PlacedObjectSelection: Equatable {
     let objectID: UUID
     let content: PlacedObjectContent
 
-    var animalArchetype: AnimalArchetype? { content.animalArchetype }
+    var animalLocomotion: AnimalLocomotion? { content.animalLocomotion }
     var title: String { content.title }
 }
 
@@ -86,11 +86,12 @@ protocol ObjectInteractionManaging: AnyObject {
     func beginRotation(on hitEntity: Entity?) -> Bool
     func rotateSelected(by angle: Float)
     func endRotation()
-    func setSelectedAnimalArchetype(_ archetype: AnimalArchetype)
+    func setSelectedAnimalLocomotion(_ locomotion: AnimalLocomotion)
     @discardableResult
     func deleteSelected() -> DeletedSceneObject?
     func restore(_ deletedObject: DeletedSceneObject)
     func selectObject(withID id: UUID)
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)?
     func clearSelection()
 }
 
@@ -101,23 +102,32 @@ protocol PlacedSceneObject: AnyObject {
     var interactionRoot: Entity { get }
     var supportSurfaceNormal: SIMD3<Float> { get set }
     var selection: PlacedObjectSelection { get }
+    var animatedWorldPosition: SIMD3<Float> { get }
 
     func update(deltaTime: Float)
     func setSelected(_ isSelected: Bool)
     func setInteractionPaused(_ isPaused: Bool)
-    func setAnimalArchetype(_ archetype: AnimalArchetype)
+    func setAnimalLocomotion(_ locomotion: AnimalLocomotion)
+    func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus)
+    func flipFacing()
+    func setViewerDistance(_ distance: Float)
 }
 
 extension PlacedSceneObject {
+    var animatedWorldPosition: SIMD3<Float> { interactionRoot.position(relativeTo: nil) }
     func update(deltaTime: Float) {}
     func setInteractionPaused(_ isPaused: Bool) {}
-    func setAnimalArchetype(_ archetype: AnimalArchetype) {}
+    func setAnimalLocomotion(_ locomotion: AnimalLocomotion) {}
+    func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus) {}
+    func flipFacing() {}
+    func setViewerDistance(_ distance: Float) {}
 }
 
 @MainActor
 protocol SceneEditing: AnyObject {
     var placedObjectSelection: PlacedObjectSelection? { get }
-    func setSelectedObjectAnimalArchetype(_ archetype: AnimalArchetype)
+    func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion)
+    func flipSelectedObjectAnimalFacing()
     @discardableResult
     func deleteSelectedObject() -> DeletedSceneObject?
     func restoreDeletedObject(_ deletedObject: DeletedSceneObject)

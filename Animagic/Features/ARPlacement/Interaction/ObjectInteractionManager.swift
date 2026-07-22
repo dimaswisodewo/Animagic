@@ -46,6 +46,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         }
 
         select(objectID)
+        selectedObject?.receiveMotionStimulus(.tapped)
         return true
     }
 
@@ -120,12 +121,16 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         end(.rotation)
     }
 
-    func setSelectedAnimalArchetype(_ archetype: AnimalArchetype) {
+    func setSelectedAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         guard let selectedObject else {
             return
         }
-        selectedObject.setAnimalArchetype(archetype)
+        selectedObject.setAnimalLocomotion(locomotion)
         notifySelectionChanged()
+    }
+
+    func flipSelectedAnimalFacing() {
+        selectedObject?.flipFacing()
     }
 
     @discardableResult
@@ -150,6 +155,10 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
     func selectObject(withID id: UUID) {
         guard registry.object(withID: id) != nil else { return }
         select(id)
+    }
+
+    func object(containing entity: Entity?) -> (any PlacedSceneObject)? {
+        objectID(containing: entity).flatMap(registry.object(withID:))
     }
 
     func clearSelection() {

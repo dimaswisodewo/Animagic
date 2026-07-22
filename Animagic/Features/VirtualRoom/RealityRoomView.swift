@@ -14,8 +14,8 @@ struct RealityRoomView: UIViewRepresentable {
     let selectedSkybox: VirtualRoomSkybox
     let cutoutAssets: [CutoutAsset]
     let selectedCutoutID: CutoutAsset.ID?
-    let spawnAnimalArchetype: AnimalArchetype
-    let selectedObjectAnimalArchetype: AnimalArchetype?
+    let spawnAnimalLocomotion: AnimalLocomotion
+    let selectedObjectAnimalLocomotion: AnimalLocomotion?
     let selectedSpawnMode: SpawnMode
     let selectedContentType: PlacementContentType
     let selectedModelID: PlaceableUSDZModel.ID?
@@ -28,7 +28,7 @@ struct RealityRoomView: UIViewRepresentable {
         RoomCoordinator(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: spawnAnimalArchetype,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
             selectedSpawnMode: selectedSpawnMode,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
@@ -49,8 +49,8 @@ struct RealityRoomView: UIViewRepresentable {
             skybox: selectedSkybox,
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
-            selectedAnimalArchetype: spawnAnimalArchetype,
-            selectedObjectAnimalArchetype: selectedObjectAnimalArchetype,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
+            selectedObjectAnimalLocomotion: selectedObjectAnimalLocomotion,
             selectedSpawnMode: selectedSpawnMode,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,

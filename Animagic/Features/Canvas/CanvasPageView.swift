@@ -1,5 +1,32 @@
+//
+//  CanvasPageView.swift
+//  AniMagic
+//
+//  Created by Meynabel Dimas Wisodewo on 22/07/26.
+//
+
 import PencilKit
 import SwiftUI
+
+enum CanvasCompletionBehavior {
+    case returnToPresentingAR
+    case openNewAR
+
+    @MainActor
+    func complete(
+        cutoutID: UUID,
+        router: NavigationRouter,
+        drawingSession: DrawingSessionManager
+    ) {
+        switch self {
+        case .returnToPresentingAR:
+            drawingSession.publishARCutout(cutoutID)
+            router.dismissFullScreenCover()
+        case .openNewAR:
+            router.push(.arView(initialCutoutID: cutoutID))
+        }
+    }
+}
 
 struct CanvasPageView: View {
     @Environment(NavigationRouter.self) private var router
@@ -19,6 +46,11 @@ struct CanvasPageView: View {
     @State private var classificationCoordinator = DoodleClassificationCoordinator()
     @State private var classificationError: String?
     @State private var failedCutoutID: UUID?
+    private let completionBehavior: CanvasCompletionBehavior
+
+    init(completionBehavior: CanvasCompletionBehavior = .openNewAR) {
+        self.completionBehavior = completionBehavior
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -227,7 +259,7 @@ struct CanvasPageView: View {
                     failedCutoutID = cutout.id
                     classificationError = error
                 } else {
-                    router.push(.arView(initialCutoutID: cutout.id))
+                    complete(with: cutout.id)
                 }
             }
         }
@@ -236,7 +268,15 @@ struct CanvasPageView: View {
     private func openGenericAR() {
         guard let failedCutoutID else { return }
         classificationError = nil
-        router.push(.arView(initialCutoutID: failedCutoutID))
+        complete(with: failedCutoutID)
+    }
+
+    private func complete(with cutoutID: UUID) {
+        completionBehavior.complete(
+            cutoutID: cutoutID,
+            router: router,
+            drawingSession: drawingSession
+        )
     }
 }
 
