@@ -10,6 +10,7 @@ import PencilKit
 
 struct CanvasTopBarView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(HapticFeedbackManager.self) private var haptics
     @Binding var documentTitle: String
     let canvasView: PKCanvasView
     @Binding var showGuidePopup: Bool
@@ -39,6 +40,7 @@ struct CanvasTopBarView: View {
             Spacer()
             
             AnimagicLabelButton(title: "Guide", icon: "book.fill", backgroundColor: AnimagicTheme.orange) {
+                haptics.play(.selection)
                 showGuidePopup = true
             }
 

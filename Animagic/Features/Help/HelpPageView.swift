@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HelpPageView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(HapticFeedbackManager.self) private var haptics
 
     var body: some View {
         VStack(spacing: 0) {
@@ -17,6 +18,7 @@ struct HelpPageView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     introduction
+                    hapticsSection
                     safetySection
                     quickStartSection
                     drawingSection
@@ -40,6 +42,20 @@ struct HelpPageView: View {
         .background(Color.Token.Background.primary.ignoresSafeArea())
         .navigationBarHidden(true)
         .textSelection(.enabled)
+    }
+
+    private var hapticsSection: some View {
+        HelpSectionView(title: "Touch feedback", icon: "waveform", accentColor: AnimagicTheme.orange) {
+            Toggle("Haptics", isOn: Binding(
+                get: { haptics.isEnabled },
+                set: { haptics.isEnabled = $0 }
+            ))
+            .font(.custom("Belanosima-SemiBold", size: 22, relativeTo: .headline))
+            .tint(AnimagicTheme.orange)
+            .accessibilityHint("Turns AniMagix touch feedback on or off")
+
+            Text("Haptics add gentle touch feedback to drawing milestones, magical transformations, AR placement, and camera controls. All actions still have visual feedback when haptics are off or unavailable.")
+        }
     }
 
     private var introduction: some View {
@@ -394,5 +410,6 @@ private struct NumberedHelpList: View {
     NavigationStack {
         HelpPageView()
     }
+    .environment(HapticFeedbackManager(defaults: UserDefaults(suiteName: "HelpPagePreview")!))
 }
 #endif

@@ -41,6 +41,7 @@
 		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
 		5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526F6226738360D3BFA9F745 /* HelpPageView.swift */; };
 		60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67231FD4CC90120FA5A8816 /* CustomButton.swift */; };
+		6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */; };
 		6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */; };
 		6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 15945EA983940214C874F789 /* TreeStump.usdz */; };
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
@@ -131,9 +132,9 @@
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
-		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
-		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
+		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
@@ -142,6 +143,7 @@
 		3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TokyoSpringAmbience.mp3; sourceTree = "<group>"; };
 		3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPageView.swift; sourceTree = "<group>"; };
 		3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePencilARInteractionAdapter.swift; sourceTree = "<group>"; };
+		45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacedCutout.swift; sourceTree = "<group>"; };
 		4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
 		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 			isa = PBXGroup;
 			children = (
 				6CC91E044008BEAE67D45102 /* Audio */,
+				B67730A80F71BA26317A20F5 /* Haptics */,
 				C9257253F98C3E88C58B19EF /* ImageProcessing */,
 				C6262D8B1DCDACFD0B4E779A /* Models */,
 				AAEB6CEF83FF72CC7DF52A5A /* Persistence */,
@@ -522,6 +525,14 @@
 				F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		B67730A80F71BA26317A20F5 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */,
+			);
+			path = Haptics;
 			sourceTree = "<group>";
 		};
 		C6262D8B1DCDACFD0B4E779A /* Models */ = {
@@ -789,6 +800,7 @@
 				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
 				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
 				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
+				6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */,
 				5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */,
 				CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */,
 				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
@@ -837,12 +849,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
@@ -850,10 +858,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -942,7 +947,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
@@ -951,10 +955,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic;

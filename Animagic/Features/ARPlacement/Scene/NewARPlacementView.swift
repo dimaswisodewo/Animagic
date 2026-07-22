@@ -28,6 +28,7 @@ protocol ARPlacementFeedbackProviding: AnyObject {
     func dragStarted()
     func placementSucceeded()
     func boundaryReached()
+    func detent()
     func pencilTargetAcquired()
     func pencilRotationCommitted()
     func warning()
@@ -35,41 +36,41 @@ protocol ARPlacementFeedbackProviding: AnyObject {
 }
 
 @MainActor
-final class SystemARPlacementFeedback: ARPlacementFeedbackProviding {
-    static let shared = SystemARPlacementFeedback()
-
-    private init() {}
-
+extension HapticFeedbackManager: ARPlacementFeedbackProviding {
     func selectionChanged() {
-        UISelectionFeedbackGenerator().selectionChanged()
+        play(.selection)
     }
 
     func dragStarted() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.7)
+        play(.dragStarted)
     }
 
     func placementSucceeded() {
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        play(.placementCompleted)
     }
 
     func boundaryReached() {
-        UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: 0.65)
+        play(.boundaryReached)
+    }
+
+    func detent() {
+        play(.detent)
     }
 
     func pencilTargetAcquired() {
-        UISelectionFeedbackGenerator().selectionChanged()
+        play(.pencilTargetAcquired)
     }
 
     func pencilRotationCommitted() {
-        UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.65)
+        play(.pencilRotationCompleted)
     }
 
     func warning() {
-        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        play(.warning)
     }
 
     func error() {
-        UINotificationFeedbackGenerator().notificationOccurred(.error)
+        play(.error)
     }
 }
 
@@ -79,6 +80,7 @@ struct NewARPlacementView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(HapticFeedbackManager.self) private var haptics
 
     @State private var selectedContentType = PlacementContentType.doodle
     @State private var selectedCutoutID: CutoutAsset.ID?
@@ -111,20 +113,10 @@ struct NewARPlacementView: View {
 
     private let initialCutoutID: CutoutAsset.ID?
     private let maximumObjectCount = 20
-    private let feedback: any ARPlacementFeedbackProviding
+    private var feedback: any ARPlacementFeedbackProviding { haptics }
 
     init(initialCutoutID: CutoutAsset.ID? = nil) {
         self.initialCutoutID = initialCutoutID
-        feedback = SystemARPlacementFeedback.shared
-        _selectedCutoutID = State(initialValue: initialCutoutID)
-    }
-
-    init(
-        initialCutoutID: CutoutAsset.ID? = nil,
-        feedback: any ARPlacementFeedbackProviding
-    ) {
-        self.initialCutoutID = initialCutoutID
-        self.feedback = feedback
         _selectedCutoutID = State(initialValue: initialCutoutID)
     }
 
@@ -834,6 +826,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var lightingAnchor: AnchorEntity?
     private var statusResetTask: Task<Void, Never>?
     private var isTargetAcquired = false
+    private var hasProvidedSurfaceReadyFeedback = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
     private var hasPlacedObject = false
@@ -1101,6 +1094,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         lastValidNormal = normal
         if !isTargetAcquired {
             isTargetAcquired = true
+            if !hasProvidedSurfaceReadyFeedback {
+                hasProvidedSurfaceReadyFeedback = true
+                feedback.selectionChanged()
+            }
             updateStatusIfScanning(.ready)
         }
         updateFocusVisibility()
@@ -1716,6 +1713,8 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
     private var initialOrientation = simd_quatf()
     private var didReachLowerScaleBound = false
     private var didReachUpperScaleBound = false
+    private var previousScaleForDetents: Float?
+    private var lastRotationDetent = 0
     private var isPencilInteractionActive = false
 
     init(controller: NewARSceneController, feedback: any ARPlacementFeedbackProviding) {
@@ -1871,15 +1870,18 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
             initialScale = selectedObject.interactionRoot.scale
             didReachLowerScaleBound = false
             didReachUpperScaleBound = false
+            previousScaleForDetents = initialScale.x
             begin(.scale)
         case .changed:
             let rawScale = initialScale.x * Float(recognizer.scale)
             let displayedScale = rubberBandedScale(rawScale)
             selectedObject.interactionRoot.scale = SIMD3(repeating: displayedScale)
             provideBoundaryFeedback(for: rawScale)
+            provideScaleDetentFeedback(for: rawScale)
         case .ended, .cancelled, .failed:
             let clamped = min(max(selectedObject.interactionRoot.scale.x, 0.25), 4)
             selectedObject.interactionRoot.scale = SIMD3(repeating: clamped)
+            previousScaleForDetents = nil
             end(.scale)
         default:
             break
@@ -1892,11 +1894,13 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         switch recognizer.state {
         case .began:
             initialOrientation = selectedObject.interactionRoot.orientation(relativeTo: nil)
+            lastRotationDetent = 0
             begin(.rotation)
         case .changed:
             let axis = simd_normalize(selectedObject.supportSurfaceNormal)
             let rotation = simd_quatf(angle: -Float(recognizer.rotation), axis: axis)
             selectedObject.interactionRoot.setOrientation(rotation * initialOrientation, relativeTo: nil)
+            provideRotationDetentFeedback(for: Float(recognizer.rotation))
         case .ended, .cancelled, .failed:
             end(.rotation)
         default:
@@ -1944,6 +1948,31 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         } else if rawScale <= 4 {
             didReachUpperScaleBound = false
         }
+    }
+
+    private func provideScaleDetentFeedback(for rawScale: Float) {
+        guard let previousScaleForDetents else {
+            self.previousScaleForDetents = rawScale
+            return
+        }
+
+        let milestones: [Float] = [0.5, 1, 2]
+        let crossedMilestone = milestones.contains { milestone in
+            (previousScaleForDetents < milestone && rawScale >= milestone)
+                || (previousScaleForDetents > milestone && rawScale <= milestone)
+        }
+        if crossedMilestone {
+            feedback.detent()
+        }
+        self.previousScaleForDetents = rawScale
+    }
+
+    private func provideRotationDetentFeedback(for rotation: Float) {
+        let radiansPerDetent = Float.pi / 12
+        let detent = Int((rotation / radiansPerDetent).rounded(.towardZero))
+        guard detent != lastRotationDetent else { return }
+        lastRotationDetent = detent
+        feedback.detent()
     }
 
     private func cancel(_ recognizer: UIGestureRecognizer) {
