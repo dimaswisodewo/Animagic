@@ -696,6 +696,7 @@ private struct ARPressButtonStyle: ButtonStyle {
 struct VerticalARObjectShelf: View {
     @Binding var contentType: PlacementContentType
     let cutoutAssets: [CutoutAsset]
+    let titleForCutout: (CutoutAsset) -> String
     @Binding var selectedCutoutID: CutoutAsset.ID?
     @Binding var selectedModelID: PlaceableUSDZModel.ID?
     let canPlace: Bool
@@ -767,12 +768,13 @@ struct VerticalARObjectShelf: View {
         } else {
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(cutoutAssets) { asset in
+                    let title = titleForCutout(asset)
                     Button {
                         selectedCutoutID = asset.id
                         onSelectionFeedback()
                     } label: {
                         ARSelectionCard(
-                            title: asset.resolvedDoodleLabel?.capitalized ?? "My Doodle",
+                            title: title,
                             isSelected: selectedCutoutID == asset.id
                         ) {
                             Image(uiImage: asset.image)
@@ -782,7 +784,7 @@ struct VerticalARObjectShelf: View {
                         }
                     }
                     .buttonStyle(ARPressButtonStyle())
-                    .accessibilityLabel(asset.resolvedDoodleLabel?.capitalized ?? "Doodle")
+                    .accessibilityLabel(title)
                     .accessibilityAddTraits(selectedCutoutID == asset.id ? .isSelected : [])
                 }
             }

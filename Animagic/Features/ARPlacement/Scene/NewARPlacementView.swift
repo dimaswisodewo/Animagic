@@ -373,6 +373,7 @@ struct NewARPlacementView: View {
                         VerticalARObjectShelf(
                             contentType: $selectedContentType,
                             cutoutAssets: artworkStore.cutoutLibrary,
+                            titleForCutout: titleForCutout,
                             selectedCutoutID: $selectedCutoutID,
                             selectedModelID: $selectedModelID,
                             canPlace: canPlace,
@@ -445,6 +446,15 @@ struct NewARPlacementView: View {
         case .model:
             return selectedModelID != nil
         }
+    }
+
+    private func titleForCutout(_ cutout: CutoutAsset) -> String {
+        guard let drawing = artworkStore.drawing(id: cutout.sourceDrawingID) else {
+            return "My Doodle"
+        }
+
+        let title = drawing.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return title.isEmpty ? "My Doodle" : title
     }
 
     private var placeButtonTitle: String {
