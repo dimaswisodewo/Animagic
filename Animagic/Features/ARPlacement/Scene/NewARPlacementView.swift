@@ -6,6 +6,7 @@
 //
 
 import ARKit
+import os
 import RealityKit
 import SwiftUI
 import UIKit
@@ -18,8 +19,6 @@ enum NewARSceneCommand: Equatable {
     case undoDelete(UUID)
     case discardUndo(UUID)
     case cancelPencilInteraction(UUID)
-    case pauseSession(UUID)
-    case resumeSession(UUID)
     case capturePhoto(UUID)
 }
 
@@ -116,7 +115,7 @@ struct NewARPlacementView: View {
     @State private var immersiveHintTask: Task<Void, Never>?
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
-    @State private var isBackpackExpanded = false
+    @State private var isBackpackExpanded = true
     @State private var hasFoundInitialSurface = false
     @State private var isCapturingPhoto = false
     @State private var isShowingCaptureFlash = false
@@ -127,6 +126,9 @@ struct NewARPlacementView: View {
     @AppStorage("hasCompletedARPencilRotation") private var hasCompletedPencilRotation = false
     @State private var pencilHint: String?
     @State private var pencilHintTask: Task<Void, Never>?
+    @State private var returnRecoveryState = ARReturnRecoveryState()
+    @State private var recoveryFallbackTask: Task<Void, Never>?
+    @State private var didLeaveActiveScene = false
 
     private enum CameraPermissionState {
         case checking
@@ -139,7 +141,6 @@ struct NewARPlacementView: View {
         static let iconButtonDiameter: CGFloat = 84
         static let backpackTopGap: CGFloat = 12
         static let backpackMinimumHeight: CGFloat = 220
-        static let backpackButtonBottomInset: CGFloat = 32
     }
 
     private let initialCutoutID: CutoutAsset.ID?
@@ -172,7 +173,13 @@ struct NewARPlacementView: View {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 checkCameraPermission()
+                if didLeaveActiveScene {
+                    didLeaveActiveScene = false
+                    beginReturnRecovery()
+                }
             } else {
+                didLeaveActiveScene = true
+                updateARReadiness(.unavailable)
                 sceneCommand = .cancelPencilInteraction(UUID())
             }
         }
@@ -199,12 +206,15 @@ struct NewARPlacementView: View {
                 objectCount: $objectCount,
                 undoAvailable: $undoAvailable,
                 command: sceneCommand,
+                isAppSceneActive: scenePhase == .active,
                 isImmersive: isImmersive,
                 onExitImmersive: exitImmersive,
                 onPencilTargetHovered: showPencilCoachMark,
                 onPencilTargetMissing: showPencilTargetHint,
                 onPencilRotationCompleted: completePencilCoachMark,
                 onPhotoCaptured: handlePhotoCaptureResult,
+                onReadinessChanged: updateARReadiness,
+                onSessionInterrupted: handleARSessionInterruption,
                 feedback: feedback
             )
             .ignoresSafeArea()
@@ -240,6 +250,15 @@ struct NewARPlacementView: View {
                 }
                 .padding(.bottom, 24)
             }
+
+            if returnRecoveryState.showsRecoveryOverlay {
+                ARReturnRecoveryView(
+                    showsActions: returnRecoveryState.showsFallbackActions,
+                    onKeepTrying: keepTryingRecovery,
+                    onExit: exitARFromRecovery
+                )
+                .transition(.opacity)
+            }
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: undoAvailable)
@@ -247,6 +266,10 @@ struct NewARPlacementView: View {
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: showsImmersiveHint)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelExit, value: hasFoundInitialSurface)
         .animation(.easeOut(duration: 0.12), value: isShowingCaptureFlash)
+        .animation(
+            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance,
+            value: returnRecoveryState.phase
+        )
         .navigationBarHidden(true)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -267,6 +290,10 @@ struct NewARPlacementView: View {
                 hasFoundInitialSurface = true
             }
         }
+        .onChange(of: placedObjectSelection?.objectID) { _, selectedObjectID in
+            guard selectedObjectID != nil, isBackpackExpanded else { return }
+            setBackpackExpanded(false)
+        }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
             guard isAvailable else { return }
@@ -282,6 +309,7 @@ struct NewARPlacementView: View {
             pencilHintTask?.cancel()
             captureFlashTask?.cancel()
             captureMessageTask?.cancel()
+            recoveryFallbackTask?.cancel()
         }
         .alert("Camera", isPresented: captureErrorIsPresented) {
             Button("OK", role: .cancel) {}
@@ -328,6 +356,7 @@ struct NewARPlacementView: View {
                             undoDismissTask?.cancel()
                             sceneCommand = .undoDelete(UUID())
                         }
+                        .allowsHitTesting(returnRecoveryState.readiness.allowsInteraction)
                         .transition(transientBottomTransition)
                     }
 
@@ -428,7 +457,7 @@ struct NewARPlacementView: View {
     private var bottomControlBar: some View {
         HStack(alignment: .bottom) {
             Group {
-                if let placedObjectSelection {
+                if let placedObjectSelection, !isBackpackExpanded {
                     NewAREditCard(
                         selection: placedObjectSelection,
                         animalLocomotion: locomotionSelection,
@@ -442,8 +471,10 @@ struct NewARPlacementView: View {
                         onDone: { sceneCommand = .clearSelection(UUID()) },
                         onDelete: { sceneCommand = .delete(UUID()) }
                     )
+                    .allowsHitTesting(returnRecoveryState.readiness.allowsInteraction)
+                    .opacity(returnRecoveryState.readiness.allowsInteraction ? 1 : 0.55)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                } else {
+                } else if placedObjectSelection == nil {
                     AnimagicLabelButton(
                         title: placeButtonTitle,
                         backgroundColor: AnimagicTheme.blue,
@@ -462,18 +493,37 @@ struct NewARPlacementView: View {
     }
 
     private func backpackControl(height: CGFloat) -> some View {
-        HStack(alignment: .bottom, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
             BackpackTabButton(
-                isOpen: $isBackpackExpanded,
+                isOpen: backpackExpansion,
                 backgroundColor: AnimagicTheme.orange,
                 innerBorderColor: Color.Palette.o400
             )
-            .padding(.bottom, Layout.backpackButtonBottomInset)
 
             if isBackpackExpanded {
                 backpackSidebar(height: height)
                     .transition(sidePanelTransition)
             }
+        }
+        .frame(height: height)
+    }
+
+    private var backpackExpansion: Binding<Bool> {
+        Binding(
+            get: { isBackpackExpanded },
+            set: { setBackpackExpanded($0) }
+        )
+    }
+
+    private func setBackpackExpanded(_ isExpanded: Bool) {
+        guard isBackpackExpanded != isExpanded else { return }
+
+        if isExpanded, placedObjectSelection != nil {
+            sceneCommand = .clearSelection(UUID())
+        }
+
+        withAnimation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.sidebar) {
+            isBackpackExpanded = isExpanded
         }
     }
 
@@ -495,11 +545,39 @@ struct NewARPlacementView: View {
                 feedback.selectionChanged()
             },
             onItemTapped: selectBackpackItem,
+            emptyContent: { tab in
+                backpackEmptyContent(for: tab)
+            },
             itemContent: { itemID in
                 backpackItemContent(for: itemID)
             }
         )
         .frame(width: backpackShelfWidth, height: height)
+    }
+
+    private func backpackEmptyContent(for tab: String) -> AnyView {
+        guard tab == "Doodle" else {
+            return AnyView(
+                AnimagicEmptyState(
+                    icon: "shippingbox.fill",
+                    title: "Nothing Here Yet",
+                    message: "There are no items in this section.",
+                    isCompact: true
+                )
+            )
+        }
+
+        return AnyView(
+            AnimagicEmptyState(
+                icon: "paintbrush.pointed.fill",
+                title: "No Doodles Yet",
+                message: "Draw a doodle for your backpack, or choose a 3D Model.",
+                actionTitle: "Draw a Doodle",
+                actionIcon: "paintbrush.fill",
+                isCompact: true,
+                action: presentCanvas
+            )
+        )
     }
 
     private var backpackTabs: [String] {
@@ -700,7 +778,7 @@ struct NewARPlacementView: View {
 
     private func presentCanvas() {
         drawingSession.clearPendingARCutout()
-        sceneCommand = .pauseSession(UUID())
+        sceneCommand = .cancelPencilInteraction(UUID())
         router.presentFullScreenCover(.canvas)
     }
 
@@ -777,7 +855,49 @@ struct NewARPlacementView: View {
                 selectedAnimalLocomotion = suggested
             }
         }
-        sceneCommand = .resumeSession(UUID())
+        beginReturnRecovery()
+    }
+
+    private func updateARReadiness(_ readiness: ARTrackingReadiness) {
+        returnRecoveryState.updateReadiness(readiness)
+        if !returnRecoveryState.showsRecoveryOverlay {
+            recoveryFallbackTask?.cancel()
+            recoveryFallbackTask = nil
+        }
+    }
+
+    private func handleARSessionInterruption() {
+        updateARReadiness(.unavailable)
+        sceneCommand = .cancelPencilInteraction(UUID())
+        if !router.presentedFullScreenCovers.contains(.canvas) {
+            beginReturnRecovery()
+        }
+    }
+
+    private func beginReturnRecovery() {
+        returnRecoveryState.requireRecovery()
+        scheduleRecoveryFallbackIfNeeded()
+    }
+
+    private func keepTryingRecovery() {
+        returnRecoveryState.keepTrying()
+        scheduleRecoveryFallbackIfNeeded()
+    }
+
+    private func scheduleRecoveryFallbackIfNeeded() {
+        recoveryFallbackTask?.cancel()
+        guard returnRecoveryState.phase == .recovering else { return }
+        recoveryFallbackTask = Task {
+            try? await Task.sleep(for: .seconds(10))
+            guard !Task.isCancelled else { return }
+            returnRecoveryState.revealFallbackActions()
+        }
+    }
+
+    private func exitARFromRecovery() {
+        recoveryFallbackTask?.cancel()
+        recoveryFallbackTask = nil
+        router.popToRoot()
     }
 
     private func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
@@ -803,50 +923,73 @@ struct NewARPlacementView: View {
     }
 
     private var cameraDeniedView: some View {
-        ZStack {
-            Color.black.opacity(0.35)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                Image(systemName: "camera.fill")
-                    .font(.system(size: 40, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .padding()
-                    .background(Color.secondary.opacity(0.12), in: Circle())
-                
-                VStack(spacing: 8) {
-                    Text("Camera Access Required")
-                        .font(.title3.weight(.bold))
-                    Text("AniMagic needs camera access to place your doodles in AR. Please enable it in Settings.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 16)
-                }
-                
-                VStack(spacing: 12) {
-                    Button("Open Settings") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(url)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack {
+                    VStack(spacing: 22) {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 44, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 84, height: 84)
+                            .background(AnimagicTheme.orange, in: Circle())
+                            .overlay {
+                                Circle()
+                                    .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+                            }
+
+                        VStack(spacing: 8) {
+                            Text("Camera Access Required")
+                                .font(.custom("Belanosima-SemiBold", size: 32, relativeTo: .title2))
+                                .foregroundStyle(AnimagicTheme.darkNavy)
+                                .multilineTextAlignment(.center)
+                                .accessibilityAddTraits(.isHeader)
+
+                            Text("AniMagic needs camera access to place your doodles in AR. Enable it in Settings, then return to AniMagic.")
+                                .font(.custom("Belanosima-Regular", size: 20, relativeTo: .body))
+                                .foregroundStyle(Color.Token.Text.secondary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        VStack(spacing: 8) {
+                            AnimagicLabelButton(
+                                title: "Open Settings",
+                                icon: "gearshape.fill",
+                                backgroundColor: AnimagicTheme.orange,
+                                innerBorderColor: Color.Palette.o400,
+                                action: openAppSettings
+                            )
+
+                            AnimagicLabelButton(
+                                title: "Go Back",
+                                icon: "chevron.left",
+                                backgroundColor: AnimagicTheme.blue,
+                                innerBorderColor: Color.Palette.b400,
+                                action: dismiss.callAsFunction
+                            )
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    
-                    Button("Back to Canvas") {
-                        dismiss()
+                    .padding(28)
+                    .frame(maxWidth: 520)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
+                    .shadow(color: AnimagicTheme.darkNavy.opacity(0.18), radius: 16, y: 6)
+                    .padding(24)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: geometry.size.height)
             }
-            .padding(32)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: .black.opacity(0.15), radius: 15)
-            .padding(24)
-            .frame(maxWidth: 360)
+            .background(AnimagicTheme.yellow)
         }
+        .ignoresSafeArea()
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 
@@ -864,12 +1007,15 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     @Binding var objectCount: Int
     @Binding var undoAvailable: Bool
     let command: NewARSceneCommand?
+    let isAppSceneActive: Bool
     let isImmersive: Bool
     let onExitImmersive: () -> Void
     let onPencilTargetHovered: () -> Void
     let onPencilTargetMissing: () -> Void
     let onPencilRotationCompleted: () -> Void
     let onPhotoCaptured: (Result<UIImage, Error>) -> Void
+    let onReadinessChanged: (ARTrackingReadiness) -> Void
+    let onSessionInterrupted: () -> Void
     let feedback: any ARPlacementFeedbackProviding
 
     func makeCoordinator() -> NewARSceneController {
@@ -888,7 +1034,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onPencilTargetHovered: onPencilTargetHovered,
             onPencilTargetMissing: onPencilTargetMissing,
             onPencilRotationCompleted: onPencilRotationCompleted,
-            onPhotoCaptured: onPhotoCaptured
+            onPhotoCaptured: onPhotoCaptured,
+            onReadinessChanged: onReadinessChanged,
+            onSessionInterrupted: onSessionInterrupted
         )
     }
 
@@ -915,6 +1063,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onPencilTargetMissing = onPencilTargetMissing
         controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.onPhotoCaptured = onPhotoCaptured
+        controller.onReadinessChanged = onReadinessChanged
+        controller.onSessionInterrupted = onSessionInterrupted
+        controller.setAppSceneActive(isAppSceneActive)
         controller.setImmersive(isImmersive)
 
         if let selectedObjectAnimalLocomotion,
@@ -993,6 +1144,11 @@ private struct PencilRotationSession {
 
 @MainActor
 final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
+    private static let signposter = OSSignposter(
+        subsystem: "com.DirouDough.AniMagic",
+        category: "AR Doodle Placement"
+    )
+
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
         set {
@@ -1011,11 +1167,17 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 pendingDeletion = nil
                 onUndoAvailabilityChanged?(false)
             }
+            scheduleSelectedDoodlePreparation()
         }
     }
     var selectedCutoutID: CutoutAsset.ID? {
         get { sceneEditor.selectedCutoutID }
-        set { sceneEditor.selectedCutoutID = newValue }
+        set {
+            guard sceneEditor.selectedCutoutID != newValue else { return }
+            sceneEditor.selectedCutoutID = newValue
+            preparedCutoutID = nil
+            scheduleSelectedDoodlePreparation()
+        }
     }
     var selectedAnimalLocomotion: AnimalLocomotion {
         get { sceneEditor.selectedAnimalLocomotion }
@@ -1023,7 +1185,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
     var selectedContentType: PlacementContentType {
         get { sceneEditor.selectedContentType }
-        set { sceneEditor.selectedContentType = newValue }
+        set {
+            guard sceneEditor.selectedContentType != newValue else { return }
+            sceneEditor.selectedContentType = newValue
+            scheduleSelectedDoodlePreparation()
+        }
     }
     var selectedModelID: PlaceableUSDZModel.ID? {
         get { sceneEditor.selectedModelID }
@@ -1047,13 +1213,19 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var focusAnchor: AnchorEntity?
     private var lightingAnchor: AnchorEntity?
     private var statusResetTask: Task<Void, Never>?
+    private var preparationTask: Task<Void, Never>?
+    private var preparationGeneration = 0
+    private var preparingCutoutID: CutoutAsset.ID?
+    private var preparedCutoutID: CutoutAsset.ID?
     private var isTargetAcquired = false
+    private var isTrackingNormal = false
+    private var isSessionInterrupted = false
+    private var isAppSceneActive = true
     private var hasProvidedSurfaceReadyFeedback = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
     private var hasPlacedObject = false
     private var isImmersive = false
-    private(set) var isSessionPaused = false
 
     var handledCommand: NewARSceneCommand?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
@@ -1065,12 +1237,27 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var onPencilTargetMissing: (() -> Void)?
     var onPencilRotationCompleted: (() -> Void)?
     var onPhotoCaptured: ((Result<UIImage, Error>) -> Void)?
+    var onReadinessChanged: ((ARTrackingReadiness) -> Void)?
+    var onSessionInterrupted: (() -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
     var placedObjectSelection: PlacedObjectSelection? { sceneEditor.placedObjectSelection }
     var isShowingImmersiveUI: Bool { isImmersive }
     var isPencilRotating: Bool { pencilRotationSession != nil }
+    var isInteractionReady: Bool {
+        isTrackingNormal && isTargetAcquired && !isSessionInterrupted && isAppSceneActive
+    }
+
+    private var isPlacementReady: Bool {
+        guard isInteractionReady else { return false }
+        switch selectedContentType {
+        case .doodle:
+            return selectedCutoutID != nil && preparedCutoutID == selectedCutoutID
+        case .model:
+            return true
+        }
+    }
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -1087,7 +1274,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onPencilTargetHovered: (() -> Void)? = nil,
         onPencilTargetMissing: (() -> Void)? = nil,
         onPencilRotationCompleted: (() -> Void)? = nil,
-        onPhotoCaptured: ((Result<UIImage, Error>) -> Void)? = nil
+        onPhotoCaptured: ((Result<UIImage, Error>) -> Void)? = nil,
+        onReadinessChanged: ((ARTrackingReadiness) -> Void)? = nil,
+        onSessionInterrupted: (() -> Void)? = nil
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
@@ -1107,6 +1296,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.onPencilTargetMissing = onPencilTargetMissing
         self.onPencilRotationCompleted = onPencilRotationCompleted
         self.onPhotoCaptured = onPhotoCaptured
+        self.onReadinessChanged = onReadinessChanged
+        self.onSessionInterrupted = onSessionInterrupted
         super.init()
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
@@ -1152,6 +1343,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         pencilInteractionAdapter = pencilAdapter
         updateStatus(.searching)
         onObjectCountChanged?(0)
+        notifyReadinessChanged()
+        scheduleSelectedDoodlePreparation()
     }
 
     private func setupLighting(in arView: ARView) {
@@ -1198,10 +1391,13 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func handle(_ command: NewARSceneCommand) {
         switch command {
         case .place:
+            guard isPlacementReady else { return }
             placeAtFocus()
         case .clearSelection:
+            guard isInteractionReady else { return }
             clearSelection()
         case .delete:
+            guard isInteractionReady else { return }
             cancelPencilRotation()
             pendingDeletion = deleteSelectedObject()
             let hasUndo = pendingDeletion != nil
@@ -1209,8 +1405,10 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             onUndoAvailabilityChanged?(hasUndo)
             onObjectCountChanged?(sceneEditor.objectCount)
         case .flipFacing:
+            guard isInteractionReady else { return }
             flipSelectedObjectAnimalFacing()
         case .undoDelete:
+            guard isInteractionReady else { return }
             guard let pendingDeletion else { return }
             restoreDeletedObject(pendingDeletion)
             self.pendingDeletion = nil
@@ -1222,10 +1420,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             onUndoAvailabilityChanged?(false)
         case .cancelPencilInteraction:
             cancelPencilRotation()
-        case .pauseSession:
-            pauseSession()
-        case .resumeSession:
-            resumeSession()
         case .capturePhoto:
             capturePhoto()
         }
@@ -1247,20 +1441,6 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 self.onPhotoCaptured?(.success(image))
             }
         }
-    }
-
-    private func pauseSession() {
-        guard !isSessionPaused else { return }
-        cancelPencilRotation()
-        isSessionPaused = true
-        arView?.session.pause()
-    }
-
-    private func resumeSession() {
-        guard isSessionPaused, let arView else { return }
-        arView.session.run(makeWorldTrackingConfiguration(for: arView))
-        isSessionPaused = false
-        updateStatus(.searching)
     }
 
     private func makeWorldTrackingConfiguration(for arView: ARView) -> ARWorldTrackingConfiguration {
@@ -1316,6 +1496,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 isTargetAcquired = false
                 focusIndicator.isEnabled = false
                 updateStatusIfScanning(.searching)
+                notifyReadinessChanged()
             }
             return
         }
@@ -1344,6 +1525,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
                 feedback.selectionChanged()
             }
             updateStatusIfScanning(.ready)
+            notifyReadinessChanged()
         }
         updateFocusVisibility()
     }
@@ -1357,6 +1539,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         focusAnchor = nil
         focusIndicator = nil
         isTargetAcquired = false
+        notifyReadinessChanged()
     }
 
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
@@ -1387,8 +1570,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func sessionWasInterrupted(_ session: ARSession) {
-        cancelPencilRotation()
-        clearPencilHoverTarget()
+        isSessionInterrupted = true
+        invalidateTrackingReadiness()
+        onSessionInterrupted?()
+    }
+
+    func sessionInterruptionEnded(_ session: ARSession) {
+        isSessionInterrupted = false
+        updateStatus(.limited("Point your device back at the original area and move slowly."))
+        notifyReadinessChanged()
     }
 
     private func makePlaneVisualization(for planeAnchor: ARPlaneAnchor) -> AnchorEntity {
@@ -1427,7 +1617,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     private func placeAtFocus() {
-        guard placedObjectSelection == nil,
+        guard isPlacementReady,
+              placedObjectSelection == nil,
               isTargetAcquired,
               let targetTransform = lastValidTransform,
               let targetNormal = lastValidNormal else {
@@ -1436,6 +1627,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             return
         }
 
+        let signpostState = Self.signposter.beginInterval("Place Doodle at Focus")
+        defer { Self.signposter.endInterval("Place Doodle at Focus", signpostState) }
         let result = sceneEditor.placeOnPlane(
             at: targetTransform.translation,
             normal: targetNormal,
@@ -1476,6 +1669,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func handleTapSelection(on entity: Entity?) -> Bool {
+        guard isInteractionReady else { return false }
         let previousID = placedObjectSelection?.objectID
         let handled = sceneEditor.handleTap(on: entity)
         if handled, placedObjectSelection?.objectID != previousID {
@@ -1485,7 +1679,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func setPencilHoverTarget(at point: CGPoint) {
-        guard !isPencilRotating, let arView else { return }
+        guard isInteractionReady, !isPencilRotating, let arView else { return }
         let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
         let target = sceneEditor.object(containing: entity)
         guard target?.id != pencilHoverTarget?.id else { return }
@@ -1519,7 +1713,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func beginPencilRotation(at point: CGPoint?, rollAngle: Float) {
-        guard pencilRotationSession == nil else { return }
+        guard isInteractionReady, pencilRotationSession == nil else { return }
         if let point {
             setPencilHoverTarget(at: point)
         }
@@ -1544,7 +1738,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func updatePencilRotation(rollAngle: Float) {
-        guard var session = pencilRotationSession else { return }
+        guard isInteractionReady, var session = pencilRotationSession else { return }
         var delta = rollAngle - session.lastRollAngle
         if delta > .pi {
             delta -= 2 * .pi
@@ -1563,7 +1757,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func commitPencilRotation() {
-        guard let session = pencilRotationSession else { return }
+        guard isInteractionReady, let session = pencilRotationSession else { return }
         finishPencilRotation(session: session, restoringOrientation: false)
         feedback.pencilRotationCommitted()
         onPencilRotationCompleted?()
@@ -1699,7 +1893,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         for objectID: UUID,
         isEditing: Bool
     ) {
-        guard selectedObject?.id == objectID else { return }
+        guard isInteractionReady, selectedObject?.id == objectID else { return }
 
         if isEditing {
             if elevationAdjustmentObjectID != objectID {
@@ -1722,32 +1916,39 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        guard isInteractionReady else { return }
         sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
     }
 
     func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        guard isInteractionReady else { return }
         sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
         updateSelectionGroundReference()
     }
 
     func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        guard isInteractionReady else { return }
         sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
     }
 
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
+        guard isInteractionReady else { return }
         sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
     }
 
     func flipSelectedObjectAnimalFacing() {
+        guard isInteractionReady else { return }
         sceneEditor.flipSelectedObjectAnimalFacing()
     }
 
     @discardableResult
     func deleteSelectedObject() -> DeletedSceneObject? {
-        sceneEditor.deleteSelectedObject()
+        guard isInteractionReady else { return nil }
+        return sceneEditor.deleteSelectedObject()
     }
 
     func restoreDeletedObject(_ deletedObject: DeletedSceneObject) {
+        guard isInteractionReady else { return }
         sceneEditor.restoreDeletedObject(deletedObject)
     }
 
@@ -1759,6 +1960,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func stopAnimationLoop() {
         statusResetTask?.cancel()
         statusResetTask = nil
+        preparationTask?.cancel()
+        preparationTask = nil
         setSelectionIndicatorDragging(false)
         pencilInteractionAdapter?.detach()
         pencilInteractionAdapter = nil
@@ -1790,8 +1993,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
 
     private func updateStatusIfScanning(_ newStatus: ARPlacementStatus) {
         switch placementStatus {
-        case .searching, .ready, .placed:
-            updateStatus(newStatus)
+        case .searching, .ready, .loading, .placed:
+            updateStatus(needsSelectedDoodlePreparation ? .loading("Preparing doodle…") : newStatus)
         default:
             break
         }
@@ -1800,13 +2003,115 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         switch camera.trackingState {
         case .normal:
-            updateStatus(isTargetAcquired ? .ready : .searching)
+            isTrackingNormal = true
+            isSessionInterrupted = false
+            updateStatus(
+                needsSelectedDoodlePreparation
+                    ? .loading("Preparing doodle…")
+                    : (isTargetAcquired ? .ready : .searching)
+            )
         case .limited(let reason):
+            isTrackingNormal = false
             updateStatus(.limited(reason.trackingMessage))
         case .notAvailable:
+            isTrackingNormal = false
             updateStatus(.limited("Camera tracking is unavailable."))
             requestExitImmersive()
         }
+        if !isInteractionReady {
+            cancelActiveInteractions()
+        }
+        notifyReadinessChanged()
+    }
+
+    private var needsSelectedDoodlePreparation: Bool {
+        selectedContentType == .doodle
+            && selectedCutoutID != nil
+            && preparedCutoutID != selectedCutoutID
+    }
+
+    private func scheduleSelectedDoodlePreparation() {
+        guard arView != nil else { return }
+
+        guard selectedContentType == .doodle, let selectedCutoutID else {
+            preparationGeneration += 1
+            preparationTask?.cancel()
+            preparationTask = nil
+            preparingCutoutID = nil
+            if case .loading = placementStatus, isTrackingNormal {
+                updateStatus(isTargetAcquired ? .ready : .searching)
+            }
+            return
+        }
+        guard preparedCutoutID != selectedCutoutID,
+              preparingCutoutID != selectedCutoutID else { return }
+
+        preparationGeneration += 1
+        let generation = preparationGeneration
+        preparationTask?.cancel()
+        preparingCutoutID = selectedCutoutID
+        updateStatus(.loading("Preparing doodle…"))
+
+        preparationTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(100))
+            guard !Task.isCancelled,
+                  let self,
+                  self.preparationGeneration == generation,
+                  self.selectedContentType == .doodle,
+                  self.selectedCutoutID == selectedCutoutID else { return }
+
+            do {
+                let preparedID = try self.sceneEditor.prepareSelectedCutout()
+                guard self.preparationGeneration == generation,
+                      self.selectedCutoutID == preparedID else { return }
+                self.preparedCutoutID = preparedID
+                self.preparingCutoutID = nil
+                self.preparationTask = nil
+                if self.isTrackingNormal {
+                    self.updateStatus(self.isTargetAcquired ? .ready : .searching)
+                }
+            } catch {
+                guard self.preparationGeneration == generation else { return }
+                self.preparingCutoutID = nil
+                self.preparationTask = nil
+                self.updateStatus(.failed("This doodle could not be prepared."))
+                self.statusResetTask?.cancel()
+                self.statusResetTask = nil
+            }
+        }
+    }
+
+    private func notifyReadinessChanged() {
+        onReadinessChanged?(ARTrackingReadiness(
+            isTrackingNormal: isTrackingNormal && !isSessionInterrupted && isAppSceneActive,
+            hasSurface: isTargetAcquired
+        ))
+    }
+
+    func setAppSceneActive(_ isActive: Bool) {
+        guard isAppSceneActive != isActive else { return }
+        isAppSceneActive = isActive
+        if isActive {
+            notifyReadinessChanged()
+        } else {
+            invalidateTrackingReadiness()
+        }
+    }
+
+    private func invalidateTrackingReadiness() {
+        isTrackingNormal = false
+        isTargetAcquired = false
+        lastValidTransform = nil
+        lastValidNormal = nil
+        focusIndicator?.isEnabled = false
+        cancelActiveInteractions()
+        notifyReadinessChanged()
+    }
+
+    private func cancelActiveInteractions() {
+        cancelPencilRotation()
+        clearPencilHoverTarget()
+        interactionAdapter?.cancelActiveInteractions()
     }
 }
 
@@ -1930,8 +2235,7 @@ final class ARPlacementSystem: System {
         context.scene.performQuery(Self.query).forEach { entity in
             guard let component = entity.components[ARPlacementComponent.self],
                   let arView = component.arView,
-                  let controller = component.controller,
-                  !controller.isSessionPaused else { return }
+                  let controller = component.controller else { return }
             controller.updateSimulation(deltaTime: deltaTime)
             controller.updateFocusIndicator(in: arView, focusAnchor: entity)
         }
@@ -2009,9 +2313,21 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         isPencilInteractionActive = isActive
     }
 
+    func cancelActiveInteractions() {
+        recognizers.forEach {
+            $0.isEnabled = false
+            $0.isEnabled = true
+        }
+        activeManipulations.removeAll()
+        resetDragState()
+        controller?.setSelectionIndicatorDragging(false)
+        controller?.selectedObject?.setInteractionPaused(false)
+        isPencilInteractionActive = false
+    }
+
     @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
         guard !isPencilInteractionActive else { return }
-        guard let arView, let controller else { return }
+        guard let arView, let controller, controller.isInteractionReady else { return }
         let point = recognizer.location(in: arView)
         let entity = arView.hitTest(point, query: .nearest, mask: .interactable).first?.entity
         if entity == nil {
@@ -2027,7 +2343,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
 
     @objc private func handlePan(_ recognizer: InitialTouchPanGestureRecognizer) {
         guard !isPencilInteractionActive else { return }
-        guard let arView, let controller else { return }
+        guard let arView, let controller, controller.isInteractionReady else { return }
         let point = recognizer.location(in: arView)
 
         switch recognizer.state {
@@ -2109,7 +2425,8 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         guard !isPencilInteractionActive else { return }
-        guard let selectedObject = controller?.selectedObject else { return }
+        guard controller?.isInteractionReady == true,
+              let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:
             initialScale = selectedObject.interactionRoot.scale
@@ -2135,7 +2452,8 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
 
     @objc private func handleRotation(_ recognizer: UIRotationGestureRecognizer) {
         guard !isPencilInteractionActive else { return }
-        guard let selectedObject = controller?.selectedObject else { return }
+        guard controller?.isInteractionReady == true,
+              let selectedObject = controller?.selectedObject else { return }
         switch recognizer.state {
         case .began:
             initialOrientation = selectedObject.interactionRoot.orientation(relativeTo: nil)
@@ -2238,6 +2556,10 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
         let pair = [gestureRecognizer, otherGestureRecognizer]
         return pair.contains(where: { $0 is UIPinchGestureRecognizer })
             && pair.contains(where: { $0 is UIRotationGestureRecognizer })
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        controller?.isInteractionReady == true && !isPencilInteractionActive
     }
 }
 

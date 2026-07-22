@@ -599,7 +599,7 @@ private struct ARHeightControl: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Label("Height", systemImage: "arrow.up.and.down")
+                Label("Elevation", systemImage: "arrow.up.and.down")
                     .font(.custom("Belanosima-SemiBold", size: 19))
 
                 Spacer()

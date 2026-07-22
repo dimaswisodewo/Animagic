@@ -216,20 +216,14 @@ struct CanvasPageView: View {
 
         let emptyDrawing = PKDrawing()
         canvasView.drawing = emptyDrawing
-        drawingSession.drawing = emptyDrawing
+        drawingSession.startNewDrawing()
+        documentTitle = ""
+        isDocumentTitleManuallyEdited = false
         hasDrawing = false
         hasPlayedFirstStrokeFeedback = false
         classificationError = nil
         failedCutoutID = nil
         haptics.play(.drawingCleared)
-
-        guard let activeDrawingID = drawingSession.activeDrawingID else { return }
-        artworkStore.saveActiveDrawing(
-            id: activeDrawingID,
-            name: documentTitle.trimmingCharacters(in: .whitespacesAndNewlines),
-            drawing: emptyDrawing,
-            isNameManuallyEdited: isDocumentTitleManuallyEdited
-        ) { _ in }
     }
 
     private func scheduleDraftAutosave() {

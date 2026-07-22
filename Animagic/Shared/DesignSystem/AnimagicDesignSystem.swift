@@ -18,6 +18,7 @@ enum AnimagicTheme {
 enum AnimagicMotion {
     static let press = Animation.easeOut(duration: 0.14)
     static let selection = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.2)
+    static let sidebar = Animation.spring(response: 0.35, dampingFraction: 1, blendDuration: 0.1)
     static let panelEntrance = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.24)
     static let panelExit = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.18)
     static let reduced = Animation.easeOut(duration: 0.16)
@@ -125,6 +126,71 @@ struct AnimagicLabelButton: View {
         .buttonStyle(.animagicPress)
         .opacity(isDimmed ? 0.55 : 1)
         .disabled(isDisabled)
+    }
+}
+
+struct AnimagicEmptyState: View {
+    let icon: String
+    let title: String
+    let message: String
+    var actionTitle: String? = nil
+    var actionIcon: String? = nil
+    var actionColor: Color = AnimagicTheme.orange
+    var isCompact = false
+    var action: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(spacing: isCompact ? 14 : 20) {
+            Image(systemName: icon)
+                .font(.system(size: isCompact ? 34 : 44, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: isCompact ? 68 : 84, height: isCompact ? 68 : 84)
+                .background(AnimagicTheme.blue, in: Circle())
+                .overlay {
+                    Circle()
+                        .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+                }
+
+            VStack(spacing: 8) {
+                Text(title)
+                    .font(.custom(
+                        "Belanosima-SemiBold",
+                        size: isCompact ? 24 : 32,
+                        relativeTo: isCompact ? .title3 : .title2
+                    ))
+                    .foregroundStyle(AnimagicTheme.darkNavy)
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+
+                Text(message)
+                    .font(.custom(
+                        "Belanosima-Regular",
+                        size: isCompact ? 17 : 20,
+                        relativeTo: .body
+                    ))
+                    .foregroundStyle(Color.Token.Text.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let actionTitle, let action {
+                AnimagicLabelButton(
+                    title: actionTitle,
+                    icon: actionIcon,
+                    backgroundColor: actionColor,
+                    innerBorderColor: AnimagicTheme.darkNavy.opacity(0.3),
+                    action: action
+                )
+            }
+        }
+        .padding(isCompact ? 18 : 28)
+        .frame(maxWidth: 460)
+        .background(.white, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(AnimagicTheme.darkNavy, lineWidth: 4)
+        }
+        .shadow(color: AnimagicTheme.darkNavy.opacity(0.14), radius: 12, y: 5)
     }
 }
 

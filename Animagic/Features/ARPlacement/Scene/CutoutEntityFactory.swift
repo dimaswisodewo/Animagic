@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 import RealityKit
 import UIKit
 
@@ -22,9 +23,16 @@ struct CutoutEntityParts {
 }
 
 final class CutoutEntityFactory {
+    private static let signposter = OSSignposter(
+        subsystem: "com.DirouDough.AniMagic",
+        category: "AR Doodle Placement"
+    )
+
     private let shadowFactory: ShadowEntityFactory
+    private var rigCache: [CutoutAsset.ID: CutoutRigDescriptor] = [:]
     private var textureCache: [CutoutAsset.ID: TexturePair] = [:]
     private var meshCache: [MeshKey: MeshResource] = [:]
+    private var materialTemplate: CustomMaterial?
 
     private struct MeshKey: Hashable {
         let width: Int
@@ -38,8 +46,25 @@ final class CutoutEntityFactory {
         let back: TextureResource
     }
 
-    init(shadowFactory: ShadowEntityFactory = ShadowEntityFactory()) {
-        self.shadowFactory = shadowFactory
+    init(shadowFactory: ShadowEntityFactory? = nil) {
+        self.shadowFactory = shadowFactory ?? ShadowEntityFactory()
+    }
+
+    func prepareResources(
+        for asset: CutoutAsset,
+        physicalWidth: Float? = nil
+    ) throws {
+        let signpostState = Self.signposter.beginInterval("Prepare Doodle Resources")
+        defer { Self.signposter.endInterval("Prepare Doodle Resources", signpostState) }
+
+        guard let cgImage = asset.image.cgImage else {
+            throw CutoutEntityFactoryError.invalidImage
+        }
+        let rig = rig(for: asset, cgImage: cgImage)
+        let size = physicalSize(for: asset, cgImage: cgImage, rig: rig, physicalWidth: physicalWidth)
+        _ = try textures(for: asset, cgImage: cgImage)
+        _ = try meshes(width: size.x, height: size.y, visibleBounds: rig.visibleBounds)
+        _ = try deformationMaterialTemplate()
     }
 
     func makeEntity(
@@ -49,28 +74,32 @@ final class CutoutEntityFactory {
         physicalWidth: Float? = nil,
         showsShadow: Bool = true
     ) throws -> CutoutEntityParts {
+        let signpostState = Self.signposter.beginInterval("Assemble Doodle Entity")
+        defer { Self.signposter.endInterval("Assemble Doodle Entity", signpostState) }
+
         guard let cgImage = asset.image.cgImage else {
             throw CutoutEntityFactoryError.invalidImage
         }
 
-        let rig = CutoutRigAnalyzer.analyze(cgImage)
+        let rig = rig(for: asset, cgImage: cgImage)
         let visibleBounds = rig.visibleBounds
-        let pixelWidth = CGFloat(cgImage.width) * visibleBounds.width
-        let pixelHeight = CGFloat(cgImage.height) * visibleBounds.height
-        let aspectRatio = Float(max(pixelWidth / max(pixelHeight, 1), 0.01))
-        let width = physicalWidth ?? asset.defaultPhysicalWidth
-        let height = width / aspectRatio
+        let size = physicalSize(for: asset, cgImage: cgImage, rig: rig, physicalWidth: physicalWidth)
+        let width = size.x
+        let height = size.y
         let phase = Float.random(in: 0...(2 * Float.pi))
         let bodyStyle = AnimalMotionProfileResolver.profile(for: asset).bodyStyle
         let textures = try textures(for: asset, cgImage: cgImage)
-        let frontMaterial = try CutoutDeformationMaterial.make(
+        let materialTemplate = try deformationMaterialTemplate()
+        let frontMaterial = CutoutDeformationMaterial.make(
+            from: materialTemplate,
             texture: textures.front,
             bodyStyle: bodyStyle,
             locomotion: locomotion,
             phase: phase,
             faceDirection: 1
         )
-        let backMaterial = try CutoutDeformationMaterial.make(
+        let backMaterial = CutoutDeformationMaterial.make(
+            from: materialTemplate,
             texture: textures.back,
             bodyStyle: bodyStyle,
             locomotion: locomotion,
@@ -78,24 +107,7 @@ final class CutoutEntityFactory {
             faceDirection: -1
         )
 
-        let meshes = try Dictionary(uniqueKeysWithValues: CutoutRenderQuality.allCases.map { quality in
-            let key = MeshKey(
-                width: Int((width * 10_000).rounded()),
-                height: Int((height * 10_000).rounded()),
-                bounds: [visibleBounds.minX, visibleBounds.minY, visibleBounds.width, visibleBounds.height]
-                    .map { Int(($0 * 1_000).rounded()) },
-                subdivisions: quality.rawValue
-            )
-            if let cached = meshCache[key] { return (quality, cached) }
-            let mesh = try DenseCutoutMesh.generate(
-                width: width,
-                height: height,
-                subdivisions: quality.rawValue,
-                textureBounds: visibleBounds
-            )
-            meshCache[key] = mesh
-            return (quality, mesh)
-        })
+        let meshes = try meshes(width: width, height: height, visibleBounds: visibleBounds)
         guard let mesh = meshes[.balanced] else { throw CutoutEntityFactoryError.invalidImage }
         let frontEntity = ModelEntity(mesh: mesh, materials: [frontMaterial])
         frontEntity.position = [0, height / 2, 0.0005]
@@ -149,6 +161,62 @@ final class CutoutEntityFactory {
             meshes: meshes,
             defaultFacing: rig.defaultFacing
         )
+    }
+
+    private func rig(for asset: CutoutAsset, cgImage: CGImage) -> CutoutRigDescriptor {
+        if let cached = rigCache[asset.id] {
+            return cached
+        }
+        let rig = CutoutRigAnalyzer.analyze(cgImage)
+        rigCache[asset.id] = rig
+        return rig
+    }
+
+    private func physicalSize(
+        for asset: CutoutAsset,
+        cgImage: CGImage,
+        rig: CutoutRigDescriptor,
+        physicalWidth: Float?
+    ) -> SIMD2<Float> {
+        let pixelWidth = CGFloat(cgImage.width) * rig.visibleBounds.width
+        let pixelHeight = CGFloat(cgImage.height) * rig.visibleBounds.height
+        let aspectRatio = Float(max(pixelWidth / max(pixelHeight, 1), 0.01))
+        let width = physicalWidth ?? asset.defaultPhysicalWidth
+        return [width, width / aspectRatio]
+    }
+
+    private func meshes(
+        width: Float,
+        height: Float,
+        visibleBounds: CGRect
+    ) throws -> [CutoutRenderQuality: MeshResource] {
+        try Dictionary(uniqueKeysWithValues: CutoutRenderQuality.allCases.map { quality in
+            let key = MeshKey(
+                width: Int((width * 10_000).rounded()),
+                height: Int((height * 10_000).rounded()),
+                bounds: [visibleBounds.minX, visibleBounds.minY, visibleBounds.width, visibleBounds.height]
+                    .map { Int(($0 * 1_000).rounded()) },
+                subdivisions: quality.rawValue
+            )
+            if let cached = meshCache[key] { return (quality, cached) }
+            let mesh = try DenseCutoutMesh.generate(
+                width: width,
+                height: height,
+                subdivisions: quality.rawValue,
+                textureBounds: visibleBounds
+            )
+            meshCache[key] = mesh
+            return (quality, mesh)
+        })
+    }
+
+    private func deformationMaterialTemplate() throws -> CustomMaterial {
+        if let materialTemplate {
+            return materialTemplate
+        }
+        let template = try CutoutDeformationMaterial.makeTemplate()
+        materialTemplate = template
+        return template
     }
 
     private func textures(for asset: CutoutAsset, cgImage: CGImage) throws -> TexturePair {
