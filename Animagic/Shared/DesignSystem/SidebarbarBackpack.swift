@@ -141,8 +141,8 @@ struct BackpackSidebar: View {
 
     private var shelfShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: 24,
-            bottomLeadingRadius: 24,
+            topLeadingRadius: 40,
+            bottomLeadingRadius: 40,
             bottomTrailingRadius: 0,
             topTrailingRadius: 0
         )
@@ -170,6 +170,7 @@ struct BackpackSidebar: View {
 }
 
 struct BackpackTabButton: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var isOpen: Bool
 
     let backgroundColor: Color
@@ -178,64 +179,46 @@ struct BackpackTabButton: View {
 
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            withAnimation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.sidebar) {
                 isOpen.toggle()
             }
         } label: {
-            Group {
-                if isOpen {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(iconColor)
-                        .frame(width: 72, height: 72)
-                        .background(Circle().fill(backgroundColor))
-                        .overlay {
-                            Circle()
-                                .strokeBorder(Color.white, lineWidth: 6)
-                            Circle()
-                                .strokeBorder(innerBorderColor, lineWidth: 3)
-                                .padding(7)
-                        }
-                } else {
-                    Image(systemName: "backpack.fill")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(iconColor)
-                        .padding(.vertical, 24)
-                        .padding(.horizontal, 20)
-                        .background(
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: 32,
-                                bottomLeadingRadius: 32,
-                                bottomTrailingRadius: 0,
-                                topTrailingRadius: 0
-                            )
-                            .fill(backgroundColor)
-                            .overlay {
-                                UnevenRoundedRectangle(
-                                    topLeadingRadius: 32,
-                                    bottomLeadingRadius: 32,
-                                    bottomTrailingRadius: 0,
-                                    topTrailingRadius: 0
-                                )
-                                .strokeBorder(innerBorderColor, lineWidth: 4)
-                            }
-                        )
+            Image(systemName: isOpen ? "chevron.right" : "backpack.fill")
+                .font(.system(size: isOpen ? 30 : 28, weight: .bold))
+                .foregroundStyle(iconColor)
+                .frame(width: 84, height: 76)
+                .background(backgroundColor, in: tabShape)
+                .overlay {
+                    tabShape
+                        .strokeBorder(Color.white, lineWidth: 6)
+                    tabShape
+                        .strokeBorder(innerBorderColor, lineWidth: 3)
+                        .padding(8)
                 }
-            }
         }
         .buttonStyle(.animagicPress)
         .accessibilityLabel(isOpen ? "Close backpack" : "Open backpack")
-        .padding(.trailing, isOpen ? -20 : -4)
+        .accessibilityHint(isOpen ? "Hides the backpack sidebar" : "Shows the backpack sidebar")
+        .padding(.trailing, -4)
+    }
+
+    private var tabShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: 38,
+            bottomLeadingRadius: 38,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 0
+        )
     }
 }
 
 struct BackpackSidebarViewTest: View {
     @State private var isSidebarOpen: Bool = true
     
-    let myTabs = ["Doodle", "3D"]
+    let myTabs = ["Doodle", "3D Model"]
     let myInventory = [
         "Doodle": ["Doodle 1", "Doodle 2", "Doodle 3", "Doodle 4"],
-        "3D": ["Model 1", "Model 2"],
+        "3D Model": ["Model 1", "Model 2"],
     ]
     
     var body: some View {
@@ -258,16 +241,11 @@ struct BackpackSidebarViewTest: View {
                 .zIndex(1)
 
                 if isSidebarOpen {
-                    // 2. Lempar data (props) ke dalam komponen
                     BackpackSidebar(
                         tabs: myTabs,
-                        items: myInventory,
-                        onItemTapped: { selectedItem in
-                            // Lakukan sesuatu saat item di dalam sidebar diklik
-                            print("User menekan: \(selectedItem)")
-                        }
+                        items: myInventory
                     )
-                    .frame(width: 250)
+                    .frame(width: 360)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }

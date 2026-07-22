@@ -116,7 +116,7 @@ struct NewARPlacementView: View {
     @State private var immersiveHintTask: Task<Void, Never>?
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
-    @State private var isBackpackExpanded = false
+    @State private var isBackpackExpanded = true
     @State private var hasFoundInitialSurface = false
     @State private var isCapturingPhoto = false
     @State private var isShowingCaptureFlash = false
