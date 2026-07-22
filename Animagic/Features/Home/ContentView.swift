@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
-    @State private var isBreathing = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -25,25 +25,29 @@ struct ContentView: View {
                 let scale = min(geometry.size.width, geometry.size.height) / 1024
 
                 TopRightGraphic(scale: scale)
-                    .offset(x: isAnimatingGraphics ? -30 : 20)
-                    .animation(.easeInOut(duration: 3.1).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                    .offset(y: isAnimatingGraphics ? -20 : 25)
-                    .animation(.easeInOut(duration: 4.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(
+                        x: reduceMotion ? 0 : (isAnimatingGraphics ? -12 : 12),
+                        y: reduceMotion ? 0 : (isAnimatingGraphics ? -10 : 10)
+                    )
+                    .animation(backgroundAnimation(duration: 4.2), value: isAnimatingGraphics)
                     .position(x: geometry.size.width - 50, y: 50)
                 
                 BottomLeftGraphic(scale: scale)
-                    .offset(x: isAnimatingGraphics ? 25 : -15)
-                    .animation(.easeInOut(duration: 3.7).repeatForever(autoreverses: true), value: isAnimatingGraphics)
-                    .offset(y: isAnimatingGraphics ? 30 : -20)
-                    .animation(.easeInOut(duration: 2.9).repeatForever(autoreverses: true), value: isAnimatingGraphics)
+                    .offset(
+                        x: reduceMotion ? 0 : (isAnimatingGraphics ? 12 : -12),
+                        y: reduceMotion ? 0 : (isAnimatingGraphics ? 10 : -10)
+                    )
+                    .animation(backgroundAnimation(duration: 4.8), value: isAnimatingGraphics)
                     .position(x: 50, y: geometry.size.height - 50)
 
                 HomeFloatingDecorations()
             }
             .ignoresSafeArea()
             .onAppear {
-                isAnimatingGraphics = true
-                isBreathing = true
+                isAnimatingGraphics = !reduceMotion
+            }
+            .onChange(of: reduceMotion) { _, shouldReduceMotion in
+                isAnimatingGraphics = !shouldReduceMotion
             }
             
             // Main Content
@@ -142,6 +146,11 @@ struct ContentView: View {
                 }
             }
         )
+    }
+
+    private func backgroundAnimation(duration: Double) -> Animation? {
+        guard !reduceMotion else { return nil }
+        return .easeInOut(duration: duration).repeatForever(autoreverses: true)
     }
 }
 

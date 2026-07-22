@@ -63,6 +63,7 @@ struct BackpackHeader: View {
 }
 
 struct BackpackCategoryBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var selectedCategory: ArtworkCategory?
     private let categories: [ArtworkCategory?] = [nil, .underwater, .land, .skies]
 
@@ -95,8 +96,12 @@ struct BackpackCategoryBar: View {
                                 Capsule()
                                     .fill(Color.white)
                             )
+                            .animation(
+                                reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                                value: isSelected
+                            )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.animagicPress)
                 }
             }
             .padding(.horizontal, 24)

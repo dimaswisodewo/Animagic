@@ -87,7 +87,7 @@ struct GuidePopupView: View {
     }
 
     private func dismiss() {
-        withAnimation { isPresented = false }
+        isPresented = false
     }
 
     private static let columns = [GridItem(.flexible()), GridItem(.flexible())]
@@ -106,6 +106,6 @@ private struct GuideAnimalButton: View {
                     .foregroundStyle(.gray)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.animagicPress)
     }
 }

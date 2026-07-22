@@ -29,6 +29,7 @@ enum CanvasCompletionBehavior {
 }
 
 struct CanvasPageView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
@@ -63,7 +64,7 @@ struct CanvasPageView: View {
                         .zIndex(2)
                 }
             }
-            .animation(.easeInOut, value: isGuidePresented)
+            .animation(guideAnimation, value: isGuidePresented)
             .navigationBarHidden(true)
             .ignoresSafeArea(.keyboard)
             .alert("Your canvas is empty", isPresented: $showEmptyCanvasMessage) {
@@ -144,9 +145,22 @@ struct CanvasPageView: View {
                 .frame(width: width)
                 .shadow(radius: 10)
             }
-            .transition(.move(edge: .trailing))
+            .transition(guideTransition)
             .zIndex(1)
         }
+    }
+
+    private var guideAnimation: Animation {
+        if reduceMotion {
+            return AnimagicMotion.reduced
+        }
+        return isGuidePresented ? AnimagicMotion.panelEntrance : AnimagicMotion.panelExit
+    }
+
+    private var guideTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .move(edge: .trailing).combined(with: .opacity)
     }
 
     private func loadDrawing() {

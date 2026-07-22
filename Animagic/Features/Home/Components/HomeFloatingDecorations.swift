@@ -145,11 +145,13 @@ private struct HomeFloatingDecoration: View {
     var body: some View {
         decoration
             .frame(width: size, height: size)
-            .scaleEffect(isAnimating ? 1.08 : 0.92)
-            .rotationEffect(.degrees(isAnimating ? rotation : -rotation))
+            .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.03 : 0.97))
+            .rotationEffect(
+                .degrees(reduceMotion ? 0 : (isAnimating ? rotation : -rotation) * 0.6)
+            )
             .offset(
-                x: isAnimating ? horizontalDrift : -horizontalDrift,
-                y: isAnimating ? -bounceHeight : bounceHeight
+                x: reduceMotion ? 0 : (isAnimating ? horizontalDrift : -horizontalDrift) * 0.6,
+                y: reduceMotion ? 0 : (isAnimating ? -bounceHeight : bounceHeight) * 0.6
             )
             .animation(
                 reduceMotion

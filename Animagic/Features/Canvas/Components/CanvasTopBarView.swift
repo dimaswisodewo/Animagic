@@ -38,9 +38,7 @@ struct CanvasTopBarView: View {
             Spacer()
             
             AnimagicLabelButton(title: "Guide", icon: "book.fill", backgroundColor: AnimagicTheme.orange) {
-                withAnimation {
-                    showGuidePopup = true
-                }
+                showGuidePopup = true
             }
             
             AnimagicLabelButton(title: "Save", icon: "checkmark", backgroundColor: AnimagicTheme.orange, isDisabled: isClassifyingDoodle, isDimmed: !hasDrawing) {

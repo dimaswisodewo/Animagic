@@ -379,25 +379,29 @@ struct NewARPlacementView: View {
                             canPlace: canPlace,
                             placeButtonTitle: placeButtonTitle,
                             onCollapse: {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                withAnimation(
+                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelExit
+                                ) {
                                     isBackpackExpanded = false
                                 }
                             },
                             onPlace: { sceneCommand = .place(UUID()) },
                             onSelectionFeedback: feedback.selectionChanged
                         )
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .transition(sidePanelTransition)
                     } else {
                         AnimagicSideTabButton(
                             icon: "backpack.fill",
                             backgroundColor: AnimagicTheme.orange,
                             action: {
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                withAnimation(
+                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance
+                                ) {
                                     isBackpackExpanded = true
                                 }
                             }
                         )
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .transition(sidePanelTransition)
                         .padding(.bottom, 32)
                     }
                 }
@@ -407,6 +411,12 @@ struct NewARPlacementView: View {
         .padding(.vertical, 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity) // Allow reaching edges
         .ignoresSafeArea(.all, edges: .trailing) // Ignore trailing safe area to sit flush on right edge
+    }
+
+    private var sidePanelTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .move(edge: .trailing).combined(with: .opacity)
     }
 
     private func enterImmersive() {
