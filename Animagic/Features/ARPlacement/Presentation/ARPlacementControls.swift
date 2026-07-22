@@ -212,47 +212,86 @@ struct SelectedObjectToolbar: View {
 struct NewARStatusPill: View {
     let status: ARPlacementStatus
 
-    private var content: (title: String, detail: String, icon: String, color: Color) {
+    private var content: (
+        title: String,
+        detail: String?,
+        icon: String,
+        accentColor: Color
+    ) {
         switch status {
         case .searching:
-            ("Finding a surface", "Move slowly over a floor or table", "viewfinder", .yellow)
+            ("Finding a surface", "Move slowly over a floor or table", "viewfinder", Color.Palette.y400)
         case .ready:
-            ("Ready to place", "Aim the reticle, then tap Place", "checkmark.circle.fill", .green)
+            ("Ready to place", nil, "checkmark.circle.fill", Color.Palette.g400)
         case .loading(let message):
-            ("Getting it ready", message, "hourglass", .yellow)
+            ("Getting it ready", message, "hourglass", Color.Palette.y400)
         case .placed:
-            ("Magic placed!", "Drag, pinch, or twist to adjust it", "sparkles", .green)
+            ("Magic placed!", nil, "sparkles", Color.Palette.g400)
         case .limited(let message):
-            ("Tracking paused", message, "exclamationmark.triangle.fill", .orange)
+            ("Tracking paused", message, "exclamationmark.triangle.fill", Color.Palette.o400)
         case .failed(let message):
-            ("Something went wrong", message, "exclamationmark.circle.fill", .red)
+            ("Something went wrong", message, "exclamationmark.circle.fill", Color.Palette.r400)
         }
     }
 
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: content.icon)
-                .font(.headline)
-                .foregroundStyle(content.color)
-                .frame(width: 28, height: 28)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(content.accentColor)
+                .frame(width: 22, height: 22)
 
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(content.title)
-                    .font(.caption.bold())
-                Text(content.detail)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .font(.custom("Belanosima-SemiBold", size: 17, relativeTo: .headline))
+                if let detail = content.detail {
+                    Text(detail)
+                        .font(.custom("Belanosima-Regular", size: 14, relativeTo: .subheadline))
+                        .foregroundStyle(Color.Palette.n60)
+                        .lineLimit(2)
+                }
             }
         }
+        .foregroundStyle(Color.Palette.n70)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .arTransientSurface()
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct ARTransientHint: View {
+    let message: String
+
+    var body: some View {
+        Text(message)
+            .font(.custom("Belanosima-SemiBold", size: 17, relativeTo: .headline))
+            .lineLimit(2)
+        .foregroundStyle(Color.Palette.n70)
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
-        .background(.regularMaterial, in: Capsule())
-        .overlay {
-            Capsule().stroke(.white.opacity(0.35), lineWidth: 1)
-        }
-        .shadow(color: .black.opacity(0.16), radius: 8, y: 3)
+        .arTransientSurface()
+        .fixedSize(horizontal: false, vertical: true)
+        .allowsHitTesting(false)
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isStaticText)
+    }
+}
+
+private struct ARTransientSurfaceModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .background(Color.white, in: Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.Palette.n70, lineWidth: 2)
+            }
+    }
+}
+
+private extension View {
+    func arTransientSurface() -> some View {
+        modifier(ARTransientSurfaceModifier())
     }
 }
 
@@ -563,19 +602,31 @@ struct ARDeleteUndoToast: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "trash")
+            Image(systemName: "trash.fill")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(Color.Palette.r300)
             Text("Object deleted")
-                .font(.callout.bold())
-            Button("Undo", action: onUndo)
-                .font(.callout.bold())
-                .foregroundStyle(.yellow)
-                .frame(minHeight: 44)
+                .font(.custom("Belanosima-SemiBold", size: 17, relativeTo: .headline))
+
+            Rectangle()
+                .fill(Color.Palette.n20)
+                .frame(width: 1, height: 22)
+
+            Button(action: onUndo) {
+                Text("Undo")
+                    .font(.custom("Belanosima-SemiBold", size: 17, relativeTo: .headline))
+                    .foregroundStyle(Color.Palette.b300)
+                    .padding(.horizontal, 12)
+                    .frame(minHeight: 44)
+            }
+            .buttonStyle(.animagicPress)
+            .accessibilityHint("Restores the deleted object")
         }
-        .foregroundStyle(.white)
-        .padding(.leading, 16)
-        .padding(.trailing, 10)
-        .background(Color.black.opacity(0.82), in: Capsule())
-        .shadow(color: .black.opacity(0.25), radius: 8, y: 3)
+        .foregroundStyle(Color.Palette.n70)
+        .padding(.leading, 14)
+        .padding(.trailing, 6)
+        .padding(.vertical, 4)
+        .arTransientSurface()
         .accessibilityElement(children: .contain)
     }
 }
@@ -811,3 +862,25 @@ struct VerticalARObjectShelf: View {
         .padding(.vertical, 8)
     }
 }
+
+#if DEBUG
+#Preview("AR Transient Feedback") {
+    ScrollView {
+        VStack(spacing: 18) {
+            NewARStatusPill(status: .searching)
+            NewARStatusPill(status: .ready)
+            NewARStatusPill(status: .loading("Preparing your model"))
+            NewARStatusPill(status: .placed)
+            NewARStatusPill(status: .limited("Move to a brighter area"))
+            NewARStatusPill(status: .failed("Try restarting the AR session"))
+
+            ARDeleteUndoToast {}
+
+            ARTransientHint(message: "Tap empty space to show controls")
+            ARTransientHint(message: "Hover Apple Pencil over an object to rotate it")
+        }
+        .padding(24)
+    }
+    .background(Color.Palette.n60)
+}
+#endif

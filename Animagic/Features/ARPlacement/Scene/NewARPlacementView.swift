@@ -185,38 +185,28 @@ struct NewARPlacementView: View {
                 controlsOverlay
             }
 
-            if showsImmersiveHint {
-                Text("Tap empty space to show controls")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .padding(.bottom, 24)
-                    .allowsHitTesting(false)
-                    .accessibilityAddTraits(.isStaticText)
-                    .transition(.opacity)
-            }
+            if isImmersive, showsImmersiveHint || pencilHint != nil {
+                VStack(spacing: 8) {
+                    if let pencilHint {
+                        ARTransientHint(message: pencilHint)
+                            .transition(transientScaleTransition)
+                    }
 
-            if let pencilHint {
-                Text(pencilHint)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .padding(.bottom, showsImmersiveHint ? 76 : 24)
-                    .allowsHitTesting(false)
-                    .accessibilityAddTraits(.isStaticText)
-                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                    if showsImmersiveHint {
+                        ARTransientHint(message: "Tap empty space to show controls")
+                            .transition(transientScaleTransition)
+                    }
+                }
+                .padding(.bottom, 24)
             }
             
             ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
-        .animation(.easeOut(duration: 0.2), value: placementStatus)
-        .animation(.easeOut(duration: 0.2), value: undoAvailable)
-        .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.24), value: pencilHint)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: placementStatus)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: undoAvailable)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: pencilHint)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: showsImmersiveHint)
         .navigationBarHidden(true)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -321,9 +311,16 @@ struct NewARPlacementView: View {
             .padding(.top, 12)
             .padding(.bottom, 24)
             
-            if shouldShowStatus {
-                NewARStatusPill(status: placementStatus)
-                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            VStack(spacing: 8) {
+                if shouldShowStatus {
+                    NewARStatusPill(status: placementStatus)
+                        .transition(transientScaleTransition)
+                }
+
+                if let pencilHint {
+                    ARTransientHint(message: pencilHint)
+                        .transition(transientScaleTransition)
+                }
             }
 
             Spacer()
@@ -333,7 +330,7 @@ struct NewARPlacementView: View {
                     undoDismissTask?.cancel()
                     sceneCommand = .undoDelete(UUID())
                 }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .transition(transientBottomTransition)
             }
 
             // Bottom Row
@@ -417,6 +414,32 @@ struct NewARPlacementView: View {
         reduceMotion
             ? .opacity
             : .move(edge: .trailing).combined(with: .opacity)
+    }
+
+    private var transientScaleTransition: AnyTransition {
+        guard !reduceMotion else {
+            return .opacity.animation(AnimagicMotion.reduced)
+        }
+
+        return .asymmetric(
+            insertion: .scale(scale: 0.96).combined(with: .opacity)
+                .animation(AnimagicMotion.panelEntrance),
+            removal: .scale(scale: 0.96).combined(with: .opacity)
+                .animation(AnimagicMotion.panelExit)
+        )
+    }
+
+    private var transientBottomTransition: AnyTransition {
+        guard !reduceMotion else {
+            return .opacity.animation(AnimagicMotion.reduced)
+        }
+
+        return .asymmetric(
+            insertion: .move(edge: .bottom).combined(with: .opacity)
+                .animation(AnimagicMotion.panelEntrance),
+            removal: .move(edge: .bottom).combined(with: .opacity)
+                .animation(AnimagicMotion.panelExit)
+        )
     }
 
     private func enterImmersive() {
