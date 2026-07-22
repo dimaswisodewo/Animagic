@@ -1,3 +1,10 @@
+//
+//  CanvasTopBarView.swift
+//  AniMagic
+//
+//  Created by Amelia Putri Aftiana on 15/07/26.
+//
+
 import SwiftUI
 import PencilKit
 
@@ -24,7 +31,8 @@ struct CanvasTopBarView: View {
                 icon: "pencil",
                 iconPosition: .leading
             )
-            .frame(maxWidth: 290)
+            .frame(maxWidth: 360)
+            .layoutPriority(1)
             .accessibilityHint("Tap to name your drawing")
             
             Spacer()
@@ -55,4 +63,3 @@ struct CanvasTopBarView: View {
         )
     }
 }
-

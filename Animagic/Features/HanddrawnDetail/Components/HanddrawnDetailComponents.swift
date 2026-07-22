@@ -9,7 +9,8 @@ import PencilKit
 import SwiftUI
 
 struct HanddrawnDetailHeader: View {
-    let title: String
+    @Binding var title: String
+    let onTitleCommit: () -> Void
     let onBack: () -> Void
     let onOpenAR: () -> Void
     let onShare: () -> Void
@@ -25,10 +26,8 @@ struct HanddrawnDetailHeader: View {
                 innerBorderColor: .black.opacity(0.2),
                 action: onBack
             )
-            Text(title)
-                .font(.custom("Belanosima-Bold", size: 28))
-                .foregroundStyle(.black)
-            Spacer()
+            EditableDrawingTitleField(title: $title, onCommit: onTitleCommit)
+                .frame(maxWidth: .infinity)
             AnimagicIconButton(
                 icon: "camera.fill",
                 backgroundColor: Color.Token.Button.secondary,
@@ -54,6 +53,44 @@ struct HanddrawnDetailHeader: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
         .background(AnimagicTheme.yellow)
+    }
+}
+
+private struct EditableDrawingTitleField: View {
+    @Binding var title: String
+    let onCommit: () -> Void
+
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "pencil")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(.black.opacity(0.6))
+            TextField("Drawing title", text: $title, prompt: Text("Untitled"))
+                .font(.custom("Belanosima-Bold", size: 28))
+                .foregroundStyle(.black)
+                .lineLimit(1)
+                .submitLabel(.done)
+                .focused($isFocused)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.white, in: Capsule())
+        .overlay {
+            Capsule()
+                .strokeBorder(.black.opacity(0.2), lineWidth: 4)
+        }
+        .onSubmit {
+            isFocused = false
+        }
+        .onChange(of: isFocused) { wasFocused, isFocused in
+            if wasFocused && !isFocused {
+                onCommit()
+            }
+        }
+        .accessibilityLabel("Drawing title")
+        .accessibilityHint("Edit the drawing title")
     }
 }
 

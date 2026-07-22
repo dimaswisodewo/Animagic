@@ -1,3 +1,10 @@
+//
+//  ArtworkLibraryStore.swift
+//  AniMagic
+//
+//  Created by dimaswisodewo on 15/07/26.
+//
+
 import Combine
 import Foundation
 import PencilKit
@@ -119,6 +126,55 @@ final class ArtworkLibraryStore: ObservableObject {
         } catch {
             present(error) { [weak self] in
                 self?.deleteDrawing(id: id, onSuccess: onSuccess)
+            }
+        }
+    }
+
+    func renameDrawing(
+        id: UUID,
+        to name: String,
+        onFailure: @escaping @MainActor () -> Void = {},
+        onSuccess: @escaping @MainActor (SavedDrawing) -> Void = { _ in }
+    ) {
+        guard var drawing = drawing(id: id) else {
+            onFailure()
+            persistenceAlert = PersistenceAlert(
+                title: "Drawing Couldn’t Be Renamed",
+                message: "This drawing is no longer available. Reload your artwork and try again.",
+                retry: { [weak self] in self?.reload() }
+            )
+            return
+        }
+
+        let normalizedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !normalizedName.isEmpty else {
+            onFailure()
+            return
+        }
+        guard normalizedName != drawing.name else {
+            onSuccess(drawing)
+            return
+        }
+
+        drawing.name = normalizedName
+        drawing.isNameManuallyEdited = true
+
+        do {
+            try repository.upsertDrawing(drawing)
+            if let index = savedDrawings.firstIndex(where: { $0.id == id }) {
+                savedDrawings[index] = drawing
+            }
+            persistenceAlert = nil
+            onSuccess(drawing)
+        } catch {
+            onFailure()
+            present(error) { [weak self] in
+                self?.renameDrawing(
+                    id: id,
+                    to: normalizedName,
+                    onFailure: onFailure,
+                    onSuccess: onSuccess
+                )
             }
         }
     }

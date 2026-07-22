@@ -16,6 +16,7 @@ struct HanddrawnDetailView: View {
     @State private var classificationCoordinator = DoodleClassificationCoordinator()
     @State private var classificationError: String?
     @State private var failedCutoutID: UUID?
+    @State private var titleDraft = ""
 
     private var drawing: SavedDrawing {
         artworkStore.drawing(id: drawingID)
@@ -26,7 +27,8 @@ struct HanddrawnDetailView: View {
         ZStack {
             VStack(spacing: 0) {
                 HanddrawnDetailHeader(
-                    title: drawing.name.isEmpty ? "Untitled" : drawing.name,
+                    title: $titleDraft,
+                    onTitleCommit: commitTitleChange,
                     onBack: dismiss.callAsFunction,
                     onOpenAR: classifyAndOpenAR,
                     onShare: { showShareSheet = true },
@@ -57,7 +59,13 @@ struct HanddrawnDetailView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareSheet(activityItems: [renderedImage ?? UIImage()])
         }
-        .onAppear(perform: loadClassificationRecovery)
+        .onAppear {
+            synchronizeTitleDraft()
+            loadClassificationRecovery()
+        }
+        .onChange(of: drawing.name) {
+            synchronizeTitleDraft()
+        }
         .onDisappear {
             classificationCoordinator.cancel()
         }
@@ -68,6 +76,31 @@ struct HanddrawnDetailView: View {
         return drawing.drawing.image(
             from: drawing.drawing.bounds,
             scale: displayScale
+        )
+    }
+
+    private func synchronizeTitleDraft() {
+        titleDraft = drawing.name.isEmpty ? "Untitled" : drawing.name
+    }
+
+    private func commitTitleChange() {
+        let normalizedTitle = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        let savedTitle = drawing.name.isEmpty ? "Untitled" : drawing.name
+
+        guard !normalizedTitle.isEmpty else {
+            titleDraft = savedTitle
+            return
+        }
+        guard normalizedTitle != drawing.name else {
+            titleDraft = savedTitle
+            return
+        }
+
+        artworkStore.renameDrawing(
+            id: drawing.id,
+            to: normalizedTitle,
+            onFailure: { titleDraft = savedTitle },
+            onSuccess: { updatedDrawing in titleDraft = updatedDrawing.name }
         )
     }
 
