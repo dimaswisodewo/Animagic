@@ -9,129 +9,182 @@ import SwiftUI
 struct BackpackSidebar: View {
     let tabs: [String]
     let items: [String: [String]]
+    let initialTab: String?
+    let itemContent: ((String) -> AnyView)?
+    var onTabChanged: ((String) -> Void)? = nil
     var onItemTapped: ((String) -> Void)? = nil
-    
+
     @State private var selectedTab: String
-    
+
     let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
     ]
-    
-    init(tabs: [String], items: [String: [String]], onItemTapped: ((String) -> Void)? = nil) {
+
+    init(
+        tabs: [String],
+        items: [String: [String]],
+        initialTab: String? = nil,
+        onTabChanged: ((String) -> Void)? = nil,
+        onItemTapped: ((String) -> Void)? = nil,
+        itemContent: ((String) -> AnyView)? = nil
+    ) {
         self.tabs = tabs
         self.items = items
+        self.initialTab = initialTab
+        self.itemContent = itemContent
+        self.onTabChanged = onTabChanged
         self.onItemTapped = onItemTapped
-        _selectedTab = State(initialValue: tabs.first ?? "")
+        _selectedTab = State(initialValue: initialTab ?? tabs.first ?? "")
     }
-    
+
     var body: some View {
-        VStack {
-            HStack(spacing: 8) {
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
                 ForEach(tabs, id: \.self) { tab in
                     let isSelected = selectedTab == tab
-                    
-                    Button(action: {
+
+                    Button {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selectedTab = tab
                         }
-                    }) {
+                        onTabChanged?(tab)
+                    } label: {
                         Text(tab)
-                            .font(.system(size: 20, weight: .heavy, design: .rounded))
-                            .foregroundColor(isSelected ? .white : Color.Token.Button.secondary)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 24)
+                            .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                            .foregroundStyle(isSelected ? .white : AnimagicTheme.blue.opacity(0.7))
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .fill(isSelected ? Color.Token.Button.secondary : Color.Token.Card.primary)
-                            )
-                            .padding(4)
-                            .background(
-                                Capsule()
-                                    .fill(Color.Token.Background.surface)
+                                    .fill(isSelected ? AnimagicTheme.blue : Color(Color.Palette.b50))
                             )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(tab)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
             }
-            .padding(6)
-            .background(Color.Token.Button.disabled)
-            .clipShape(RoundedRectangle(cornerRadius: 28))
-            .padding(10)
+            .padding(4)
+            .background(Capsule().fill(Color.white))
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color(Color.Palette.b50), lineWidth: 3)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
 
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: columns) {
-                    let currentItems = items[selectedTab] ?? []
-                    
-                    ForEach(currentItems, id: \.self) { item in
-                        Button(action: {
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(items[selectedTab] ?? [], id: \.self) { item in
+                        Button {
                             onItemTapped?(item)
-                        }) {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.Token.Background.surface)
-                                .frame(width: 100, height: 100)
-                                .overlay(
-                                    VStack {
-                                        Image(systemName: "square")
-                                            .font(.system(size: 40))
-                                            .foregroundColor(Color.Token.Text.secondary)
-                                    }
-                                )
+                        } label: {
+                            if let itemContent {
+                                itemContent(item)
+                            } else {
+                                defaultItemContent
+                            }
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(item)
                     }
                 }
-                .padding(.horizontal, 18)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
             }
         }
-        .background(Color.Token.Background.primary)
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AnimagicTheme.yellow, in: shelfShape)
+        .clipShape(shelfShape)
+        .overlay {
+            shelfShape
                 .strokeBorder(Color.white, lineWidth: 6)
+        }
+    }
+
+    private var shelfShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: 24,
+            bottomLeadingRadius: 24,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 0
         )
+    }
+
+    private var defaultItemContent: some View {
+        RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .fill(Color(Color.Palette.n10))
+            .frame(width: 140, height: 128)
+            .overlay {
+                Image(systemName: "square")
+                    .font(.system(size: 40, weight: .medium))
+                    .foregroundStyle(Color.Palette.n70)
+            }
     }
 }
 
 struct BackpackTabButton: View {
     @Binding var isOpen: Bool
-    
+
     let backgroundColor: Color
     var iconColor: Color = .white
     var innerBorderColor: Color = .white
-    
+
     var body: some View {
-        Button(action: {
+        Button {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                 isOpen.toggle()
             }
-        }) {
-            Image(systemName: isOpen ? "chevron.right" : "backpack.fill")
-                .font(.system(size: 26, weight: .bold))
-                .foregroundColor(iconColor)
-                .padding(.vertical, 20)
-                .padding(.horizontal, 18)
-                .background(
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 28,
-                        bottomLeadingRadius: 28,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 0
-                    )
-                    .fill(backgroundColor)
-                    .overlay(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 28,
-                            bottomLeadingRadius: 28,
-                            bottomTrailingRadius: 0,
-                            topTrailingRadius: 0
+        } label: {
+            Group {
+                if isOpen {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 30, weight: .bold))
+                        .foregroundStyle(iconColor)
+                        .frame(width: 72, height: 72)
+                        .background(Circle().fill(backgroundColor))
+                        .overlay {
+                            Circle()
+                                .strokeBorder(Color.white, lineWidth: 6)
+                            Circle()
+                                .strokeBorder(innerBorderColor, lineWidth: 3)
+                                .padding(7)
+                        }
+                } else {
+                    Image(systemName: "backpack.fill")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundStyle(iconColor)
+                        .padding(.vertical, 24)
+                        .padding(.horizontal, 20)
+                        .background(
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 32,
+                                bottomLeadingRadius: 32,
+                                bottomTrailingRadius: 0,
+                                topTrailingRadius: 0
+                            )
+                            .fill(backgroundColor)
+                            .overlay {
+                                UnevenRoundedRectangle(
+                                    topLeadingRadius: 32,
+                                    bottomLeadingRadius: 32,
+                                    bottomTrailingRadius: 0,
+                                    topTrailingRadius: 0
+                                )
+                                .strokeBorder(innerBorderColor, lineWidth: 4)
+                            }
                         )
-                        .strokeBorder(innerBorderColor, lineWidth: 4)
-                    )
-                )
-                .padding(.trailing, -4)
+                }
+            }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.animagicPress)
+        .accessibilityLabel(isOpen ? "Close backpack" : "Open backpack")
+        .padding(.trailing, isOpen ? -20 : -4)
     }
 }
 

@@ -20,6 +20,21 @@ enum NewARSceneCommand: Equatable {
     case cancelPencilInteraction(UUID)
     case pauseSession(UUID)
     case resumeSession(UUID)
+    case capturePhoto(UUID)
+}
+
+private enum ARPhotoCaptureError: LocalizedError {
+    case viewUnavailable
+    case snapshotFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .viewUnavailable:
+            "The AR camera is not ready yet. Please try again."
+        case .snapshotFailed:
+            "AniMagix couldn’t capture this AR scene. Please try again."
+        }
+    }
 }
 
 @MainActor
@@ -78,6 +93,7 @@ struct NewARPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(DrawingSessionManager.self) private var drawingSession
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @Environment(HapticFeedbackManager.self) private var haptics
@@ -101,6 +117,13 @@ struct NewARPlacementView: View {
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
     @State private var isBackpackExpanded = false
+    @State private var hasFoundInitialSurface = false
+    @State private var isCapturingPhoto = false
+    @State private var isShowingCaptureFlash = false
+    @State private var captureMessage: String?
+    @State private var captureErrorMessage: String?
+    @State private var captureFlashTask: Task<Void, Never>?
+    @State private var captureMessageTask: Task<Void, Never>?
     @AppStorage("hasCompletedARPencilRotation") private var hasCompletedPencilRotation = false
     @State private var pencilHint: String?
     @State private var pencilHintTask: Task<Void, Never>?
@@ -109,6 +132,14 @@ struct NewARPlacementView: View {
         case checking
         case authorized
         case denied
+    }
+
+    private enum Layout {
+        static let topControlInset: CGFloat = 12
+        static let iconButtonDiameter: CGFloat = 84
+        static let backpackTopGap: CGFloat = 12
+        static let backpackMinimumHeight: CGFloat = 220
+        static let backpackButtonBottomInset: CGFloat = 32
     }
 
     private let initialCutoutID: CutoutAsset.ID?
@@ -173,9 +204,23 @@ struct NewARPlacementView: View {
                 onPencilTargetHovered: showPencilCoachMark,
                 onPencilTargetMissing: showPencilTargetHint,
                 onPencilRotationCompleted: completePencilCoachMark,
+                onPhotoCaptured: handlePhotoCaptureResult,
                 feedback: feedback
             )
             .ignoresSafeArea()
+
+            if !hasFoundInitialSurface {
+                ARLoadingOverlayView(status: placementStatus)
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+            }
+
+            if isShowingCaptureFlash {
+                Color.white
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+            }
 
             if !isImmersive {
                 controlsOverlay
@@ -195,13 +240,13 @@ struct NewARPlacementView: View {
                 }
                 .padding(.bottom, 24)
             }
-            
-            ARLoadingOverlayView()
         }
         .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.32), value: placedObjectSelection)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: undoAvailable)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: pencilHint)
         .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance, value: showsImmersiveHint)
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelExit, value: hasFoundInitialSurface)
+        .animation(.easeOut(duration: 0.12), value: isShowingCaptureFlash)
         .navigationBarHidden(true)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -217,6 +262,11 @@ struct NewARPlacementView: View {
                   let suggested = suggestedLocomotion(for: asset) else { return }
             selectedAnimalLocomotion = suggested
         }
+        .onChange(of: placementStatus) { _, newStatus in
+            if newStatus == .ready {
+                hasFoundInitialSurface = true
+            }
+        }
         .onChange(of: undoAvailable) { _, isAvailable in
             undoDismissTask?.cancel()
             guard isAvailable else { return }
@@ -230,6 +280,13 @@ struct NewARPlacementView: View {
             undoDismissTask?.cancel()
             immersiveHintTask?.cancel()
             pencilHintTask?.cancel()
+            captureFlashTask?.cancel()
+            captureMessageTask?.cancel()
+        }
+        .alert("Camera", isPresented: captureErrorIsPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(captureErrorMessage ?? "The photo couldn’t be saved.")
         }
     }
 
@@ -259,180 +316,258 @@ struct NewARPlacementView: View {
     }
 
     private var controlsOverlay: some View {
-        VStack(spacing: 12) {
-            // Top Row
-            HStack(alignment: .top) {
-                AnimagicIconButton(
-                    icon: "chevron.left",
-                    backgroundColor: Color(Color.Palette.n20),
-                    iconColor: Color(Color.Palette.n70),
-                    innerBorderColor: .black.opacity(0.2),
-                    action: { router.popToRoot() }
-                )
-                
-                Spacer()
-                
-                HStack(spacing: 8) {
-                    AnimagicExpandableButtonGroup(
-                        isExpanded: $isTopMenuExpanded,
-                        mainIconExpanded: "xmark",
-                        mainIconCollapsed: "rectangle.3.group.fill",
-                        mainColor: AnimagicTheme.orange,
-                        items: [
-                            ExpandableButtonItem(
-                                id: "help",
-                                icon: "questionmark",
-                                backgroundColor: .green,
-                                innerBorderColor: Color.Palette.g400,
-                                action: {
-                                    isTopMenuExpanded = false
-                                    router.push(.help)
-                                }
-                            ),
-                            ExpandableButtonItem(
-                                id: "immersive",
-                                icon: "eye.fill",
-                                backgroundColor: AnimagicTheme.orange,
-                                innerBorderColor: Color.Palette.o400,
-                                action: { enterImmersive() }
-                            ),
-                            ExpandableButtonItem(
-                                id: "camera",
-                                icon: "camera.fill",
-                                backgroundColor: .blue,
-                                innerBorderColor: Color.Palette.b400,
-                                action: { /* Camera action */ }
-                            )
-                        ]
-                    )
-                    
-                    AnimagicIconButton(
-                        icon: "paintbrush.fill",
-                        backgroundColor: .yellow,
-                        innerBorderColor: Color.Palette.y400,
-                        isSelected: selectedContentType == .doodle,
-                        action: presentCanvas
-                    )
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-            .padding(.bottom, 24)
-            
-            VStack(spacing: 8) {
-                if shouldShowStatus {
-                    NewARStatusPill(status: placementStatus)
-                        .animation(
-                            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
-                            value: placementStatus
-                        )
-                        .transition(transientScaleTransition)
+        GeometryReader { geometry in
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: 12) {
+                    topControlBar
+                    statusOverlay
+                    Spacer()
+
+                    if undoAvailable {
+                        ARDeleteUndoToast {
+                            undoDismissTask?.cancel()
+                            sceneCommand = .undoDelete(UUID())
+                        }
+                        .transition(transientBottomTransition)
+                    }
+
+                    bottomControlBar
                 }
 
-                if let pencilHint {
-                    ARTransientHint(message: pencilHint)
-                        .transition(transientScaleTransition)
-                }
+                backpackControl(height: backpackShelfHeight(for: geometry.size.height))
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .ignoresSafeArea(.container, edges: [.top, .trailing])
+    }
+
+    private var topControlBar: some View {
+        HStack(alignment: .top) {
+            AnimagicIconButton(
+                icon: "chevron.left",
+                backgroundColor: Color(Color.Palette.n20),
+                iconColor: Color(Color.Palette.n70),
+                innerBorderColor: .black.opacity(0.2),
+                action: { router.popToRoot() }
+            )
 
             Spacer()
 
-            if undoAvailable {
-                ARDeleteUndoToast {
-                    undoDismissTask?.cancel()
-                    sceneCommand = .undoDelete(UUID())
-                }
-                .transition(transientBottomTransition)
-            }
-
-            // Bottom Row
-            HStack(alignment: .bottom) {
-                Group {
-                    if let placedObjectSelection {
-                        NewAREditCard(
-                            selection: placedObjectSelection,
-                            animalLocomotion: locomotionSelection,
-                            elevationMeters: $selectedObjectElevationMeters,
-                            onElevationEditingChanged: { isEditing in
-                                isAdjustingObjectElevation = isEditing
-                            },
-                            onElevationGrounded: feedback.selectionChanged,
-                            onElevationMaximumReached: feedback.boundaryReached,
-                            onFlip: { sceneCommand = .flipFacing(UUID()) },
-                            onDone: {
-                                sceneCommand = .clearSelection(UUID())
-                            },
-                            onDelete: {
-                                sceneCommand = .delete(UUID())
-                            }
-                        )
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    } else {
-                        AnimagicLabelButton(
-                            title: placeButtonTitle,
-                            backgroundColor: AnimagicTheme.blue,
-                            innerBorderColor: Color.Palette.b400,
-                            isDisabled: !canPlace,
-                            isDimmed: !canPlace,
-                            action: { sceneCommand = .place(UUID()) }
-                        )
-                    }
-                }
-                .padding(.leading, 24)
-                .padding(.vertical, 24)
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 12) {
-                    if isBackpackExpanded {
-                        VerticalARObjectShelf(
-                            contentType: $selectedContentType,
-                            cutoutAssets: artworkStore.cutoutLibrary,
-                            titleForCutout: titleForCutout,
-                            selectedCutoutID: $selectedCutoutID,
-                            selectedModelID: $selectedModelID,
-                            shelfHeight: 620,
-                            canPlace: canPlace,
-                            placeButtonTitle: placeButtonTitle,
-                            onCollapse: {
-                                withAnimation(
-                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelExit
-                                ) {
-                                    isBackpackExpanded = false
-                                }
-                            },
-                            onPlace: { sceneCommand = .place(UUID()) },
-                            onSelectionFeedback: feedback.selectionChanged
-                        )
-                        .transition(sidePanelTransition)
-                    } else {
-                        AnimagicSideTabButton(
-                            icon: "backpack.fill",
-                            backgroundColor: AnimagicTheme.orange,
+            HStack(spacing: 8) {
+                AnimagicExpandableButtonGroup(
+                    isExpanded: $isTopMenuExpanded,
+                    mainIconExpanded: "xmark",
+                    mainIconCollapsed: "rectangle.3.group.fill",
+                    mainColor: AnimagicTheme.orange,
+                    items: [
+                        ExpandableButtonItem(
+                            id: "help",
+                            icon: "questionmark",
+                            backgroundColor: .green,
+                            innerBorderColor: Color.Palette.g400,
                             action: {
-                                withAnimation(
-                                    reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.panelEntrance
-                                ) {
-                                    isBackpackExpanded = true
-                                }
+                                isTopMenuExpanded = false
+                                router.push(.help)
                             }
+                        ),
+                        ExpandableButtonItem(
+                            id: "immersive",
+                            icon: "eye.fill",
+                            backgroundColor: AnimagicTheme.orange,
+                            innerBorderColor: Color.Palette.o400,
+                            action: enterImmersive
+                        ),
+                        ExpandableButtonItem(
+                            id: "camera",
+                            icon: "camera.fill",
+                            backgroundColor: .blue,
+                            innerBorderColor: Color.Palette.b400,
+                            isSelected: !isCapturingPhoto,
+                            action: captureARPhoto
                         )
-                        .transition(sidePanelTransition)
-                        .padding(.bottom, 32)
-                    }
-                }
+                    ]
+                )
+
+                AnimagicIconButton(
+                    icon: "paintbrush.fill",
+                    backgroundColor: .yellow,
+                    innerBorderColor: Color.Palette.y400,
+                    isSelected: selectedContentType == .doodle,
+                    action: presentCanvas
+                )
             }
         }
-        .padding(.horizontal, 0)
-        .padding(.vertical, 0)
-        .frame(maxWidth: .infinity, maxHeight: .infinity) // Allow reaching edges
-        .ignoresSafeArea(.all, edges: .trailing) // Ignore trailing safe area to sit flush on right edge
+        .padding(.horizontal, 24)
+        .padding(.top, Layout.topControlInset)
+        .padding(.bottom, 24)
+    }
+
+    private var statusOverlay: some View {
+        VStack(spacing: 8) {
+            if shouldShowStatus {
+                NewARStatusPill(status: placementStatus)
+                    .animation(
+                        reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                        value: placementStatus
+                    )
+                    .transition(transientScaleTransition)
+            }
+
+            if let pencilHint {
+                ARTransientHint(message: pencilHint)
+                    .transition(transientScaleTransition)
+            }
+
+            if let captureMessage {
+                ARTransientHint(message: captureMessage)
+                    .transition(transientScaleTransition)
+            }
+        }
+    }
+
+    private var bottomControlBar: some View {
+        HStack(alignment: .bottom) {
+            Group {
+                if let placedObjectSelection {
+                    NewAREditCard(
+                        selection: placedObjectSelection,
+                        animalLocomotion: locomotionSelection,
+                        elevationMeters: $selectedObjectElevationMeters,
+                        onElevationEditingChanged: { isEditing in
+                            isAdjustingObjectElevation = isEditing
+                        },
+                        onElevationGrounded: feedback.selectionChanged,
+                        onElevationMaximumReached: feedback.boundaryReached,
+                        onFlip: { sceneCommand = .flipFacing(UUID()) },
+                        onDone: { sceneCommand = .clearSelection(UUID()) },
+                        onDelete: { sceneCommand = .delete(UUID()) }
+                    )
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else {
+                    AnimagicLabelButton(
+                        title: placeButtonTitle,
+                        backgroundColor: AnimagicTheme.blue,
+                        innerBorderColor: Color.Palette.b400,
+                        isDisabled: !canPlace,
+                        isDimmed: !canPlace,
+                        action: { sceneCommand = .place(UUID()) }
+                    )
+                }
+            }
+            .padding(.leading, 24)
+            .padding(.vertical, 24)
+
+            Spacer()
+        }
+    }
+
+    private func backpackControl(height: CGFloat) -> some View {
+        HStack(alignment: .bottom, spacing: 0) {
+            BackpackTabButton(
+                isOpen: $isBackpackExpanded,
+                backgroundColor: AnimagicTheme.orange,
+                innerBorderColor: Color.Palette.o400
+            )
+            .padding(.bottom, Layout.backpackButtonBottomInset)
+
+            if isBackpackExpanded {
+                backpackSidebar(height: height)
+                    .transition(sidePanelTransition)
+            }
+        }
     }
 
     private var sidePanelTransition: AnyTransition {
         reduceMotion
             ? .opacity
             : .move(edge: .trailing).combined(with: .opacity)
+    }
+
+    private func backpackSidebar(height: CGFloat) -> some View {
+        BackpackSidebar(
+            tabs: backpackTabs,
+            items: backpackItems,
+            initialTab: selectedContentType == .doodle ? "Doodle" : "3D Model",
+            onTabChanged: { tab in
+                let newContentType: PlacementContentType = tab == "3D Model" ? .model : .doodle
+                guard selectedContentType != newContentType else { return }
+                selectedContentType = newContentType
+                feedback.selectionChanged()
+            },
+            onItemTapped: selectBackpackItem,
+            itemContent: { itemID in
+                backpackItemContent(for: itemID)
+            }
+        )
+        .frame(width: backpackShelfWidth, height: height)
+    }
+
+    private var backpackTabs: [String] {
+        ["Doodle", "3D Model"]
+    }
+
+    private var backpackItems: [String: [String]] {
+        [
+            "Doodle": artworkStore.cutoutLibrary.map { "doodle:\($0.id.uuidString)" },
+            "3D Model": PlaceableUSDZModel.all.map { "model:\($0.id.rawValue)" }
+        ]
+    }
+
+    private var backpackShelfWidth: CGFloat {
+        verticalSizeClass == .compact ? 340 : 400
+    }
+
+    private func backpackShelfHeight(for containerHeight: CGFloat) -> CGFloat {
+        let topControlsBottom = Layout.topControlInset
+            + Layout.iconButtonDiameter
+            + Layout.backpackTopGap
+        return max(Layout.backpackMinimumHeight, containerHeight - topControlsBottom)
+    }
+
+    private func selectBackpackItem(_ itemID: String) {
+        if itemID.hasPrefix("doodle:"),
+           let cutoutID = UUID(uuidString: String(itemID.dropFirst("doodle:".count))) {
+            selectedContentType = .doodle
+            selectedCutoutID = cutoutID
+        } else if let rawID = itemID.split(separator: ":", maxSplits: 1).last,
+                  let modelID = PlaceableUSDZModel.ID(rawValue: String(rawID)) {
+            selectedContentType = .model
+            selectedModelID = modelID
+        }
+
+        feedback.selectionChanged()
+    }
+
+    private func backpackItemContent(for itemID: String) -> AnyView {
+        if let rawID = itemID.split(separator: ":", maxSplits: 1).last,
+           itemID.hasPrefix("doodle:"),
+           let cutoutID = UUID(uuidString: String(rawID)),
+           let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
+            return AnyView(
+                ARSelectionCard(
+                    title: titleForCutout(asset),
+                    isSelected: selectedCutoutID == asset.id
+                ) {
+                    Image(uiImage: asset.image)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(6)
+                }
+            )
+        }
+
+        if let rawID = itemID.split(separator: ":", maxSplits: 1).last,
+           itemID.hasPrefix("model:"),
+           let modelID = PlaceableUSDZModel.ID(rawValue: String(rawID)),
+           let model = PlaceableUSDZModel.model(withID: modelID) {
+            return AnyView(
+                ARSelectionCard(title: model.title, isSelected: selectedModelID == model.id) {
+                    ARUSDZThumbnail(model: model)
+                }
+            )
+        }
+
+        return AnyView(EmptyView())
     }
 
     private var transientScaleTransition: AnyTransition {
@@ -566,6 +701,70 @@ struct NewARPlacementView: View {
         router.presentFullScreenCover(.canvas)
     }
 
+    private func captureARPhoto() {
+        guard !isCapturingPhoto else { return }
+
+        isTopMenuExpanded = false
+        isCapturingPhoto = true
+        captureErrorMessage = nil
+        sceneCommand = .capturePhoto(UUID())
+    }
+
+    private func handlePhotoCaptureResult(_ result: Result<UIImage, Error>) {
+        switch result {
+        case .success(let image):
+            haptics.play(.cameraShutter)
+            showCaptureFlash()
+
+            Task { @MainActor in
+                do {
+                    try await NativeCameraPhotoLibrarySaver.savePhoto(image)
+                    isCapturingPhoto = false
+                    showCaptureMessage("Photo saved to Photos")
+                } catch {
+                    isCapturingPhoto = false
+                    captureErrorMessage = error.localizedDescription
+                    feedback.error()
+                }
+            }
+        case .failure(let error):
+            isCapturingPhoto = false
+            captureErrorMessage = error.localizedDescription
+            feedback.error()
+        }
+    }
+
+    private func showCaptureFlash() {
+        captureFlashTask?.cancel()
+        isShowingCaptureFlash = true
+        captureFlashTask = Task {
+            try? await Task.sleep(for: .milliseconds(120))
+            guard !Task.isCancelled else { return }
+            isShowingCaptureFlash = false
+        }
+    }
+
+    private func showCaptureMessage(_ message: String) {
+        captureMessageTask?.cancel()
+        captureMessage = message
+        captureMessageTask = Task {
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            captureMessage = nil
+        }
+    }
+
+    private var captureErrorIsPresented: Binding<Bool> {
+        Binding(
+            get: { captureErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    captureErrorMessage = nil
+                }
+            }
+        )
+    }
+
     private func restoreAfterCanvas() {
         if let cutoutID = drawingSession.consumeARCutout(),
            let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
@@ -667,6 +866,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     let onPencilTargetHovered: () -> Void
     let onPencilTargetMissing: () -> Void
     let onPencilRotationCompleted: () -> Void
+    let onPhotoCaptured: (Result<UIImage, Error>) -> Void
     let feedback: any ARPlacementFeedbackProviding
 
     func makeCoordinator() -> NewARSceneController {
@@ -684,7 +884,8 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onExitImmersive: onExitImmersive,
             onPencilTargetHovered: onPencilTargetHovered,
             onPencilTargetMissing: onPencilTargetMissing,
-            onPencilRotationCompleted: onPencilRotationCompleted
+            onPencilRotationCompleted: onPencilRotationCompleted,
+            onPhotoCaptured: onPhotoCaptured
         )
     }
 
@@ -710,6 +911,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onPencilTargetHovered = onPencilTargetHovered
         controller.onPencilTargetMissing = onPencilTargetMissing
         controller.onPencilRotationCompleted = onPencilRotationCompleted
+        controller.onPhotoCaptured = onPhotoCaptured
         controller.setImmersive(isImmersive)
 
         if let selectedObjectAnimalLocomotion,
@@ -843,6 +1045,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var onPencilTargetHovered: (() -> Void)?
     var onPencilTargetMissing: (() -> Void)?
     var onPencilRotationCompleted: (() -> Void)?
+    var onPhotoCaptured: ((Result<UIImage, Error>) -> Void)?
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
@@ -864,7 +1067,8 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onExitImmersive: (() -> Void)? = nil,
         onPencilTargetHovered: (() -> Void)? = nil,
         onPencilTargetMissing: (() -> Void)? = nil,
-        onPencilRotationCompleted: (() -> Void)? = nil
+        onPencilRotationCompleted: (() -> Void)? = nil,
+        onPhotoCaptured: ((Result<UIImage, Error>) -> Void)? = nil
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
@@ -883,6 +1087,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.onPencilTargetHovered = onPencilTargetHovered
         self.onPencilTargetMissing = onPencilTargetMissing
         self.onPencilRotationCompleted = onPencilRotationCompleted
+        self.onPhotoCaptured = onPhotoCaptured
         super.init()
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
@@ -1002,6 +1207,26 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             pauseSession()
         case .resumeSession:
             resumeSession()
+        case .capturePhoto:
+            capturePhoto()
+        }
+    }
+
+    private func capturePhoto() {
+        guard let arView else {
+            onPhotoCaptured?(.failure(ARPhotoCaptureError.viewUnavailable))
+            return
+        }
+
+        arView.snapshot(saveToHDR: false) { [weak self] image in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                guard let image else {
+                    self.onPhotoCaptured?(.failure(ARPhotoCaptureError.snapshotFailed))
+                    return
+                }
+                self.onPhotoCaptured?(.success(image))
+            }
         }
     }
 
@@ -2014,36 +2239,63 @@ final class InitialTouchPanGestureRecognizer: UIPanGestureRecognizer {
 }
 
 struct ARLoadingOverlayView: View {
-    @State private var phase = 0
-    @State private var textTitleSize: CGFloat = 40
-    
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let status: ARPlacementStatus
+
     var body: some View {
         ZStack {
-            if phase < 3 {
-                // Background
-                Color.Token.Background.primary
-                    .opacity(phase == 0 ? 1.0 : (phase == 1 ? 0.8 : 0.6))
-                    .ignoresSafeArea()
-                    .animation(.easeInOut(duration: 0.8), value: phase)
-                
-                VStack(spacing: 30) {
-                    if phase < 2 {
-                        iconView(icon: "iphone", secondaryIcon: "hand.tap.fill")
-                        outlinedText(text: "Move your phone to start")
-                    } else {
-                        iconView(icon: "iphone.radiowaves.left.and.right", secondaryIcon: "hand.tap.fill")
-                        outlinedText(text: "Finding a Surface")
-                    }
-                }
-                .transition(.opacity)
-                .animation(.easeInOut(duration: 0.8), value: phase)
+            Color.Token.Background.primary
+                .opacity(0.68)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                iconView(icon: iconName, secondaryIcon: "hand.tap.fill")
+                outlinedText(text: title)
+
+                Text(detail)
+                    .font(.custom("Belanosima-Regular", size: 22, relativeTo: .body))
+                    .foregroundStyle(Color(Color.Palette.n70))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
             }
+            .id(title)
+            .transition(.opacity)
         }
-        .onAppear {
-            startAnimation()
+        .animation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection, value: title)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(detail)")
+    }
+
+    private var title: String {
+        switch status {
+        case .limited:
+            "Move your phone to start"
+        case .loading:
+            "Getting Your Creation Ready"
+        case .failed:
+            "Keep Looking for a Surface"
+        case .searching, .ready, .placed:
+            "Finding a Surface"
         }
     }
-    
+
+    private var detail: String {
+        switch status {
+        case .limited(let message), .loading(let message), .failed(let message):
+            message
+        case .searching, .ready, .placed:
+            "Slowly point your device at a well-lit floor or table."
+        }
+    }
+
+    private var iconName: String {
+        if case .limited = status {
+            return "iphone"
+        }
+        return "iphone.radiowaves.left.and.right"
+    }
+
     @ViewBuilder
     private func iconView(icon: String, secondaryIcon: String) -> some View {
         ZStack {
@@ -2064,7 +2316,7 @@ struct ARLoadingOverlayView: View {
         ZStack {
             ForEach(0..<12) { i in
                 Text(text)
-                    .font(.custom("Belanosima-SemiBold", size: textTitleSize))
+                    .font(.custom("Belanosima-SemiBold", size: 40, relativeTo: .title))
                     .foregroundColor(.white)
                     .offset(
                         x: CGFloat(cos(Double(i) * .pi / 6)) * 6,
@@ -2072,25 +2324,10 @@ struct ARLoadingOverlayView: View {
                     )
             }
             Text(text)
-                .font(.custom("Belanosima-SemiBold", size: textTitleSize))
+                .font(.custom("Belanosima-SemiBold", size: 40, relativeTo: .title))
                 .foregroundColor(Color(Color.Palette.n70))
         }
-    }
-    
-    private func startAnimation() {
-        // Phase 0: Solid (0s - 1s)
-        // Phase 1: Translucent (1s - 2s)
-        // Phase 2: Finding Surface (2s - 3s)
-        // Phase 3: Hidden (>3s)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation(.easeInOut(duration: 0.8)) { phase = 1 }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            withAnimation(.easeInOut(duration: 0.8)) { phase = 2 }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            withAnimation(.easeInOut(duration: 0.8)) { phase = 3 }
-        }
+        .lineLimit(2)
+        .minimumScaleFactor(0.75)
     }
 }

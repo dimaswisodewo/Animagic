@@ -97,7 +97,8 @@ struct ContentView: View {
                     icon: backgroundMusic.isEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill",
                     backgroundColor: Color.Palette.b300,
                     innerBorderColor: Color.Palette.b400,
-                    isSelected: backgroundMusic.isEnabled
+                    isSelected: backgroundMusic.isEnabled,
+                    scalesWhenUnselected: false
                 ) {
                     backgroundMusic.toggle()
                     haptics.play(.selection)
@@ -110,6 +111,7 @@ struct ContentView: View {
                     icon: haptics.isEnabled ? "waveform" : "waveform.slash",
                     backgroundColor: AnimagicTheme.pink,
                     isSelected: haptics.isEnabled,
+                    scalesWhenUnselected: false,
                     action: toggleHaptics
                 )
                 .accessibilityLabel("Haptics")
