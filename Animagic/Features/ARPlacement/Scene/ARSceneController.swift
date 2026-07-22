@@ -22,7 +22,7 @@ enum ARPlacementStatus: Equatable {
 final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
-        set { sceneEditor.cutoutAssets = newValue }
+        set { sceneEditor.updateCutoutAssets(newValue) }
     }
     var selectedCutoutID: CutoutAsset.ID? {
         get { sceneEditor.selectedCutoutID }

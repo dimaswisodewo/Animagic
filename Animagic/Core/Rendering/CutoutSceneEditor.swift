@@ -29,7 +29,7 @@ enum CutoutPlacementResult: Equatable {
 
 @MainActor
 final class CutoutSceneEditor: SceneEditing {
-    var cutoutAssets: [CutoutAsset]
+    private(set) var cutoutAssets: [CutoutAsset]
     var selectedCutoutID: CutoutAsset.ID?
     var selectedAnimalLocomotion: AnimalLocomotion
     var selectedSpawnMode: SpawnMode
@@ -83,6 +83,28 @@ final class CutoutSceneEditor: SceneEditing {
         self.onSelectionChanged = onSelectionChanged
         interactionManager.onSelectionChanged = onSelectionChanged
         self.modelRepository.preload()
+    }
+
+    @discardableResult
+    func updateCutoutAssets(_ assets: [CutoutAsset]) -> Set<UUID> {
+        cutoutAssets = assets
+        let availableAssetIDs = Set(assets.map(\.id))
+        let unavailableObjects = registry.objects.compactMap { object -> PlacedCutout? in
+            guard let cutout = object as? PlacedCutout,
+                  !availableAssetIDs.contains(cutout.cutoutAssetID) else { return nil }
+            return cutout
+        }
+        let removedObjectIDs = Set(unavailableObjects.map(\.id))
+
+        if let selectedObjectID = interactionManager.selectedObject?.id,
+           removedObjectIDs.contains(selectedObjectID) {
+            interactionManager.clearSelection()
+        }
+        for object in unavailableObjects {
+            object.anchor.removeFromParent()
+            registry.remove(id: object.id)
+        }
+        return removedObjectIDs
     }
 
     func attachInteraction(
@@ -293,6 +315,7 @@ final class CutoutSceneEditor: SceneEditing {
         )
         let placedCutout = PlacedCutout(
                 id: objectID,
+                cutoutAssetID: cutoutAsset.id,
                 anchor: anchor,
                 parts: cutout,
                 locomotion: selectedAnimalLocomotion,

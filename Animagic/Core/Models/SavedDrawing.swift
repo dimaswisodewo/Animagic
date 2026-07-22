@@ -45,6 +45,70 @@ struct ArtworkSnapshot {
     let cutouts: [CutoutAsset]
 }
 
+struct BackpackCutoutItem: Identifiable {
+    let cutout: CutoutAsset
+    let title: String
+
+    var id: CutoutAsset.ID { cutout.id }
+}
+
+enum ArtworkLibraryPresentation {
+    static func displayName(for drawing: SavedDrawing) -> String {
+        let name = drawing.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return name.isEmpty ? "Untitled" : name
+    }
+
+    static func sortedDrawings(_ drawings: [SavedDrawing]) -> [SavedDrawing] {
+        drawings.sorted { lhs, rhs in
+            let nameComparison = displayName(for: lhs).localizedStandardCompare(displayName(for: rhs))
+            if nameComparison != .orderedSame {
+                return nameComparison == .orderedAscending
+            }
+            if lhs.createdAt != rhs.createdAt {
+                return lhs.createdAt < rhs.createdAt
+            }
+            return lhs.id.uuidString < rhs.id.uuidString
+        }
+    }
+
+    static func backpackCutoutItems(
+        drawings: [SavedDrawing],
+        cutouts: [CutoutAsset],
+        temporaryCutoutID: CutoutAsset.ID? = nil
+    ) -> [BackpackCutoutItem] {
+        let cutoutsByDrawingID = Dictionary(
+            cutouts.compactMap { cutout in
+                cutout.sourceDrawingID.map { ($0, cutout) }
+            },
+            uniquingKeysWith: { first, _ in first }
+        )
+        var items = sortedDrawings(drawings).compactMap { drawing in
+            cutoutsByDrawingID[drawing.id].map {
+                BackpackCutoutItem(cutout: $0, title: displayName(for: drawing))
+            }
+        }
+
+        guard let temporaryCutoutID,
+              !items.contains(where: { $0.id == temporaryCutoutID }),
+              let temporaryCutout = cutouts.first(where: { $0.id == temporaryCutoutID }) else {
+            return items
+        }
+
+        let recognizedTitle = temporaryCutout.resolvedDoodleLabel?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .capitalized
+        let temporaryTitle = recognizedTitle.flatMap { $0.isEmpty ? nil : $0 } ?? "Photo Cutout"
+        items.insert(
+            BackpackCutoutItem(
+                cutout: temporaryCutout,
+                title: temporaryTitle
+            ),
+            at: 0
+        )
+        return items
+    }
+}
+
 enum DrawingNameGenerator {
     static func automaticName(
         for label: String?,
