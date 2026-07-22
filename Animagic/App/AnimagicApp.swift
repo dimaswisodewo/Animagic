@@ -16,8 +16,8 @@ struct AnimagicApp: App {
     @State private var router = NavigationRouter()
     @State private var drawingSession = DrawingSessionManager()
     @State private var haptics = HapticFeedbackManager()
+    @State private var backgroundMusic = BackgroundMusicController()
     @StateObject private var artworkStore: ArtworkLibraryStore
-    @State private var hasStartedMusic = false
 
     init() {
         do {
@@ -42,20 +42,17 @@ struct AnimagicApp: App {
                 .environment(router)
                 .environment(drawingSession)
                 .environment(haptics)
+                .environment(backgroundMusic)
                 .environmentObject(artworkStore)
-                .onAppear(perform: startMusicIfNeeded)
+                .onAppear(perform: activateAppServices)
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {
                     case .active:
                         haptics.prepare()
-                        if hasStartedMusic {
-                            AudioManager.shared.resumeMusic()
-                        } else {
-                            startMusicIfNeeded()
-                        }
+                        backgroundMusic.activate()
                     case .inactive, .background:
                         haptics.shutdown()
-                        AudioManager.shared.pauseMusic()
+                        backgroundMusic.deactivate()
                     @unknown default:
                         break
                     }
@@ -64,11 +61,8 @@ struct AnimagicApp: App {
         .modelContainer(modelContainer)
     }
 
-    private func startMusicIfNeeded() {
+    private func activateAppServices() {
         haptics.prepare()
-        guard !hasStartedMusic else { return }
-        AudioManager.shared.setup()
-        AudioManager.shared.playMusic(.bgmHome)
-        hasStartedMusic = true
+        backgroundMusic.activate()
     }
 }

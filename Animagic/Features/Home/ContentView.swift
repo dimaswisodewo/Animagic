@@ -11,6 +11,8 @@ struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
+    @Environment(HapticFeedbackManager.self) private var haptics
+    @Environment(BackgroundMusicController.self) private var backgroundMusic
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @State private var isAnimatingGraphics = false
     
@@ -90,6 +92,33 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
 
+            HStack(spacing: 8) {
+                AnimagicIconButton(
+                    icon: backgroundMusic.isEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill",
+                    backgroundColor: Color.Palette.b300,
+                    innerBorderColor: Color.Palette.b400,
+                    isSelected: backgroundMusic.isEnabled
+                ) {
+                    backgroundMusic.toggle()
+                    haptics.play(.selection)
+                }
+                .accessibilityLabel("Background music")
+                .accessibilityValue(backgroundMusic.isEnabled ? "On" : "Off")
+                .accessibilityHint("Turns background music on or off")
+
+                AnimagicIconButton(
+                    icon: haptics.isEnabled ? "waveform" : "waveform.slash",
+                    backgroundColor: AnimagicTheme.pink,
+                    isSelected: haptics.isEnabled,
+                    action: toggleHaptics
+                )
+                .accessibilityLabel("Haptics")
+                .accessibilityValue(haptics.isEnabled ? "On" : "Off")
+                .accessibilityHint("Turns touch feedback on or off")
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+
             AnimagicIconButton(
                 icon: "questionmark",
                 backgroundColor: Color.Token.Button.success
@@ -152,6 +181,16 @@ struct ContentView: View {
         guard !reduceMotion else { return nil }
         return .easeInOut(duration: duration).repeatForever(autoreverses: true)
     }
+
+    private func toggleHaptics() {
+        if haptics.isEnabled {
+            haptics.play(.selection)
+            haptics.isEnabled = false
+        } else {
+            haptics.isEnabled = true
+            haptics.play(.selection)
+        }
+    }
 }
 
 struct TopRightGraphic: View {
@@ -209,6 +248,8 @@ struct BottomLeftGraphic: View {
     ContentView()
         .environment(NavigationRouter())
         .environment(DrawingSessionManager())
+        .environment(HapticFeedbackManager(defaults: UserDefaults(suiteName: "ContentHapticsPreview")!))
+        .environment(BackgroundMusicController(defaults: UserDefaults(suiteName: "ContentMusicPreview")!))
         .environmentObject(ArtworkLibraryStore(repository: PreviewArtworkRepository()))
 }
 #endif
