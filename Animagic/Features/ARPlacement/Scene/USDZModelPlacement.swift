@@ -178,7 +178,11 @@ final class PlacedUSDZModel: PlacedSceneObject {
     private var animationController: AnimationPlaybackController?
 
     var selection: PlacedObjectSelection {
-        PlacedObjectSelection(objectID: id, content: .model(catalogID))
+        PlacedObjectSelection(
+            objectID: id,
+            content: .model(catalogID),
+            elevationMeters: elevationMeters
+        )
     }
 
     init(

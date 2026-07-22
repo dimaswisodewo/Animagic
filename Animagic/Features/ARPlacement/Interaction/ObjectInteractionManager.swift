@@ -14,6 +14,7 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
         case translation
         case scale
         case rotation
+        case elevation
     }
 
     private let registry: SceneObjectRegistry
@@ -119,6 +120,24 @@ final class ObjectInteractionManager: ObjectInteractionManaging {
     func endRotation() {
         startingOrientation = nil
         end(.rotation)
+    }
+
+    func beginElevationAdjustment(for objectID: UUID) {
+        guard objectID == selectedObjectID else { return }
+        begin(.elevation)
+    }
+
+    func setElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        guard objectID == selectedObjectID, let selectedObject else { return }
+        selectedObject.setElevationMeters(
+            min(max(elevationMeters, ARObjectElevation.range.lowerBound), ARObjectElevation.range.upperBound)
+        )
+    }
+
+    func endElevationAdjustment(for objectID: UUID) {
+        guard objectID == selectedObjectID else { return }
+        end(.elevation)
+        notifySelectionChanged()
     }
 
     func setSelectedAnimalLocomotion(_ locomotion: AnimalLocomotion) {

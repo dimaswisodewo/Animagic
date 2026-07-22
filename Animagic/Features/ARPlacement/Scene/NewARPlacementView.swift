@@ -86,6 +86,8 @@ struct NewARPlacementView: View {
     @State private var selectedAnimalLocomotion = AnimalLocomotion.generic
     @State private var placementStatus: ARPlacementStatus = .searching
     @State private var placedObjectSelection: PlacedObjectSelection?
+    @State private var selectedObjectElevationMeters: Float = 0
+    @State private var isAdjustingObjectElevation = false
     @State private var sceneCommand: NewARSceneCommand?
     @State private var objectCount = 0
     @State private var undoAvailable = false
@@ -168,6 +170,8 @@ struct NewARPlacementView: View {
                 selectedContentType: selectedContentType,
                 selectedModelID: selectedModelID,
                 placedObjectSelection: $placedObjectSelection,
+                selectedObjectElevationMeters: $selectedObjectElevationMeters,
+                isAdjustingObjectElevation: $isAdjustingObjectElevation,
                 placementStatus: $placementStatus,
                 objectCount: $objectCount,
                 undoAvailable: $undoAvailable,
@@ -356,6 +360,12 @@ struct NewARPlacementView: View {
                         NewAREditCard(
                             selection: placedObjectSelection,
                             animalLocomotion: locomotionSelection,
+                            elevationMeters: $selectedObjectElevationMeters,
+                            onElevationEditingChanged: { isEditing in
+                                isAdjustingObjectElevation = isEditing
+                            },
+                            onElevationGrounded: feedback.selectionChanged,
+                            onElevationMaximumReached: feedback.boundaryReached,
                             onFlip: { sceneCommand = .flipFacing(UUID()) },
                             onDone: {
                                 sceneCommand = .clearSelection(UUID())
@@ -528,7 +538,8 @@ struct NewARPlacementView: View {
                       selection.animalLocomotion != nil else { return }
                 placedObjectSelection = PlacedObjectSelection(
                     objectID: selection.objectID,
-                    content: .doodle(locomotion)
+                    content: .doodle(locomotion),
+                    elevationMeters: selection.elevationMeters
                 )
                 feedback.selectionChanged()
             }
@@ -652,6 +663,8 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     let selectedContentType: PlacementContentType
     let selectedModelID: PlaceableUSDZModel.ID?
     @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var selectedObjectElevationMeters: Float
+    @Binding var isAdjustingObjectElevation: Bool
     @Binding var placementStatus: ARPlacementStatus
     @Binding var objectCount: Int
     @Binding var undoAvailable: Bool
@@ -711,6 +724,14 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             controller.setSelectedObjectAnimalLocomotion(selectedObjectAnimalLocomotion)
         }
 
+        if let selectedObjectID = placedObjectSelection?.objectID {
+            controller.synchronizeSelectedObjectElevation(
+                selectedObjectElevationMeters,
+                for: selectedObjectID,
+                isEditing: isAdjustingObjectElevation
+            )
+        }
+
         if let command, controller.handledCommand != command {
             controller.handledCommand = command
             controller.handle(command)
@@ -727,8 +748,15 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
 
     private func updateSelection(_ selection: PlacedObjectSelection?) {
         Task { @MainActor in
+            if placedObjectSelection?.objectID != selection?.objectID {
+                isAdjustingObjectElevation = false
+            }
             if placedObjectSelection != selection {
                 placedObjectSelection = selection
+            }
+            if let selection,
+               selectedObjectElevationMeters != selection.elevationMeters {
+                selectedObjectElevationMeters = selection.elevationMeters
             }
         }
     }
@@ -794,7 +822,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private static var hasRegisteredSystem = false
     private var interactionAdapter: NewARViewInteractionAdapter?
     private var pencilInteractionAdapter: ApplePencilARInteractionAdapter?
-    private var lastSelectedObject: (any PlacedSceneObject)?
+    private var selectionGroundIndicator: Entity?
+    private var heightGuide: Entity?
+    private var elevationAdjustmentObjectID: UUID?
     private weak var pencilHoverTarget: (any PlacedSceneObject)?
     private var pencilRotationSession: PencilRotationSession?
     private var pendingDeletion: DeletedSceneObject?
@@ -863,6 +893,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
             guard let self else { return }
+            if selection?.objectID != self.elevationAdjustmentObjectID {
+                self.elevationAdjustmentObjectID = nil
+            }
             self.updateSelectionIndicator(for: selection)
             self.updateFocusVisibility()
             self.onSelectionChanged?(selection)
@@ -1367,7 +1400,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func setSelectionIndicatorDragging(_ isDragging: Bool) {
-        guard let ring = selectedObject?.interactionRoot.findEntity(named: "selection_ring") else { return }
+        guard let ring = selectionGroundIndicator else { return }
         var target = ring.transform
         target.scale = SIMD3(repeating: isDragging ? 1.08 : 1)
         ring.components.set(OpacityComponent(opacity: isDragging ? 1 : 0.9))
@@ -1384,26 +1417,79 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     private func updateSelectionIndicator(for selection: PlacedObjectSelection?) {
-        if let lastSelectedObject {
-            lastSelectedObject.interactionRoot.findEntity(named: "selection_ring")?.removeFromParent()
-        }
+        selectionGroundIndicator?.removeFromParent()
+        selectionGroundIndicator = nil
+        heightGuide = nil
 
         guard selection != nil, let selectedObject else {
-            lastSelectedObject = nil
             return
         }
 
         let bounds = selectedObject.interactionRoot.visualBounds(relativeTo: selectedObject.interactionRoot)
         let radius = max(max(bounds.extents.x, bounds.extents.z) * 0.65, 0.12)
         let ring = SelectionRingFactory.make(radius: radius)
-        selectedObject.interactionRoot.addChild(ring)
-        lastSelectedObject = selectedObject
+        let guide = HeightGuideFactory.make()
+        ring.addChild(guide)
+        selectedObject.anchor.addChild(ring)
+        selectionGroundIndicator = ring
+        heightGuide = guide
+        updateSelectionGroundReference()
 
         guard !UIAccessibility.isReduceMotionEnabled else { return }
         ring.scale = [0.84, 0.84, 0.84]
         var target = ring.transform
         target.scale = .one
-        ring.move(to: target, relativeTo: selectedObject.interactionRoot, duration: 0.22, timingFunction: .easeOut)
+        ring.move(to: target, relativeTo: selectedObject.anchor, duration: 0.22, timingFunction: .easeOut)
+    }
+
+    func updateSelectionGroundReference() {
+        guard let selectedObject, let selectionGroundIndicator else { return }
+        let objectPosition = selectedObject.interactionRoot.position(relativeTo: selectedObject.anchor)
+        selectionGroundIndicator.position = [objectPosition.x, 0, objectPosition.z]
+
+        let elevation = max(selectedObject.elevationMeters, 0)
+        heightGuide?.position = [0, elevation / 2, 0]
+        heightGuide?.scale = [1, max(elevation, 0.001), 1]
+    }
+
+    func synchronizeSelectedObjectElevation(
+        _ elevationMeters: Float,
+        for objectID: UUID,
+        isEditing: Bool
+    ) {
+        guard selectedObject?.id == objectID else { return }
+
+        if isEditing {
+            if elevationAdjustmentObjectID != objectID {
+                sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+                elevationAdjustmentObjectID = objectID
+            }
+            sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+        } else {
+            sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+            if elevationAdjustmentObjectID == objectID {
+                sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
+                elevationAdjustmentObjectID = nil
+            }
+        }
+
+        updateSelectionGroundReference()
+        heightGuide?.components.set(
+            OpacityComponent(opacity: isEditing && elevationMeters > 0 ? 0.72 : 0)
+        )
+    }
+
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+        updateSelectionGroundReference()
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
     }
 
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
@@ -1570,6 +1656,23 @@ struct SelectionRingFactory {
     }
 }
 
+struct HeightGuideFactory {
+    static func make() -> Entity {
+        let guide = Entity()
+        guide.name = "height_guide"
+
+        var material = UnlitMaterial()
+        material.color = .init(tint: UIColor(Color.Palette.b200))
+        let model = ModelEntity(
+            mesh: .generateCylinder(height: 1, radius: 0.004),
+            materials: [material]
+        )
+        guide.addChild(model)
+        guide.components.set(OpacityComponent(opacity: 0))
+        return guide
+    }
+}
+
 struct ARPlacementComponent: Component {
     weak var arView: ARView?
     weak var controller: NewARSceneController?
@@ -1726,6 +1829,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 ],
                 relativeTo: nil
             )
+            controller.updateSelectionGroundReference()
             begin(.translation)
             controller.setSelectionIndicatorDragging(true)
             feedback.dragStarted()
@@ -1749,6 +1853,7 @@ final class NewARViewInteractionAdapter: NSObject, UIGestureRecognizerDelegate {
                 ],
                 relativeTo: nil
             )
+            controller.updateSelectionGroundReference()
         case .ended, .cancelled, .failed:
             end(.translation)
             resetDragState()

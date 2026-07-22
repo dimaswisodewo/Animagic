@@ -241,6 +241,18 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         onPlacementStatusChanged?(status)
     }
 
+    func beginSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.beginSelectedObjectElevationAdjustment(for: objectID)
+    }
+
+    func setSelectedObjectElevationMeters(_ elevationMeters: Float, for objectID: UUID) {
+        sceneEditor.setSelectedObjectElevationMeters(elevationMeters, for: objectID)
+    }
+
+    func endSelectedObjectElevationAdjustment(for objectID: UUID) {
+        sceneEditor.endSelectedObjectElevationAdjustment(for: objectID)
+    }
+
     func setSelectedObjectAnimalLocomotion(_ locomotion: AnimalLocomotion) {
         sceneEditor.setSelectedObjectAnimalLocomotion(locomotion)
     }

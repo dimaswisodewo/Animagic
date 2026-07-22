@@ -195,7 +195,8 @@ struct ARObjectPlacementView: View {
                    selection.animalLocomotion != nil {
                     placedObjectSelection = PlacedObjectSelection(
                         objectID: selection.objectID,
-                        content: .doodle(locomotion)
+                        content: .doodle(locomotion),
+                        elevationMeters: selection.elevationMeters
                     )
                 } else {
                     selectedAnimalLocomotion = locomotion

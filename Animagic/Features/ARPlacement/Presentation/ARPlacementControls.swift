@@ -414,6 +414,10 @@ struct NewARObjectShelf: View {
 struct NewAREditCard: View {
     let selection: PlacedObjectSelection
     @Binding var animalLocomotion: AnimalLocomotion
+    @Binding var elevationMeters: Float
+    let onElevationEditingChanged: (Bool) -> Void
+    let onElevationGrounded: () -> Void
+    let onElevationMaximumReached: () -> Void
     let onFlip: () -> Void
     let onDone: () -> Void
     let onDelete: () -> Void
@@ -466,6 +470,14 @@ struct NewAREditCard: View {
                             .strokeBorder(Color.Palette.n20, lineWidth: 3)
                     }
             )
+
+            ARHeightControl(
+                elevationMeters: $elevationMeters,
+                onEditingChanged: onElevationEditingChanged,
+                onGrounded: onElevationGrounded,
+                onMaximumReached: onElevationMaximumReached
+            )
+            .frame(height: 80)
 
             if selection.animalLocomotion != nil {
                 VStack(spacing: 10) {
@@ -555,6 +567,178 @@ struct NewAREditCard: View {
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(title)
+    }
+}
+
+private struct ARHeightControl: View {
+    private enum FeedbackBoundary {
+        case grounded
+        case maximum
+    }
+
+    @Binding var elevationMeters: Float
+    let onEditingChanged: (Bool) -> Void
+    let onGrounded: () -> Void
+    let onMaximumReached: () -> Void
+
+    @State private var isEditing = false
+    @State private var feedbackBoundary: FeedbackBoundary?
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Label("Height", systemImage: "arrow.up.and.down")
+                    .font(.custom("Belanosima-SemiBold", size: 19))
+
+                Spacer()
+
+                Text(formattedElevation)
+                    .font(.custom("Belanosima-SemiBold", size: 17))
+                    .foregroundStyle(Color.Palette.b300)
+                    .contentTransition(.numericText())
+            }
+
+            HStack(spacing: 10) {
+                Image(systemName: "arrow.down.to.line")
+                sliderTrack
+                Image(systemName: "arrow.up.to.line")
+            }
+            .font(.system(size: 16, weight: .bold))
+        }
+        .foregroundStyle(Color.Palette.n70)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color.Palette.n10)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(Color.Palette.n20, lineWidth: 3)
+                }
+        )
+        .accessibilityRepresentation {
+            Slider(
+                value: accessibilityBinding,
+                in: ARObjectElevation.range,
+                step: 0.05,
+                onEditingChanged: handleEditingChanged
+            ) {
+                Text("Height")
+            }
+            .accessibilityValue(formattedElevation)
+            .accessibilityHint("Adjusts how high the selected object floats above its surface")
+        }
+    }
+
+    private var sliderTrack: some View {
+        GeometryReader { geometry in
+            let thumbDiameter: CGFloat = 32
+            let usableWidth = max(geometry.size.width - thumbDiameter, 1)
+            let progress = CGFloat(elevationMeters / ARObjectElevation.range.upperBound)
+            let thumbOffset = usableWidth * min(max(progress, 0), 1)
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.Palette.n20)
+                    .overlay {
+                        Capsule()
+                            .strokeBorder(Color.Palette.n30, lineWidth: 3)
+                    }
+                    .frame(height: 16)
+
+                Capsule()
+                    .fill(Color.Palette.b200)
+                    .frame(width: thumbOffset + thumbDiameter / 2, height: 16)
+
+                Circle()
+                    .fill(Color.Palette.b200)
+                    .overlay {
+                        Circle()
+                            .strokeBorder(Color.Palette.b400, lineWidth: 4)
+                    }
+                    .padding(4)
+                    .background(Circle().fill(.white))
+                    .frame(width: thumbDiameter, height: thumbDiameter)
+                    .offset(x: thumbOffset)
+                    .shadow(color: Color.Palette.n70.opacity(0.16), radius: 4, y: 2)
+            }
+            .frame(maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .gesture(sliderGesture(width: geometry.size.width, thumbDiameter: thumbDiameter))
+        }
+        .frame(minWidth: 180, minHeight: 44)
+    }
+
+    private var accessibilityBinding: Binding<Float> {
+        Binding(
+            get: { elevationMeters },
+            set: { updateElevation(to: $0) }
+        )
+    }
+
+    private func sliderGesture(width: CGFloat, thumbDiameter: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                if !isEditing {
+                    feedbackBoundary = boundary(for: elevationMeters)
+                    handleEditingChanged(true)
+                }
+
+                let usableWidth = max(width - thumbDiameter, 1)
+                let progress = min(max((value.location.x - thumbDiameter / 2) / usableWidth, 0), 1)
+                updateElevation(to: Float(progress) * ARObjectElevation.range.upperBound)
+            }
+            .onEnded { _ in
+                handleEditingChanged(false)
+                feedbackBoundary = nil
+            }
+    }
+
+    private func updateElevation(to proposedElevation: Float) {
+        let clamped = min(
+            max(proposedElevation, ARObjectElevation.range.lowerBound),
+            ARObjectElevation.range.upperBound
+        )
+        let adjusted = clamped <= ARObjectElevation.groundingThreshold ? 0 : clamped
+        elevationMeters = adjusted
+
+        let newBoundary = boundary(for: adjusted)
+        guard newBoundary != feedbackBoundary else { return }
+        feedbackBoundary = newBoundary
+
+        switch newBoundary {
+        case .grounded:
+            onGrounded()
+        case .maximum:
+            onMaximumReached()
+        case nil:
+            break
+        }
+    }
+
+    private func handleEditingChanged(_ editing: Bool) {
+        guard editing != isEditing else { return }
+        isEditing = editing
+        if editing {
+            feedbackBoundary = boundary(for: elevationMeters)
+        }
+        onEditingChanged(editing)
+    }
+
+    private func boundary(for elevation: Float) -> FeedbackBoundary? {
+        if elevation == 0 { return .grounded }
+        if elevation >= ARObjectElevation.range.upperBound { return .maximum }
+        return nil
+    }
+
+    private var formattedElevation: String {
+        if elevationMeters == 0 {
+            return "Grounded"
+        }
+        if elevationMeters < 1 {
+            return "\(Int((elevationMeters * 100).rounded())) cm"
+        }
+        return elevationMeters.formatted(.number.precision(.fractionLength(1))) + " m"
     }
 }
 
