@@ -120,6 +120,7 @@
 		AA3000000000000000000002 /* MotionLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionLabView.swift; sourceTree = "<group>"; };
 		AA2000000000000000000003 /* CutoutRigAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalyzerTests.swift; sourceTree = "<group>"; };
 		AA2000000000000000000004 /* MotionSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulatorTests.swift; sourceTree = "<group>"; };
+		AA4000000000000000000002 /* CanvasCompletionBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCompletionBehaviorTests.swift; sourceTree = "<group>"; };
 		AA2000000000000000000005 /* AniMagicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AniMagicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1000000000000000000002 /* CutoutRigAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalysis.swift; sourceTree = "<group>"; };
 		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
@@ -463,6 +464,7 @@
 		AA2000000000000000000008 /* AnimagicTests */ = {
 			isa = PBXGroup;
 			children = (
+				AA4000000000000000000002 /* CanvasCompletionBehaviorTests.swift */,
 				AA2000000000000000000003 /* CutoutRigAnalyzerTests.swift */,
 				AA2000000000000000000004 /* MotionSimulatorTests.swift */,
 			);
@@ -804,6 +806,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA4000000000000000000001 /* CanvasCompletionBehaviorTests.swift in Sources */,
 				AA2000000000000000000001 /* CutoutRigAnalyzerTests.swift in Sources */,
 				AA2000000000000000000002 /* MotionSimulatorTests.swift in Sources */,
 			);

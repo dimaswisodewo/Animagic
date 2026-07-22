@@ -18,6 +18,8 @@ enum NewARSceneCommand: Equatable {
     case undoDelete(UUID)
     case discardUndo(UUID)
     case cancelPencilInteraction(UUID)
+    case pauseSession(UUID)
+    case resumeSession(UUID)
 }
 
 @MainActor
@@ -73,6 +75,7 @@ final class SystemARPlacementFeedback: ARPlacementFeedbackProviding {
 
 struct NewARPlacementView: View {
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
+    @Environment(DrawingSessionManager.self) private var drawingSession
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
@@ -147,6 +150,10 @@ struct NewARPlacementView: View {
             } else {
                 sceneCommand = .cancelPencilInteraction(UUID())
             }
+        }
+        .onChange(of: router.presentedFullScreenCovers.contains(.canvas)) { wasPresented, isPresented in
+            guard wasPresented, !isPresented else { return }
+            restoreAfterCanvas()
         }
     }
 
@@ -306,7 +313,7 @@ struct NewARPlacementView: View {
                         backgroundColor: .yellow,
                         innerBorderColor: Color.Palette.y400,
                         isSelected: selectedContentType == .doodle,
-                        action: { router.push(.canvas) }
+                        action: presentCanvas
                     )
                 }
             }
@@ -488,6 +495,24 @@ struct NewARPlacementView: View {
         if let suggested = suggestedLocomotion(for: initialAsset) {
             selectedAnimalLocomotion = suggested
         }
+    }
+
+    private func presentCanvas() {
+        drawingSession.clearPendingARCutout()
+        sceneCommand = .pauseSession(UUID())
+        router.presentFullScreenCover(.canvas)
+    }
+
+    private func restoreAfterCanvas() {
+        if let cutoutID = drawingSession.consumeARCutout(),
+           let asset = artworkStore.cutoutLibrary.first(where: { $0.id == cutoutID }) {
+            selectedCutoutID = cutoutID
+            selectedContentType = .doodle
+            if let suggested = suggestedLocomotion(for: asset) {
+                selectedAnimalLocomotion = suggested
+            }
+        }
+        sceneCommand = .resumeSession(UUID())
     }
 
     private func suggestedLocomotion(for asset: CutoutAsset?) -> AnimalLocomotion? {
@@ -724,6 +749,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var lastValidNormal: SIMD3<Float>?
     private var hasPlacedObject = false
     private var isImmersive = false
+    private(set) var isSessionPaused = false
 
     var handledCommand: NewARSceneCommand?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
@@ -802,10 +828,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
 
         setupLighting(in: arView)
         setupFocusIndicator(in: arView)
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal]
-        configuration.environmentTexturing = .automatic
-        configureOcclusion(on: arView, with: configuration)
+        let configuration = makeWorldTrackingConfiguration(for: arView)
         arView.session.delegate = self
         arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         arView.renderOptions.insert(.disableGroundingShadows)
@@ -889,7 +912,33 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             onUndoAvailabilityChanged?(false)
         case .cancelPencilInteraction:
             cancelPencilRotation()
+        case .pauseSession:
+            pauseSession()
+        case .resumeSession:
+            resumeSession()
         }
+    }
+
+    private func pauseSession() {
+        guard !isSessionPaused else { return }
+        cancelPencilRotation()
+        isSessionPaused = true
+        arView?.session.pause()
+    }
+
+    private func resumeSession() {
+        guard isSessionPaused, let arView else { return }
+        arView.session.run(makeWorldTrackingConfiguration(for: arView))
+        isSessionPaused = false
+        updateStatus(.searching)
+    }
+
+    private func makeWorldTrackingConfiguration(for arView: ARView) -> ARWorldTrackingConfiguration {
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = [.horizontal]
+        configuration.environmentTexturing = .automatic
+        configureOcclusion(on: arView, with: configuration)
+        return configuration
     }
 
     private func configureOcclusion(on arView: ARView, with configuration: ARWorldTrackingConfiguration) {
@@ -1477,7 +1526,8 @@ final class ARPlacementSystem: System {
         context.scene.performQuery(Self.query).forEach { entity in
             guard let component = entity.components[ARPlacementComponent.self],
                   let arView = component.arView,
-                  let controller = component.controller else { return }
+                  let controller = component.controller,
+                  !controller.isSessionPaused else { return }
             controller.updateSimulation(deltaTime: deltaTime)
             controller.updateFocusIndicator(in: arView, focusAnchor: entity)
         }
