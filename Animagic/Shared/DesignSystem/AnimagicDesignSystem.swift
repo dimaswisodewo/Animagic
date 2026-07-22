@@ -46,6 +46,7 @@ struct AnimagicIconButton: View {
     var iconColor: Color = .white
     var innerBorderColor: Color = .black.opacity(0.2)
     var isSelected: Bool = true
+    var scalesWhenUnselected: Bool = true
     let action: () -> Void
     
     var body: some View {
@@ -56,6 +57,7 @@ struct AnimagicIconButton: View {
             Image(systemName: icon)
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(iconColor)
+                .frame(width: 32, height: 32)
                 .padding(18)
                 .background(
                     Circle()
@@ -72,7 +74,7 @@ struct AnimagicIconButton: View {
                 )
         }
         .buttonStyle(.animagicPress)
-        .scaleEffect(isSelected || reduceMotion ? 1 : 0.96)
+        .scaleEffect(isSelected || reduceMotion || !scalesWhenUnselected ? 1 : 0.96)
         .opacity(isSelected ? 1 : 0.72)
         .animation(
             reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,

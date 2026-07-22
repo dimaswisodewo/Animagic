@@ -827,7 +827,7 @@ struct ARDeleteUndoToast: View {
     }
 }
 
-private struct ARSelectionCard<Preview: View>: View {
+struct ARSelectionCard<Preview: View>: View {
     let title: String
     let isSelected: Bool
     @ViewBuilder let preview: Preview
@@ -835,17 +835,17 @@ private struct ARSelectionCard<Preview: View>: View {
     var body: some View {
         VStack(spacing: 4) {
             preview
-                .frame(width: 82, height: 64)
+                .frame(width: 100, height: 82)
             Text(title)
                 .font(.caption2.bold())
                 .lineLimit(1)
-                .frame(maxWidth: 104)
+                .frame(maxWidth: 128)
         }
         .foregroundStyle(.primary)
         .padding(.horizontal, 8)
-        .padding(.vertical, 7)
-        .frame(width: 112)
-        .frame(minHeight: 104)
+        .padding(.vertical, 8)
+        .frame(width: 140)
+        .frame(minHeight: 128)
         .background(isSelected ? Color.yellow.opacity(0.28) : Color.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay {
@@ -862,7 +862,7 @@ private struct ARSelectionCard<Preview: View>: View {
     }
 }
 
-private struct ARUSDZThumbnail: View {
+struct ARUSDZThumbnail: View {
     let model: PlaceableUSDZModel
     @State private var image: UIImage?
     @State private var didRequestImage = false
