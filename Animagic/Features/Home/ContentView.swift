@@ -119,20 +119,21 @@ struct ContentView: View {
             .padding(24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
-            AnimagicIconButton(
-                icon: "questionmark",
-                backgroundColor: Color.Token.Button.success
-            ) {
-                router.push(.help)
-            }
-            .accessibilityLabel("Help")
-            .accessibilityHint("Opens the AniMagix guide")
-            .padding(24)
-            
             // Floating Bottom Buttons
             VStack {
                 Spacer()
                 HStack {
+                    AnimagicIconButton(
+                        icon: "questionmark",
+                        backgroundColor: Color.Token.Button.success
+                    ) {
+                        router.push(.help)
+                    }
+                    .accessibilityLabel("Help")
+                    .accessibilityHint("Opens the AniMagix guide")
+                    .padding(.leading, 32)
+                    .padding(.bottom, 32)
+
                     Spacer()
                     
                     AnimagicIconButton(

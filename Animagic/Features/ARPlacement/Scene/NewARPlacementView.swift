@@ -391,6 +391,7 @@ struct NewARPlacementView: View {
                             titleForCutout: titleForCutout,
                             selectedCutoutID: $selectedCutoutID,
                             selectedModelID: $selectedModelID,
+                            shelfHeight: 620,
                             canPlace: canPlace,
                             placeButtonTitle: placeButtonTitle,
                             onCollapse: {
