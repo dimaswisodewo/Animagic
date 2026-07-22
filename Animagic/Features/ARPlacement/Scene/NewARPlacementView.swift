@@ -124,6 +124,8 @@ struct NewARPlacementView: View {
     @State private var captureErrorMessage: String?
     @State private var captureFlashTask: Task<Void, Never>?
     @State private var captureMessageTask: Task<Void, Never>?
+    @State private var isMultiplayerEnabled = false
+    @State private var multiplayerStatus: ARMultiplayerStatus = .disabled
     @AppStorage("hasCompletedARPencilRotation") private var hasCompletedPencilRotation = false
     @State private var pencilHint: String?
     @State private var pencilHintTask: Task<Void, Never>?
@@ -200,7 +202,11 @@ struct NewARPlacementView: View {
                 undoAvailable: $undoAvailable,
                 command: sceneCommand,
                 isImmersive: isImmersive,
+                isMultiplayerEnabled: isMultiplayerEnabled,
                 onExitImmersive: exitImmersive,
+                onMultiplayerStatusChanged: { status in
+                    multiplayerStatus = status
+                },
                 onPencilTargetHovered: showPencilCoachMark,
                 onPencilTargetMissing: showPencilTargetHint,
                 onPencilRotationCompleted: completePencilCoachMark,
@@ -389,6 +395,17 @@ struct NewARPlacementView: View {
                 )
 
                 AnimagicIconButton(
+                    icon: isMultiplayerEnabled ? "person.2.fill" : "person.2",
+                    backgroundColor: isMultiplayerEnabled ? AnimagicTheme.blue : Color(Color.Palette.n20),
+                    iconColor: isMultiplayerEnabled ? .white : Color(Color.Palette.n70),
+                    innerBorderColor: isMultiplayerEnabled ? Color.Palette.b400 : .black.opacity(0.2),
+                    action: {
+                        isMultiplayerEnabled.toggle()
+                    }
+                )
+                .accessibilityLabel(isMultiplayerEnabled ? "Turn multiplayer off" : "Turn multiplayer on")
+
+                AnimagicIconButton(
                     icon: "paintbrush.fill",
                     backgroundColor: .yellow,
                     innerBorderColor: Color.Palette.y400,
@@ -410,6 +427,11 @@ struct NewARPlacementView: View {
                         reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
                         value: placementStatus
                     )
+                    .transition(transientScaleTransition)
+            }
+
+            if isMultiplayerEnabled {
+                ARMultiplayerStatusPill(status: multiplayerStatus)
                     .transition(transientScaleTransition)
             }
 
@@ -865,7 +887,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     @Binding var undoAvailable: Bool
     let command: NewARSceneCommand?
     let isImmersive: Bool
+    let isMultiplayerEnabled: Bool
     let onExitImmersive: () -> Void
+    let onMultiplayerStatusChanged: (ARMultiplayerStatus) -> Void
     let onPencilTargetHovered: () -> Void
     let onPencilTargetMissing: () -> Void
     let onPencilRotationCompleted: () -> Void
@@ -879,6 +903,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             selectedAnimalLocomotion: spawnAnimalLocomotion,
             selectedContentType: selectedContentType,
             selectedModelID: selectedModelID,
+            isMultiplayerEnabled: isMultiplayerEnabled,
             feedback: feedback,
             onSelectionChanged: updateSelection,
             onPlacementStatusChanged: updateStatus,
@@ -888,7 +913,9 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onPencilTargetHovered: onPencilTargetHovered,
             onPencilTargetMissing: onPencilTargetMissing,
             onPencilRotationCompleted: onPencilRotationCompleted,
-            onPhotoCaptured: onPhotoCaptured
+    var onPhotoCaptured: ((Result<UIImage, Error>) -> Void)?
+    var isMultiplayerEnabled: Bool = false
+    var onMultiplayerStatusChanged: ((ARMultiplayerStatus) -> Void)?
         )
     }
 
@@ -911,11 +938,13 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onObjectCountChanged = updateObjectCount
         controller.onUndoAvailabilityChanged = updateUndoAvailability
         controller.onExitImmersive = onExitImmersive
+        controller.onMultiplayerStatusChanged = onMultiplayerStatusChanged
         controller.onPencilTargetHovered = onPencilTargetHovered
         controller.onPencilTargetMissing = onPencilTargetMissing
         controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.onPhotoCaptured = onPhotoCaptured
         controller.setImmersive(isImmersive)
+        controller.setMultiplayerEnabled(isMultiplayerEnabled)
 
         if let selectedObjectAnimalLocomotion,
            controller.placedObjectSelection?.animalLocomotion != selectedObjectAnimalLocomotion {
@@ -981,6 +1010,39 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
                 undoAvailable = isAvailable
             }
         }
+    }
+}
+
+private struct ARMultiplayerStatusPill: View {
+    let status: ARMultiplayerStatus
+
+    private var tint: Color {
+        switch status {
+        case .disabled: Color(Color.Palette.n20)
+        case .searching, .connected, .synchronizing: AnimagicTheme.orange
+        case .ready: Color.Palette.g400
+        case .failed: Color.Palette.r400
+        }
+    }
+
+    var body: some View {
+        Label(status.title, systemImage: status.icon)
+            .font(.custom("Belanosima-SemiBold", size: 22))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(tint)
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(.black.opacity(0.2), lineWidth: 3)
+                    )
+            )
+            .padding(5)
+            .background(Capsule().fill(.white))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Multiplayer: \(status.title)")
     }
 }
 
@@ -1054,6 +1116,14 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var hasPlacedObject = false
     private var isImmersive = false
     private(set) var isSessionPaused = false
+    private let multipeerSession = ARMultipeerSession()
+    private var isMultiplayerEnabled = false
+    private var hasEstablishedSharedWorld = false
+    private var pendingSharedObjects: [UUID: ARSharedObjectPayload] = [:]
+    private var sharedObjectAnchors: [UUID: UUID] = [:]
+    private var receivedObjectAnchorTransforms: [UUID: simd_float4x4] = [:]
+    private var sharedObjectPayloads: [UUID: ARSharedObjectPayload] = [:]
+    private var pendingRemoteObjectIDs: Set<UUID> = []
 
     var handledCommand: NewARSceneCommand?
     var onPlacementStatusChanged: ((ARPlacementStatus) -> Void)?
@@ -1064,7 +1134,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     var onPencilTargetHovered: (() -> Void)?
     var onPencilTargetMissing: (() -> Void)?
     var onPencilRotationCompleted: (() -> Void)?
-    var onPhotoCaptured: ((Result<UIImage, Error>) -> Void)?
+        onPhotoCaptured: ((Result<UIImage, Error>) -> Void)? = nil,
+        isMultiplayerEnabled: Bool = false,
+        onMultiplayerStatusChanged: ((ARMultiplayerStatus) -> Void)? = nil
     private(set) var placementStatus: ARPlacementStatus = .searching
 
     var selectedObject: (any PlacedSceneObject)? { sceneEditor.selectedObject }
@@ -1078,6 +1150,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         selectedAnimalLocomotion: AnimalLocomotion,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
+        isMultiplayerEnabled: Bool,
         feedback: any ARPlacementFeedbackProviding,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil,
@@ -1087,7 +1160,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         onPencilTargetHovered: (() -> Void)? = nil,
         onPencilTargetMissing: (() -> Void)? = nil,
         onPencilRotationCompleted: (() -> Void)? = nil,
-        onPhotoCaptured: ((Result<UIImage, Error>) -> Void)? = nil
+        self.onPhotoCaptured = onPhotoCaptured
+        self.isMultiplayerEnabled = isMultiplayerEnabled
+        self.onMultiplayerStatusChanged = onMultiplayerStatusChanged
     ) {
         sceneEditor = CutoutSceneEditor(
             cutoutAssets: cutoutAssets,
@@ -1106,8 +1181,27 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         self.onPencilTargetHovered = onPencilTargetHovered
         self.onPencilTargetMissing = onPencilTargetMissing
         self.onPencilRotationCompleted = onPencilRotationCompleted
+<<<<<<< ours
         self.onPhotoCaptured = onPhotoCaptured
+=======
+        self.isMultiplayerEnabled = isMultiplayerEnabled
+        self.onMultiplayerStatusChanged = onMultiplayerStatusChanged
+>>>>>>> theirs
         super.init()
+
+        multipeerSession.onStatusChanged = { [weak self] status in
+            guard let self else { return }
+            self.onMultiplayerStatusChanged?(status)
+        }
+        multipeerSession.onCollaborationDataReceived = { [weak self] data in
+            self?.receiveCollaborationData(data)
+        }
+        multipeerSession.onSharedObjectReceived = { [weak self] object in
+            self?.receiveSharedObject(object)
+        }
+        multipeerSession.onPeerConnected = { [weak self] in
+            self?.sendSharedObjectSnapshot()
+        }
 
         sceneEditor.onSelectionChanged = { [weak self] selection in
             guard let self else { return }
@@ -1120,6 +1214,9 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         }
         sceneEditor.onPlacementResult = { [weak self] result in
             self?.handlePlacementResult(result)
+        }
+        sceneEditor.onObjectPlaced = { [weak self] object in
+            self?.handleObjectPlaced(object)
         }
     }
 
@@ -1152,6 +1249,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         pencilInteractionAdapter = pencilAdapter
         updateStatus(.searching)
         onObjectCountChanged?(0)
+        if isMultiplayerEnabled {
+            multipeerSession.start()
+        } else {
+            onMultiplayerStatusChanged?(.disabled)
+        }
     }
 
     private func setupLighting(in arView: ARView) {
@@ -1267,6 +1369,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = [.horizontal]
         configuration.environmentTexturing = .automatic
+        configuration.isCollaborationEnabled = isMultiplayerEnabled
         configureOcclusion(on: arView, with: configuration)
         return configuration
     }
@@ -1360,8 +1463,28 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        guard !hasPlacedObject else { return }
-        for planeAnchor in anchors.compactMap({ $0 as? ARPlaneAnchor }) {
+        for anchor in anchors {
+            if anchor is ARParticipantAnchor {
+                hasEstablishedSharedWorld = true
+                if isMultiplayerEnabled {
+                    onMultiplayerStatusChanged?(.ready(multipeerSession.connectedPeerCount))
+                    flushPendingSharedObjects()
+                }
+                continue
+            }
+
+            if let sharedObjectID = sharedObjectID(from: anchor) {
+                guard isMultiplayerEnabled,
+                      anchor.sessionIdentifier != session.identifier else { continue }
+                receivedObjectAnchorTransforms[sharedObjectID] = anchor.transform
+                if let payload = pendingSharedObjects.removeValue(forKey: sharedObjectID) {
+                    placeRemoteObject(payload, at: anchor.transform)
+                }
+                continue
+            }
+
+            guard !hasPlacedObject,
+                  let planeAnchor = anchor as? ARPlaneAnchor else { continue }
             let anchorEntity = makePlaneVisualization(for: planeAnchor)
             anchorEntity.isEnabled = !isImmersive
             arView?.scene.addAnchor(anchorEntity)
@@ -1389,6 +1512,18 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func sessionWasInterrupted(_ session: ARSession) {
         cancelPencilRotation()
         clearPencilHoverTarget()
+    }
+
+    func session(_ session: ARSession, didOutputCollaborationData data: ARSession.CollaborationData) {
+        guard isMultiplayerEnabled,
+              let encodedData = try? NSKeyedArchiver.archivedData(
+                withRootObject: data,
+                requiringSecureCoding: true
+              ) else { return }
+        multipeerSession.sendCollaborationData(
+            encodedData,
+            reliably: data.priority == .critical
+        )
     }
 
     private func makePlaneVisualization(for planeAnchor: ARPlaneAnchor) -> AnchorEntity {
@@ -1426,6 +1561,29 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         planeAnchors.removeAll()
     }
 
+    func setMultiplayerEnabled(_ enabled: Bool) {
+        guard isMultiplayerEnabled != enabled else { return }
+        isMultiplayerEnabled = enabled
+        hasEstablishedSharedWorld = false
+        pendingSharedObjects.removeAll()
+        receivedObjectAnchorTransforms.removeAll()
+
+        if enabled {
+            multipeerSession.start()
+            if let arView {
+                arView.session.run(makeWorldTrackingConfiguration(for: arView), options: [])
+            }
+            registerExistingSharedObjects()
+        } else {
+            multipeerSession.stop()
+            sharedObjectAnchors.removeAll()
+            if let arView {
+                arView.session.run(makeWorldTrackingConfiguration(for: arView), options: [])
+            }
+            onMultiplayerStatusChanged?(.disabled)
+        }
+    }
+
     private func placeAtFocus() {
         guard placedObjectSelection == nil,
               isTargetAcquired,
@@ -1443,6 +1601,141 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         )
         handlePlacementResult(result)
     }
+
+    private func handleObjectPlaced(_ object: any PlacedSceneObject) {
+        if pendingRemoteObjectIDs.remove(object.id) != nil {
+            onObjectCountChanged?(sceneEditor.objectCount)
+            return
+        }
+        guard isMultiplayerEnabled,
+              let payload = makeSharedObjectPayload(for: object) else {
+            return
+        }
+        sharedObjectPayloads[object.id] = payload
+        addSharedObjectAnchor(for: payload)
+        multipeerSession.sendSharedObject(payload)
+    }
+
+    private func makeSharedObjectPayload(for object: any PlacedSceneObject) -> ARSharedObjectPayload? {
+        let sharedContent: ARSharedObjectContent
+        switch object.selection.content {
+        case .doodle(let locomotion):
+            guard let assetID = object.sharedCutoutAssetID ?? selectedCutoutID,
+                  let asset = cutoutAssets.first(where: { $0.id == assetID }),
+                  let content = ARSharedObjectContent.doodle(asset: asset, locomotion: locomotion) else {
+                return nil
+            }
+            sharedContent = content
+        case .model(let modelID):
+            sharedContent = .model(modelID)
+        }
+
+        return ARSharedObjectPayload(
+            id: object.id,
+            content: sharedContent,
+            anchorTransform: ARSharedMatrix4x4(object.anchor.transformMatrix(relativeTo: nil)),
+            interactionTransform: ARSharedTransform(object.interactionRoot.transform),
+            supportSurfaceNormal: ARSharedVector3(object.supportSurfaceNormal)
+        )
+    }
+
+    private func registerExistingSharedObjects() {
+        for object in sceneEditor.objects {
+            guard sharedObjectPayloads[object.id] == nil,
+                  let payload = makeSharedObjectPayload(for: object) else { continue }
+            sharedObjectPayloads[object.id] = payload
+            addSharedObjectAnchor(for: payload)
+        }
+    }
+
+    private func addSharedObjectAnchor(for payload: ARSharedObjectPayload) {
+        guard isMultiplayerEnabled,
+              let arView,
+              sharedObjectAnchors[payload.id] == nil else { return }
+        let anchor = ARAnchor(
+            name: sharedAnchorName(for: payload.id),
+            transform: payload.anchorTransform.simdValue
+        )
+        arView.session.add(anchor: anchor)
+        sharedObjectAnchors[payload.id] = anchor.identifier
+    }
+
+    private func sendSharedObjectSnapshot() {
+        guard isMultiplayerEnabled else { return }
+        registerExistingSharedObjects()
+        sharedObjectPayloads.values.forEach { multipeerSession.sendSharedObject($0) }
+    }
+
+    private func receiveCollaborationData(_ data: Data) {
+        guard isMultiplayerEnabled,
+              let arView,
+              let collaborationData = try? NSKeyedUnarchiver.unarchivedObject(
+                ofClass: ARSession.CollaborationData.self,
+                from: data
+              ) else { return }
+        arView.session.update(with: collaborationData)
+        onMultiplayerStatusChanged?(.synchronizing)
+    }
+
+    private func receiveSharedObject(_ payload: ARSharedObjectPayload) {
+        guard isMultiplayerEnabled,
+              sceneEditor.objects.contains(where: { $0.id == payload.id }) == false,
+              payload.content.placedContent != nil else { return }
+
+        sharedObjectPayloads[payload.id] = payload
+        if let anchorTransform = receivedObjectAnchorTransforms[payload.id] {
+            placeRemoteObject(payload, at: anchorTransform)
+        } else if hasEstablishedSharedWorld {
+            placeRemoteObject(payload, at: payload.anchorTransform.simdValue)
+        } else {
+            pendingSharedObjects[payload.id] = payload
+        }
+    }
+
+    private func flushPendingSharedObjects() {
+        let pending = pendingSharedObjects.values
+        pendingSharedObjects.removeAll()
+        for payload in pending {
+            placeRemoteObject(
+                payload,
+                at: receivedObjectAnchorTransforms[payload.id] ?? payload.anchorTransform.simdValue
+            )
+        }
+    }
+
+    private func placeRemoteObject(_ payload: ARSharedObjectPayload, at anchorTransform: simd_float4x4) {
+        guard sceneEditor.objects.contains(where: { $0.id == payload.id }) == false,
+              let content = payload.content.placedContent else { return }
+        pendingRemoteObjectIDs.insert(payload.id)
+        let result = sceneEditor.placeSharedObject(
+            id: payload.id,
+            content: content,
+            cutoutAsset: payload.content.cutoutAsset(),
+            at: anchorTransform,
+            interactionTransform: payload.interactionTransform.realityKitTransform,
+            supportSurfaceNormal: payload.supportSurfaceNormal.simdValue
+        )
+        switch result {
+        case .placed:
+            handlePlacementResult(result)
+        case .loading:
+            break
+        default:
+            pendingRemoteObjectIDs.remove(payload.id)
+        }
+    }
+
+    private func sharedObjectID(from anchor: ARAnchor) -> UUID? {
+        guard let name = anchor.name,
+              name.hasPrefix(Self.sharedAnchorPrefix) else { return nil }
+        return UUID(uuidString: String(name.dropFirst(Self.sharedAnchorPrefix.count)))
+    }
+
+    private func sharedAnchorName(for objectID: UUID) -> String {
+        Self.sharedAnchorPrefix + objectID.uuidString
+    }
+
+    private static let sharedAnchorPrefix = "animagic-object-"
 
     private func handlePlacementResult(_ result: CutoutPlacementResult) {
         switch result {
@@ -1759,6 +2052,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func stopAnimationLoop() {
         statusResetTask?.cancel()
         statusResetTask = nil
+        multipeerSession.stop()
         setSelectionIndicatorDragging(false)
         pencilInteractionAdapter?.detach()
         pencilInteractionAdapter = nil

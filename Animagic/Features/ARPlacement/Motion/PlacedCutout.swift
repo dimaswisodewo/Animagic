@@ -36,6 +36,7 @@ final class PlacedCutout: PlacedSceneObject {
     private var isSelected = false
     private var viewerDistance: Float = 1.5
     private(set) var animalLocomotion: AnimalLocomotion
+    private let assetID: CutoutAsset.ID
     var isAnimationPaused = false
     var supportSurfaceNormal: SIMD3<Float>
 
@@ -52,6 +53,7 @@ final class PlacedCutout: PlacedSceneObject {
         cutoutAssetID: CutoutAsset.ID,
         anchor: AnchorEntity,
         parts: CutoutEntityParts,
+        assetID: CutoutAsset.ID,
         locomotion: AnimalLocomotion,
         spawnMode: SpawnMode,
         initialYaw: Float = 0,
@@ -74,6 +76,7 @@ final class PlacedCutout: PlacedSceneObject {
         meshes = parts.meshes
         facingOverride = parts.defaultFacing
         animalLocomotion = locomotion
+        self.assetID = assetID
         self.supportSurfaceNormal = supportSurfaceNormal
 
         let configuration = MotionInstanceConfiguration.make(
@@ -88,6 +91,8 @@ final class PlacedCutout: PlacedSceneObject {
         initialPosition.y += configuration.baseAltitude
         interactionRoot.setPosition(initialPosition, relativeTo: anchor)
     }
+
+    var sharedCutoutAssetID: CutoutAsset.ID? { assetID }
 
     func update(deltaTime: Float) {
         guard !isAnimationPaused else { return }

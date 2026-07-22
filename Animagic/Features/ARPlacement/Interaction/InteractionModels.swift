@@ -111,6 +111,7 @@ protocol PlacedSceneObject: AnyObject {
     var interactionRoot: Entity { get }
     var supportSurfaceNormal: SIMD3<Float> { get set }
     var selection: PlacedObjectSelection { get }
+    var sharedCutoutAssetID: CutoutAsset.ID? { get }
     var animatedWorldPosition: SIMD3<Float> { get }
     var elevationMeters: Float { get }
 
@@ -125,6 +126,7 @@ protocol PlacedSceneObject: AnyObject {
 }
 
 extension PlacedSceneObject {
+    var sharedCutoutAssetID: CutoutAsset.ID? { nil }
     var animatedWorldPosition: SIMD3<Float> { interactionRoot.position(relativeTo: nil) }
     var elevationMeters: Float { interactionRoot.position(relativeTo: anchor).y }
     func update(deltaTime: Float) {}

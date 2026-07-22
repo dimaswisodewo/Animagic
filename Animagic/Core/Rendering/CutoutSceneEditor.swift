@@ -36,6 +36,7 @@ final class CutoutSceneEditor: SceneEditing {
     var selectedContentType: PlacementContentType
     var selectedModelID: PlaceableUSDZModel.ID?
     var onPlacementResult: ((CutoutPlacementResult) -> Void)?
+    var onObjectPlaced: ((any PlacedSceneObject) -> Void)?
 
     var onSelectionChanged: ((PlacedObjectSelection?) -> Void)? {
         didSet {
@@ -55,6 +56,7 @@ final class CutoutSceneEditor: SceneEditing {
 
     var objectCount: Int { registry.objects.count }
     var maximumObjectCount: Int? { configuration.maximumObjectCount }
+    var objects: [any PlacedSceneObject] { registry.objects }
 
     init(
         cutoutAssets: [CutoutAsset],
@@ -145,6 +147,45 @@ final class CutoutSceneEditor: SceneEditing {
             spawnMode: .plane,
             supportSurfaceNormal: normal
         )
+    }
+
+    @discardableResult
+    func placeSharedObject(
+        id: UUID,
+        content: PlacedObjectContent,
+        cutoutAsset: CutoutAsset?,
+        at transform: simd_float4x4,
+        interactionTransform: Transform,
+        supportSurfaceNormal: SIMD3<Float>
+    ) -> CutoutPlacementResult {
+        guard registry.object(withID: id) == nil else { return .placed }
+        guard objectCount < (configuration.maximumObjectCount ?? .max) else {
+            return .limitReached(configuration.maximumObjectCount ?? .max)
+        }
+
+        switch content {
+        case .doodle(let locomotion):
+            return placeCutout(
+                at: transform,
+                cameraTransform: nil,
+                spawnMode: .plane,
+                supportSurfaceNormal: supportSurfaceNormal,
+                objectID: id,
+                cutoutAsset: cutoutAsset,
+                locomotion: locomotion,
+                interactionTransform: interactionTransform,
+                selectsObject: false
+            )
+        case .model(let modelID):
+            return placeModel(
+                at: transform,
+                supportSurfaceNormal: supportSurfaceNormal,
+                objectID: id,
+                modelID: modelID,
+                interactionTransform: interactionTransform,
+                selectsObject: false
+            )
+        }
     }
 
     @discardableResult
@@ -259,7 +300,10 @@ final class CutoutSceneEditor: SceneEditing {
         at transform: simd_float4x4,
         cameraTransform: simd_float4x4?,
         spawnMode: SpawnMode,
-        supportSurfaceNormal: SIMD3<Float>
+        supportSurfaceNormal: SIMD3<Float>,
+        objectID: UUID = UUID(),
+        interactionTransform: Transform? = nil,
+        selectsObject: Bool = true
     ) -> CutoutPlacementResult {
         if let maximumObjectCount = configuration.maximumObjectCount,
            objectCount >= maximumObjectCount {
@@ -272,12 +316,21 @@ final class CutoutSceneEditor: SceneEditing {
                 at: transform,
                 cameraTransform: cameraTransform,
                 spawnMode: spawnMode,
-                supportSurfaceNormal: supportSurfaceNormal
+                supportSurfaceNormal: supportSurfaceNormal,
+                objectID: objectID,
+                cutoutAsset: selectedCutoutAsset,
+                locomotion: selectedAnimalLocomotion,
+                interactionTransform: interactionTransform,
+                selectsObject: selectsObject
             )
         case .model:
             return placeModel(
                 at: transform,
-                supportSurfaceNormal: supportSurfaceNormal
+                supportSurfaceNormal: supportSurfaceNormal,
+                objectID: objectID,
+                modelID: selectedModelID,
+                interactionTransform: interactionTransform,
+                selectsObject: selectsObject
             )
         }
     }
@@ -286,15 +339,19 @@ final class CutoutSceneEditor: SceneEditing {
         at transform: simd_float4x4,
         cameraTransform: simd_float4x4?,
         spawnMode: SpawnMode,
-        supportSurfaceNormal: SIMD3<Float>
+        supportSurfaceNormal: SIMD3<Float>,
+        objectID: UUID,
+        cutoutAsset: CutoutAsset?,
+        locomotion: AnimalLocomotion,
+        interactionTransform: Transform?,
+        selectsObject: Bool
     ) -> CutoutPlacementResult {
-        let objectID = UUID()
-        guard let cutoutAsset = selectedCutoutAsset else {
+        guard let cutoutAsset else {
             return .missingAsset
         }
         guard let cutout = try? entityFactory.makeEntity(
                   from: cutoutAsset,
-                  locomotion: selectedAnimalLocomotion,
+                  locomotion: locomotion,
                   objectID: objectID,
                   physicalWidth: configuration.physicalWidthOverride,
                   showsShadow: configuration.showsShadow
@@ -318,26 +375,37 @@ final class CutoutSceneEditor: SceneEditing {
                 cutoutAssetID: cutoutAsset.id,
                 anchor: anchor,
                 parts: cutout,
-                locomotion: selectedAnimalLocomotion,
+                assetID: cutoutAsset.id,
+                locomotion: locomotion,
                 spawnMode: spawnMode,
                 initialYaw: spawnOrientation.yaw,
                 initialRoll: spawnOrientation.roll,
                 supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
             )
+        if let interactionTransform {
+            placedCutout.interactionRoot.transform = interactionTransform
+        }
         registry.register(placedCutout)
-        interactionManager.selectObject(withID: objectID)
+        onObjectPlaced?(placedCutout)
+        if selectsObject {
+            interactionManager.selectObject(withID: objectID)
+        }
         return .placed
     }
 
     private func placeModel(
         at transform: simd_float4x4,
-        supportSurfaceNormal: SIMD3<Float>
+        supportSurfaceNormal: SIMD3<Float>,
+        objectID: UUID,
+        modelID: PlaceableUSDZModel.ID?,
+        interactionTransform: Transform?,
+        selectsObject: Bool
     ) -> CutoutPlacementResult {
         guard !isLoadingModel else {
             return .loading("Loading model…")
         }
-        guard let selectedModelID,
-              let model = PlaceableUSDZModel.model(withID: selectedModelID) else {
+        guard let modelID,
+              let model = PlaceableUSDZModel.model(withID: modelID) else {
             return .missingModel
         }
 
@@ -361,7 +429,6 @@ final class CutoutSceneEditor: SceneEditing {
                     .creationFailed(error.localizedDescription)
                 )
             case .success(let loadedEntity):
-                let objectID = UUID()
                 let anchor = AnchorEntity(world: transform)
                 let placedModel = PlacedUSDZModel(
                     id: objectID,
@@ -370,13 +437,20 @@ final class CutoutSceneEditor: SceneEditing {
                     loadedEntity: loadedEntity,
                     supportSurfaceNormal: simd_normalize(supportSurfaceNormal)
                 )
-                placedModel.interactionRoot.orientation = simd_quatf(
-                    angle: Float.random(in: (-.pi / 30)...(.pi / 30)),
-                    axis: [0, 1, 0]
-                )
+                if let interactionTransform {
+                    placedModel.interactionRoot.transform = interactionTransform
+                } else {
+                    placedModel.interactionRoot.orientation = simd_quatf(
+                        angle: Float.random(in: (-.pi / 30)...(.pi / 30)),
+                        axis: [0, 1, 0]
+                    )
+                }
                 arView.scene.addAnchor(anchor)
                 self.registry.register(placedModel)
-                self.interactionManager.selectObject(withID: objectID)
+                self.onObjectPlaced?(placedModel)
+                if selectsObject {
+                    self.interactionManager.selectObject(withID: objectID)
+                }
                 self.onPlacementResult?(.placed)
             }
         }
