@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct BackpackPageView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(NavigationRouter.self) private var router
     @Environment(DrawingSessionManager.self) private var drawingSession
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
@@ -23,7 +22,7 @@ struct BackpackPageView: View {
         VStack(spacing: 0) {
             BackpackHeader(
                 searchText: $searchText,
-                onBack: dismiss.callAsFunction,
+                onBack: router.pop,
                 onDrawMore: startNewDrawing,
                 onOpenAR: openAR
             )
@@ -89,6 +88,7 @@ struct BackpackPageView: View {
                             drawing: drawing,
                             classificationError: artworkStore.classificationError(forDrawingID: drawing.id)
                         )
+                        .id(ArtworkLibraryPresentation.displayName(for: drawing))
                     }
                     .buttonStyle(.animagicPress)
                 }
