@@ -46,6 +46,12 @@ Blender-derived RealityKit assets follow the documented [AR asset pipeline](docs
 
 See the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) for conversion steps and [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md) for delivery gates and known failure modes.
 
+For supported static props, run `./scripts/ar-asset` for a guided terminal workflow, or `./scripts/ar-asset build /path/to/Asset.blend` for automation. Both produce an auditable validation report under `build/asset-pipeline/`.
+
+See the [`ar-asset` operator guide](scripts/README.md) for installation, guided and explicit workflows, output files, review, and troubleshooting.
+
+Install the command for use from any directory with `./scripts/ar-asset install`. The per-user installation requires no `sudo`; verify it with `ar-asset doctor`, update it by rerunning the repository install command, and remove it with `ar-asset uninstall`.
+
 ## Requirements
 
 - macOS with **Xcode 16 or newer**

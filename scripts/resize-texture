@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+#
+#  resize-texture
+#  AniMagic
+#
+#  Created by dimaswisodewo on 23/07/26.
+#
+
+"""Create preset, aspect-ratio-preserving variants of an image texture."""
+
+from __future__ import annotations
+
+import argparse
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+
+PRESET_SIZES = (512, 1024, 2048, 4096)
+SIPS_PATH = Path("/usr/bin/sips")
+
+
+class ResizeError(RuntimeError):
+    """A user-facing texture resize failure."""
+
+
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="resize-texture",
+        description=(
+            "Create 512, 1024, 2048, and 4096 px texture variants without "
+            "changing the source image."
+        ),
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="replace matching generated variants that already exist",
+    )
+    parser.add_argument("image", type=Path, help="path to one source image")
+    return parser
+
+
+def run_sips(arguments: list[str]) -> str:
+    try:
+        result = subprocess.run(
+            [str(SIPS_PATH), *arguments],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as error:
+        raise ResizeError(f"Required tool was not found: {SIPS_PATH}") from error
+    except subprocess.CalledProcessError as error:
+        detail = error.stderr.strip() or error.stdout.strip() or "unknown sips error"
+        raise ResizeError(detail) from error
+    return result.stdout
+
+
+def image_dimensions(path: Path) -> tuple[int, int]:
+    output = run_sips(
+        ["--getProperty", "pixelWidth", "--getProperty", "pixelHeight", str(path)]
+    )
+    width_match = re.search(r"pixelWidth:\s*(\d+)", output)
+    height_match = re.search(r"pixelHeight:\s*(\d+)", output)
+    if not width_match or not height_match:
+        raise ResizeError(f"Could not read image dimensions: {path}")
+
+    width = int(width_match.group(1))
+    height = int(height_match.group(1))
+    if width <= 0 or height <= 0:
+        raise ResizeError(f"Image has invalid dimensions: {path}")
+    return width, height
+
+
+def output_paths(source: Path, sizes: list[int]) -> tuple[Path, dict[int, Path]]:
+    output_directory = source.parent / f"{source.stem}-resized"
+    paths = {
+        size: output_directory / f"{source.stem}-{size}{source.suffix}"
+        for size in sizes
+    }
+    return output_directory, paths
+
+
+def resize_texture(source_argument: Path, force: bool) -> int:
+    source = source_argument.expanduser().resolve()
+    if not source.is_file():
+        raise ResizeError(f"Input image was not found: {source_argument}")
+    if not source.suffix:
+        raise ResizeError("Input image must have a filename extension.")
+
+    width, height = image_dimensions(source)
+    longest_edge = max(width, height)
+    sizes_to_generate = [size for size in PRESET_SIZES if size < longest_edge]
+    skipped_sizes = [size for size in PRESET_SIZES if size >= longest_edge]
+    output_directory, destinations = output_paths(source, sizes_to_generate)
+
+    if output_directory.exists() and not output_directory.is_dir():
+        raise ResizeError(f"Output path is not a directory: {output_directory}")
+
+    collisions = [destinations[size] for size in sizes_to_generate if destinations[size].exists()]
+    if collisions and not force:
+        formatted = "\n".join(f"  {path}" for path in collisions)
+        raise ResizeError(
+            "Generated output already exists. Rerun with --force to replace it:\n"
+            f"{formatted}"
+        )
+
+    if not sizes_to_generate:
+        print(
+            f"No variants generated: {source.name} is {width}x{height}, "
+            "which does not exceed the 512 px preset."
+        )
+        for size in skipped_sizes:
+            print(f"Skipped {size} px (source longest edge: {longest_edge} px)")
+        return 0
+
+    temporary_directory = Path(
+        tempfile.mkdtemp(prefix=f".{source.stem}-resize-", dir=source.parent)
+    )
+    try:
+        temporary_outputs: dict[int, Path] = {}
+        for size in sizes_to_generate:
+            temporary_output = temporary_directory / destinations[size].name
+            run_sips(
+                [
+                    "--resampleHeightWidthMax",
+                    str(size),
+                    str(source),
+                    "--out",
+                    str(temporary_output),
+                ]
+            )
+            image_dimensions(temporary_output)
+            temporary_outputs[size] = temporary_output
+
+        output_directory.mkdir(exist_ok=True)
+        for size in sizes_to_generate:
+            os.replace(temporary_outputs[size], destinations[size])
+            output_width, output_height = image_dimensions(destinations[size])
+            print(
+                f"Generated {size} px: {destinations[size]} "
+                f"({output_width}x{output_height})"
+            )
+    finally:
+        shutil.rmtree(temporary_directory, ignore_errors=True)
+
+    for size in skipped_sizes:
+        print(f"Skipped {size} px (source longest edge: {longest_edge} px)")
+    print(f"Created {len(sizes_to_generate)} variant(s) in {output_directory}")
+    return 0
+
+
+def main() -> int:
+    args = create_parser().parse_args()
+    try:
+        return resize_texture(args.image, args.force)
+    except ResizeError as error:
+        print(f"Error: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

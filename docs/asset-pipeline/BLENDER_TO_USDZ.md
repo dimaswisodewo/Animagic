@@ -2,6 +2,62 @@
 
 This runbook defines the authoritative script-first conversion. Blender UI operations are acceptable for inspection and art review, but automation should produce the delivery artifact so results are repeatable.
 
+## Automated workflow
+
+Install the per-user CLI once with `./scripts/ar-asset install`, then run `ar-asset doctor`. The installed command can be invoked from any directory and defaults to `~/Documents/AniMagic AR Assets`; repository-local commands continue to use the ignored repository build directory.
+
+When the Blend is already authored at the desired geometry, transforms, scale,
+and texture resolution, export it directly:
+
+```bash
+./scripts/ar-asset export /path/to/Asset.blend
+```
+
+This exports every render-visible mesh, preserves authored geometry and texture
+dimensions, normalizes supported opaque materials, performs the same explicit
+Apple packaging and validation gates, and writes `<Asset>.usdz` beside the source
+only after validation succeeds.
+
+For the supported static-prop workflow, run:
+
+```bash
+./scripts/ar-asset build /path/to/Asset.blend \
+  --target-triangles 15000
+```
+
+Useful options:
+
+- `--name <Asset>` overrides the sanitized source filename used for artifacts.
+- `--object <mesh>` resolves a scene with multiple visible meshes.
+- `--target-height-m <meters>` supplies intended scale when scene metadata is not plausibly meter-based.
+- `--textures-only` skips triangle-budget enforcement and mesh decimation while retaining the rest of the build and validation workflow.
+- `--max-texture-size <pixels>` sets the maximum texture width or height; the default is 1024.
+- `--output-dir <path>` overrides `build/asset-pipeline/<Asset>`.
+- `--blender <path>` selects a non-default Blender executable.
+
+`--textures-only` and `--target-triangles` are mutually exclusive. For example, to retain the
+evaluated mesh geometry while limiting its used textures to 512 pixels:
+
+```bash
+./scripts/ar-asset build /path/to/Asset.blend \
+  --textures-only \
+  --max-texture-size 512
+```
+
+Texture-only builds still select a single delivery mesh, apply its render modifiers and transforms,
+validate or set metric scale, center it on the ground, normalize its supported materials, package
+the USDZ, and generate a Metal validation render. They skip only triangle decimation.
+
+The CLI implements the inventory, optimization, texture conversion, material normalization, USDC export, Apple packaging, structural checks, and Metal render described below. It supports one static delivery mesh with Principled BSDF materials, direct base-color image connections or constants, and optional normal images connected through Normal Map nodes. It deliberately rejects rigs, shape keys, multi-object delivery props, and shader graphs whose intent cannot be inferred safely.
+
+After inspecting the generated Metal render, record approval:
+
+```bash
+./scripts/ar-asset approve build/asset-pipeline/<Asset>
+```
+
+`report.json` remains `technical_pass` with visual review `pending` until this command verifies the artifact hashes and records the reviewer.
+
 ## 1. Preserve and inventory the source
 
 Never overwrite `<Asset>.blend`. Open it read-only or in a separate background process and collect:
@@ -48,14 +104,14 @@ Process only images that are actually connected to delivered materials.
 
 ### Base color
 
-- Resize so the longest side is at most 1024 px while preserving aspect ratio.
+- Resize so the longest side is at most the `--max-texture-size` value (1024 px by default) while preserving aspect ratio.
 - Save as a genuine baseline RGB JPEG at quality about 82.
 - Use an `.jpg` extension and `sRGB` interpretation.
 - Do not retain an alpha channel for an opaque prop.
 
 ### Normal maps
 
-- Resize so the longest side is at most 1024 px.
+- Resize so the longest side is at most the `--max-texture-size` value (1024 px by default).
 - Save as a genuine 8-bit RGB PNG.
 - Use a `.png` extension and Blender's `Non-Color` interpretation.
 - Connect through a Normal Map node, never directly to Principled BSDF Normal.
