@@ -39,6 +39,80 @@ extension ButtonStyle where Self == AnimagicPressButtonStyle {
     static var animagicPress: AnimagicPressButtonStyle { AnimagicPressButtonStyle() }
 }
 
+struct AnimagicToggleStyle: ToggleStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            HStack(spacing: 16) {
+                configuration.label
+                    .font(.custom("Belanosima-SemiBold", size: 22, relativeTo: .headline))
+                    .foregroundStyle(AnimagicTheme.darkNavy)
+
+                Spacer(minLength: 12)
+
+                toggleTrack(isOn: configuration.isOn)
+            }
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.animagicPress)
+        .accessibilityValue(configuration.isOn ? "On" : "Off")
+    }
+
+    private func toggleTrack(isOn: Bool) -> some View {
+        HStack(spacing: 6) {
+            if isOn {
+                Text("On")
+                    .font(.custom("Belanosima-SemiBold", size: 18, relativeTo: .subheadline))
+                    .foregroundStyle(.white)
+                    .padding(.leading, 8)
+                Spacer(minLength: 0)
+            }
+
+            Image(systemName: isOn ? "waveform" : "waveform.slash")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(isOn ? AnimagicTheme.orange : Color.Palette.n70)
+                .frame(width: 34, height: 34)
+                .background(Color.white, in: Circle())
+                .overlay {
+                    Circle()
+                        .strokeBorder(Color.black.opacity(0.2), lineWidth: 2)
+                }
+
+            if !isOn {
+                Spacer(minLength: 0)
+                Text("Off")
+                    .font(.custom("Belanosima-SemiBold", size: 18, relativeTo: .subheadline))
+                    .foregroundStyle(Color.Palette.n70)
+                    .padding(.trailing, 8)
+            }
+        }
+        .padding(6)
+        .frame(width: 112, height: 52)
+        .background(
+            Capsule()
+                .fill(isOn ? AnimagicTheme.orange : Color(Color.Palette.n20))
+                .overlay {
+                    Capsule()
+                        .strokeBorder(Color.black.opacity(0.2), lineWidth: 4)
+                }
+        )
+        .padding(6)
+        .background(Capsule().fill(Color.white))
+        .animation(
+            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+            value: isOn
+        )
+    }
+}
+
+extension ToggleStyle where Self == AnimagicToggleStyle {
+    static var animagic: AnimagicToggleStyle { AnimagicToggleStyle() }
+}
+
 struct AnimagicIconButton: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

@@ -137,7 +137,7 @@ struct NewARPlacementView: View {
     }
 
     private enum Layout {
-        static let topControlInset: CGFloat = 12
+        static let topControlInset: CGFloat = 24
         static let iconButtonDiameter: CGFloat = 84
         static let backpackTopGap: CGFloat = 12
         static let backpackMinimumHeight: CGFloat = 220
@@ -167,6 +167,8 @@ struct NewARPlacementView: View {
                 arContent
             }
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
             checkCameraPermission()
         }
@@ -475,13 +477,27 @@ struct NewARPlacementView: View {
                     .opacity(returnRecoveryState.readiness.allowsInteraction ? 1 : 0.55)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 } else if placedObjectSelection == nil {
-                    AnimagicLabelButton(
-                        title: placeButtonTitle,
-                        backgroundColor: AnimagicTheme.blue,
-                        innerBorderColor: Color.Palette.b400,
-                        isDisabled: !canPlace,
-                        isDimmed: !canPlace,
-                        action: { sceneCommand = .place(UUID()) }
+                    placementControlLayout {
+                        if !isBackpackExpanded {
+                            selectedContentIndicator
+                        }
+
+                        AnimagicLabelButton(
+                            title: placeButtonTitle,
+                            backgroundColor: AnimagicTheme.blue,
+                            innerBorderColor: Color.Palette.b400,
+                            isDisabled: !canPlace,
+                            isDimmed: !canPlace,
+                            action: { sceneCommand = .place(UUID()) }
+                        )
+                    }
+                    .animation(
+                        reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                        value: selectedCutoutID
+                    )
+                    .animation(
+                        reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+                        value: selectedModelID
                     )
                 }
             }
@@ -489,6 +505,14 @@ struct NewARPlacementView: View {
             .padding(.vertical, 24)
 
             Spacer()
+        }
+    }
+
+    private var placementControlLayout: AnyLayout {
+        if verticalSizeClass == .compact {
+            AnyLayout(HStackLayout(alignment: .bottom, spacing: 10))
+        } else {
+            AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
         }
     }
 
@@ -711,6 +735,61 @@ struct NewARPlacementView: View {
         case .model:
             return selectedModelID != nil
         }
+    }
+
+    private var selectedCutoutAsset: CutoutAsset? {
+        guard selectedContentType == .doodle,
+              let selectedCutoutID else { return nil }
+        return arCutoutAssets.first(where: { $0.id == selectedCutoutID })
+    }
+
+    private var selectedModel: PlaceableUSDZModel? {
+        guard selectedContentType == .model,
+              let selectedModelID else { return nil }
+        return PlaceableUSDZModel.model(withID: selectedModelID)
+    }
+
+    @ViewBuilder
+    private var selectedContentIndicator: some View {
+        if let asset = selectedCutoutAsset {
+            ARSelectedContentIndicator(
+                kindTitle: "Doodle",
+                title: titleForCutout(asset),
+                accentColor: AnimagicTheme.orange
+            ) {
+                Image(uiImage: asset.image)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(2)
+            }
+            .id("doodle-\(asset.id.uuidString)")
+            .transition(selectedIndicatorTransition)
+        } else if let model = selectedModel {
+            ARSelectedContentIndicator(
+                kindTitle: "3D Model",
+                title: model.title,
+                accentColor: AnimagicTheme.blue
+            ) {
+                ARUSDZThumbnail(model: model)
+                    .padding(2)
+            }
+            .id("model-\(model.id.rawValue)")
+            .transition(selectedIndicatorTransition)
+        }
+    }
+
+    private var selectedIndicatorTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .scale(scale: 0.96, anchor: .bottomLeading).combined(with: .opacity)
+    }
+
+    private func titleForCutout(_ cutout: CutoutAsset) -> String {
+        guard let drawing = artworkStore.drawing(id: cutout.sourceDrawingID) else {
+            return "My Doodle"
+        }
+        let title = drawing.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return title.isEmpty ? "My Doodle" : title
     }
 
     private var arCutoutItems: [BackpackCutoutItem] {
