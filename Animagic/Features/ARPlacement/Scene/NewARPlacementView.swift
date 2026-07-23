@@ -115,7 +115,7 @@ struct NewARPlacementView: View {
     @State private var immersiveHintTask: Task<Void, Never>?
     @State private var cameraPermissionState: CameraPermissionState = .checking
     @State private var isTopMenuExpanded = false
-    @State private var isBackpackExpanded = true
+    @State private var isBackpackExpanded = false
     @State private var hasFoundInitialSurface = false
     @State private var isCapturingPhoto = false
     @State private var isShowingCaptureFlash = false
@@ -1114,8 +1114,8 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             onPencilTargetMissing: onPencilTargetMissing,
             onPencilRotationCompleted: onPencilRotationCompleted,
             onPhotoCaptured: onPhotoCaptured,
-            onReadinessChanged: onReadinessChanged,
-            onSessionInterrupted: onSessionInterrupted
+            onReadinessChanged: deliverReadinessUpdate,
+            onSessionInterrupted: deliverSessionInterruption
         )
     }
 
@@ -1142,8 +1142,8 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
         controller.onPencilTargetMissing = onPencilTargetMissing
         controller.onPencilRotationCompleted = onPencilRotationCompleted
         controller.onPhotoCaptured = onPhotoCaptured
-        controller.onReadinessChanged = onReadinessChanged
-        controller.onSessionInterrupted = onSessionInterrupted
+        controller.onReadinessChanged = deliverReadinessUpdate
+        controller.onSessionInterrupted = deliverSessionInterruption
         controller.setAppSceneActive(isAppSceneActive)
         controller.setImmersive(isImmersive)
 
@@ -1167,11 +1167,7 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ arView: ARView, coordinator: NewARSceneController) {
-        coordinator.stopAnimationLoop()
-        coordinator.cleanupLighting()
-        coordinator.cleanupFocusIndicator()
-        coordinator.cleanupPlaneAnchors()
-        arView.session.pause()
+        coordinator.tearDown(arView)
     }
 
     private func updateSelection(_ selection: PlacedObjectSelection?) {
@@ -1210,6 +1206,18 @@ struct ARRealityViewRepresentable: UIViewRepresentable {
             if undoAvailable != isAvailable {
                 undoAvailable = isAvailable
             }
+        }
+    }
+
+    private func deliverReadinessUpdate(_ readiness: ARTrackingReadiness) {
+        Task { @MainActor in
+            onReadinessChanged(readiness)
+        }
+    }
+
+    private func deliverSessionInterruption() {
+        Task { @MainActor in
+            onSessionInterrupted()
         }
     }
 }
@@ -1300,6 +1308,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var isTrackingNormal = false
     private var isSessionInterrupted = false
     private var isAppSceneActive = true
+    private var isTearingDown = false
     private var hasProvidedSurfaceReadyFeedback = false
     private var lastValidTransform: simd_float4x4?
     private var lastValidNormal: SIMD3<Float>?
@@ -1394,6 +1403,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func runSession(on arView: ARView) {
+        isTearingDown = false
         self.arView = arView
         sceneEditor.arView = arView
         guard ARWorldTrackingConfiguration.isSupported else {
@@ -2049,6 +2059,34 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         pendingDeletion = nil
     }
 
+    func tearDown(_ arView: ARView) {
+        guard !isTearingDown else { return }
+        isTearingDown = true
+        arView.session.delegate = nil
+        clearCallbacks()
+        stopAnimationLoop()
+        cleanupLighting()
+        cleanupFocusIndicator()
+        cleanupPlaneAnchors()
+        arView.session.pause()
+        sceneEditor.arView = nil
+        self.arView = nil
+    }
+
+    private func clearCallbacks() {
+        onPlacementStatusChanged = nil
+        onSelectionChanged = nil
+        onObjectCountChanged = nil
+        onUndoAvailabilityChanged = nil
+        onExitImmersive = nil
+        onPencilTargetHovered = nil
+        onPencilTargetMissing = nil
+        onPencilRotationCompleted = nil
+        onPhotoCaptured = nil
+        onReadinessChanged = nil
+        onSessionInterrupted = nil
+    }
+
     func updateSimulation(deltaTime: Float) {
         sceneEditor.update(deltaTime: deltaTime)
     }
@@ -2161,6 +2199,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     private func notifyReadinessChanged() {
+        guard !isTearingDown else { return }
         onReadinessChanged?(ARTrackingReadiness(
             isTrackingNormal: isTrackingNormal && !isSessionInterrupted && isAppSceneActive,
             hasSurface: isTargetAcquired
