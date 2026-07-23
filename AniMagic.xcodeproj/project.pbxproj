@@ -12,8 +12,12 @@
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */; };
 		13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */; };
+		15BCA40123CDEF0000000001 /* CutoutContourExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */; };
+		15BCA40123CDEF0000000002 /* CardboardRimMeshGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */; };
+		15BCA40123CDEF0000000003 /* CardboardSurfaceField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */; };
 		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
 		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
+		1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B760E43EEC00C31B3BC26C6E /* Cloud.usdz */; };
 		1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */; };
 		1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */; };
 		22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1056000C4958CB23F9F1962F /* Assets.xcassets */; };
@@ -47,11 +51,11 @@
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
 		770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D044F34FEBE90F2C670DAF /* AudioManager.swift */; };
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
-		D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
 		7B9A5F927CDACF2F8DB5BD14 /* Broccoli.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */; };
+		7C49A4BF2BB3F20E53D8C7E3 /* TreeTrunk.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */; };
 		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
 		7CEF23E11CC5EA193748F74E /* ColorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C865A342D8F33249F737C2E3 /* ColorToken.swift */; };
 		815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */; };
@@ -97,6 +101,7 @@
 		EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */; };
 		EC0BF8E0F69BBFFE35B038E7 /* NativeCameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */; };
 		EC67889AF56BDE8DACB33C4C /* VirtualRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */; };
+		ECC5FFB58F9A60F0BD783E13 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */; };
 		F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */; };
 		F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */; };
 		FC3FA727CD38D1E3AEE4EA4D /* VisionForegroundCutoutProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */; };
@@ -115,6 +120,9 @@
 		11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePlaceholderView.swift; sourceTree = "<group>"; };
 		14A60964229B227465EE8AD4 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Birds.usdz; sourceTree = "<group>"; };
 		15945EA983940214C874F789 /* TreeStump.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = TreeStump.usdz; sourceTree = "<group>"; };
+		15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutContourExtraction.swift; sourceTree = "<group>"; };
+		15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardRimMeshGenerator.swift; sourceTree = "<group>"; };
+		15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardSurfaceField.swift; sourceTree = "<group>"; };
 		1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
 		19D044F34FEBE90F2C670DAF /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
@@ -127,11 +135,10 @@
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
-		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
-		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
+		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
-		B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -161,6 +168,7 @@
 		750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionManager.swift; sourceTree = "<group>"; };
 		777390A8652DBF52D2DA8707 /* WaterMelon.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = WaterMelon.usdz; sourceTree = "<group>"; };
 		7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutEntityFactory.swift; sourceTree = "<group>"; };
+		7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = TreeTrunk.usdz; sourceTree = "<group>"; };
 		7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Broccoli.usdz; sourceTree = "<group>"; };
 		82D64AFC77E63971E16652B5 /* ARReturnRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARReturnRecoveryView.swift; sourceTree = "<group>"; };
 		8331F114D19F860980D9EF08 /* tap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = tap.mp3; sourceTree = "<group>"; };
@@ -180,6 +188,7 @@
 		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
 		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
+		B760E43EEC00C31B3BC26C6E /* Cloud.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Cloud.usdz; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
 		C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
@@ -187,6 +196,7 @@
 		C865A342D8F33249F737C2E3 /* ColorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToken.swift; sourceTree = "<group>"; };
 		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		D6F9B88EF207E0F2806EB8A8 /* ButtonSfx.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ButtonSfx.mp3; sourceTree = "<group>"; };
+		D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
 		DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneController.swift; sourceTree = "<group>"; };
 		DB73231B83858CE30A584E76 /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
 		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
@@ -614,10 +624,12 @@
 			children = (
 				14A60964229B227465EE8AD4 /* Birds.usdz */,
 				7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */,
+				B760E43EEC00C31B3BC26C6E /* Cloud.usdz */,
 				AE185F0D5C9434A5A272154D /* Croissant.usdz */,
 				AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */,
 				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
 				15945EA983940214C874F789 /* TreeStump.usdz */,
+				7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */,
 				777390A8652DBF52D2DA8707 /* WaterMelon.usdz */,
 			);
 			path = VirtualRoom;
@@ -629,6 +641,9 @@
 				28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */,
 				F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */,
 				2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */,
+				15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */,
+				15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */,
+				15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */,
 				F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */,
 				F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */,
 				FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */,
@@ -650,7 +665,8 @@
 			children = (
 				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
 				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
-				B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */,
+				82D64AFC77E63971E16652B5 /* ARReturnRecoveryView.swift */,
+				D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -721,10 +737,12 @@
 				238238874722D44037214247 /* Birds.usdz in Resources */,
 				7B9A5F927CDACF2F8DB5BD14 /* Broccoli.usdz in Resources */,
 				35DBB73FBA018A10878D0ECC /* ButtonSfx.mp3 in Resources */,
+				1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */,
 				92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */,
 				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
 				6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */,
+				7C49A4BF2BB3F20E53D8C7E3 /* TreeTrunk.usdz in Resources */,
 				B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */,
 				2450F58C34EAD53998B320DF /* bgm_home.mp3 in Resources */,
 				B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */,
@@ -741,8 +759,9 @@
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
-				D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */,
+				55F9E2EC56BFF343AC05F6EA /* ARReturnRecoveryView.swift in Sources */,
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
+				ECC5FFB58F9A60F0BD783E13 /* ARSelectedContentIndicator.swift in Sources */,
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,
 				D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */,
@@ -776,6 +795,9 @@
 				33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */,
 				DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */,
 				9D439EC03C5A72F3802DE170 /* CutoutRigAnalysis.swift in Sources */,
+				15BCA40123CDEF0000000001 /* CutoutContourExtraction.swift in Sources */,
+				15BCA40123CDEF0000000002 /* CardboardRimMeshGenerator.swift in Sources */,
+				15BCA40123CDEF0000000003 /* CardboardSurfaceField.swift in Sources */,
 				94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */,
 				B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */,
 				79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */,
@@ -835,8 +857,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
@@ -844,7 +870,10 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -933,6 +962,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
@@ -941,7 +971,10 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic;
