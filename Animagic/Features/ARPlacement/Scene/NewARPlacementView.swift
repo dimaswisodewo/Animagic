@@ -149,7 +149,6 @@ struct NewARPlacementView: View {
 
     init(initialCutoutID: CutoutAsset.ID? = nil) {
         self.initialCutoutID = initialCutoutID
-        _selectedCutoutID = State(initialValue: initialCutoutID)
     }
 
     var body: some View {
@@ -1308,6 +1307,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     private var isTrackingNormal = false
     private var isSessionInterrupted = false
     private var isAppSceneActive = true
+    private var needsTrackingStateRefresh = false
     private var isTearingDown = false
     private var hasProvidedSurfaceReadyFeedback = false
     private var lastValidTransform: simd_float4x4?
@@ -1667,7 +1667,14 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     func sessionInterruptionEnded(_ session: ARSession) {
         isSessionInterrupted = false
         updateStatus(.limited("Point your device back at the original area and move slowly."))
-        notifyReadinessChanged()
+        refreshTrackingState(from: session.currentFrame?.camera)
+    }
+
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        guard needsTrackingStateRefresh,
+              isAppSceneActive,
+              !isSessionInterrupted else { return }
+        applyTrackingState(frame.camera)
     }
 
     private func makePlaneVisualization(for planeAnchor: ARPlaneAnchor) -> AnchorEntity {
@@ -2118,6 +2125,11 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
     }
 
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        applyTrackingState(camera)
+    }
+
+    private func applyTrackingState(_ camera: ARCamera) {
+        needsTrackingStateRefresh = false
         switch camera.trackingState {
         case .normal:
             isTrackingNormal = true
@@ -2139,6 +2151,15 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
             cancelActiveInteractions()
         }
         notifyReadinessChanged()
+    }
+
+    private func refreshTrackingState(from camera: ARCamera?) {
+        guard let camera else {
+            needsTrackingStateRefresh = true
+            notifyReadinessChanged()
+            return
+        }
+        applyTrackingState(camera)
     }
 
     private var needsSelectedDoodlePreparation: Bool {
@@ -2210,7 +2231,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         guard isAppSceneActive != isActive else { return }
         isAppSceneActive = isActive
         if isActive {
-            notifyReadinessChanged()
+            refreshTrackingState(from: arView?.session.currentFrame?.camera)
         } else {
             invalidateTrackingReadiness()
         }
@@ -2222,6 +2243,7 @@ final class NewARSceneController: NSObject, SceneEditing, @preconcurrency ARSess
         lastValidTransform = nil
         lastValidNormal = nil
         focusIndicator?.isEnabled = false
+        needsTrackingStateRefresh = true
         cancelActiveInteractions()
         notifyReadinessChanged()
     }

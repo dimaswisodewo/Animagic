@@ -122,11 +122,19 @@ struct CanvasPageView: View {
         ZStack {
             Color.white.ignoresSafeArea()
             if let animal = selectedGuideAnimal {
-                Image(systemName: animal.imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.gray.opacity(0.15))
-                    .padding(100)
+                if animal.usesAssetImage {
+                    Image(animal.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .opacity(0.15)
+                        .padding(100)
+                } else {
+                    Image(systemName: animal.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.gray.opacity(0.15))
+                        .padding(100)
+                }
             }
             DrawingView(
                 canvasView: $canvasView,

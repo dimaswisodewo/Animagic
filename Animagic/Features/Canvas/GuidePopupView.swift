@@ -1,3 +1,10 @@
+//
+//  GuidePopupView.swift
+//  AniMagic
+//
+//  Created by dimaswisodewo on 23/07/26.
+//
+
 import SwiftUI
 
 struct GuideAnimal: Identifiable, Equatable {
@@ -5,6 +12,7 @@ struct GuideAnimal: Identifiable, Equatable {
     let imageName: String
 
     var id: String { imageName }
+    var usesAssetImage: Bool { imageName.hasPrefix("overlay-") }
 }
 
 enum GuideCatalog {
@@ -18,7 +26,14 @@ enum GuideCatalog {
         GuideAnimal(name: "Ladybug", imageName: "ladybug"),
         GuideAnimal(name: "Ant", imageName: "ant"),
         GuideAnimal(name: "Lizard", imageName: "lizard"),
-        GuideAnimal(name: "Snail", imageName: "snail")
+        GuideAnimal(name: "Snail", imageName: "snail"),
+        GuideAnimal(name: "Bird", imageName: "overlay-bird"),
+        GuideAnimal(name: "Butterfly", imageName: "overlay-butterfly"),
+        GuideAnimal(name: "Chicken", imageName: "overlay-chicken"),
+        GuideAnimal(name: "Fish", imageName: "overlay-fish"),
+        GuideAnimal(name: "Pig", imageName: "overlay-pig"),
+        GuideAnimal(name: "Reindeer", imageName: "overlay-reindeer"),
+        GuideAnimal(name: "Sheep", imageName: "overlay-sheep")
     ]
 
     static func animals(matching searchText: String) -> [GuideAnimal] {
@@ -100,12 +115,23 @@ private struct GuideAnimalButton: View {
     var body: some View {
         Button(action: action) {
             AnimagicCard(title: animal.name) {
-                Image(systemName: animal.imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.gray)
+                guideImage
             }
         }
         .buttonStyle(.animagicPress)
+    }
+
+    @ViewBuilder
+    private var guideImage: some View {
+        if animal.usesAssetImage {
+            Image(animal.imageName)
+                .resizable()
+                .scaledToFit()
+        } else {
+            Image(systemName: animal.imageName)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(.gray)
+        }
     }
 }
