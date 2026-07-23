@@ -99,7 +99,7 @@ generate_project() {
 
 if [[ "$MODE" == "check" ]]; then
     [[ -f "$PROJECT_PATH/project.pbxproj" ]] || \
-        fail "$PROJECT_NAME.xcodeproj is missing; run ./Scripts/generate-project.sh first."
+        fail "$PROJECT_NAME.xcodeproj is missing; run ./generate-project.sh first."
 
     # Recreate the repository's relative layout outside the repository. XcodeGen
     # embeds path-dependent project entries, so a plain temporary output directory
@@ -114,12 +114,21 @@ if [[ "$MODE" == "check" ]]; then
         --project "$TEMP_DIR" \
         --quiet
     GENERATED_PBXPROJ="$TEMP_DIR/$PROJECT_NAME.xcodeproj/project.pbxproj"
+    GENERATED_SCHEMES="$TEMP_DIR/$PROJECT_NAME.xcodeproj/xcshareddata/xcschemes"
+    COMMITTED_SCHEMES="$PROJECT_PATH/xcshareddata/xcschemes"
     [[ -f "$GENERATED_PBXPROJ" ]] || \
         fail "XcodeGen did not create the expected project in $TEMP_DIR."
 
     if ! cmp -s "$GENERATED_PBXPROJ" "$PROJECT_PATH/project.pbxproj"; then
         echo "The committed $PROJECT_NAME.xcodeproj is out of date." >&2
-        echo "Run ./Scripts/generate-project.sh and commit the regenerated project." >&2
+        echo "Run ./generate-project.sh and commit the regenerated project." >&2
+        exit 1
+    fi
+
+    if [[ ! -d "$GENERATED_SCHEMES" || ! -d "$COMMITTED_SCHEMES" ]] || \
+        ! diff -qr "$GENERATED_SCHEMES" "$COMMITTED_SCHEMES" >/dev/null; then
+        echo "The committed $PROJECT_NAME.xcodeproj schemes are out of date." >&2
+        echo "Run ./generate-project.sh and commit the regenerated project." >&2
         exit 1
     fi
 

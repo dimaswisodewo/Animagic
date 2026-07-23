@@ -63,3 +63,17 @@ targets:
           VALIDATE_PRODUCT: YES
           DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
           MTL_ENABLE_DEBUG_INFO: NO
+
+schemes:
+  AniMagic:
+    build:
+      targets:
+        AniMagic: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
