@@ -46,7 +46,7 @@
 		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
 		770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D044F34FEBE90F2C670DAF /* AudioManager.swift */; };
 		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
-		D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */; };
+		A3E2D9C7B4F8106A23D1C5E7 /* ARReturnRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E2D9C7B4F8106A23D1C5E8 /* ARReturnRecoveryView.swift */; };
 		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
 		79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */; };
 		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
@@ -88,9 +88,9 @@
 		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
 		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
 		D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */; };
-		D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4F33D5C4ECB695106958159D /* StatueRoom.usdz */; };
 		D6AB40DEEC6444D08179A8D4 /* USDZModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBA987867DEE41501405418 /* USDZModelPlacement.swift */; };
 		D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */; };
+		D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */; };
 		DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */; };
 		DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */; };
 		E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */; };
@@ -131,7 +131,7 @@
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
 		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
-		B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
+		A3E2D9C7B4F8106A23D1C5E8 /* ARReturnRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARReturnRecoveryView.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
 		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -145,7 +145,6 @@
 		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCoordinator.swift; sourceTree = "<group>"; };
 		4F276AC999DC428A1F9AF535 /* SidebarbarBackpack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarbarBackpack.swift; sourceTree = "<group>"; };
-		4F33D5C4ECB695106958159D /* StatueRoom.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = StatueRoom.usdz; sourceTree = "<group>"; };
 		50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraView.swift; sourceTree = "<group>"; };
 		526F6226738360D3BFA9F745 /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
 		572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
@@ -179,6 +178,7 @@
 		AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicApp.swift; sourceTree = "<group>"; };
 		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
 		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
+		B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
 		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
 		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
 		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
@@ -616,7 +616,6 @@
 				7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */,
 				AE185F0D5C9434A5A272154D /* Croissant.usdz */,
 				AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */,
-				4F33D5C4ECB695106958159D /* StatueRoom.usdz */,
 				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
 				15945EA983940214C874F789 /* TreeStump.usdz */,
 				777390A8652DBF52D2DA8707 /* WaterMelon.usdz */,
@@ -651,6 +650,7 @@
 			children = (
 				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
 				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
+				A3E2D9C7B4F8106A23D1C5E8 /* ARReturnRecoveryView.swift */,
 				B41D7E6F1C2A4D5098E7F603 /* ARSelectedContentIndicator.swift */,
 			);
 			path = Presentation;
@@ -724,7 +724,6 @@
 				35DBB73FBA018A10878D0ECC /* ButtonSfx.mp3 in Resources */,
 				92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */,
 				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
-				D58794C7AAFEED4B308192CD /* StatueRoom.usdz in Resources */,
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
 				6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */,
 				B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */,
@@ -743,6 +742,7 @@
 				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
 				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
 				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
+				A3E2D9C7B4F8106A23D1C5E7 /* ARReturnRecoveryView.swift in Sources */,
 				D92A6C4E8B1F3A5076D9E204 /* ARSelectedContentIndicator.swift in Sources */,
 				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
 				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
@@ -837,7 +837,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -942,7 +942,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
+				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
