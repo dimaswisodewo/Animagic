@@ -8,15 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
+		0BEF7BBB30127A6000DC61B2 /* AniMagixAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */; };
 		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
 		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
 		13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */; };
 		13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */; };
+		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
+		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
 		15BCA40123CDEF0000000001 /* CutoutContourExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */; };
 		15BCA40123CDEF0000000002 /* CardboardRimMeshGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */; };
 		15BCA40123CDEF0000000003 /* CardboardSurfaceField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */; };
-		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
-		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
 		1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B760E43EEC00C31B3BC26C6E /* Cloud.usdz */; };
 		1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */; };
 		1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */; };
@@ -116,6 +117,7 @@
 		06573462B1119264F3AD812E /* ExpandableActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableActionMenu.swift; sourceTree = "<group>"; };
 		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AniMagixAppIcon.icon; sourceTree = "<group>"; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePlaceholderView.swift; sourceTree = "<group>"; };
 		14A60964229B227465EE8AD4 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Birds.usdz; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			children = (
 				3F370872313E0F6F949422A0 /* Animagic */,
 				144AE8A48FDC59CD65F95DA7 /* Products */,
+				0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -743,6 +746,7 @@
 				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
 				6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */,
 				7C49A4BF2BB3F20E53D8C7E3 /* TreeTrunk.usdz in Resources */,
+				0BEF7BBB30127A6000DC61B2 /* AniMagixAppIcon.icon in Resources */,
 				B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */,
 				2450F58C34EAD53998B320DF /* bgm_home.mp3 in Resources */,
 				B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */,
@@ -851,7 +855,7 @@
 		0B75A26D3DCEA23B81CE5728 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AniMagixAppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -956,7 +960,7 @@
 		7CE87580F8F3B58AB1F03EF9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AniMagixAppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
