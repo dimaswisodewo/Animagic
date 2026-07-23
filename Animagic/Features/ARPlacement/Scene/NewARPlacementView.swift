@@ -149,7 +149,6 @@ struct NewARPlacementView: View {
 
     init(initialCutoutID: CutoutAsset.ID? = nil) {
         self.initialCutoutID = initialCutoutID
-        _selectedCutoutID = State(initialValue: initialCutoutID)
     }
 
     var body: some View {

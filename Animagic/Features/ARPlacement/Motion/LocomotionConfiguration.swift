@@ -107,20 +107,17 @@ struct AnimalMotionProfile: Equatable {
 }
 
 enum AnimalMotionProfileResolver {
-    static let confidenceThreshold: Float = 0.5
-
     static func profile(for asset: CutoutAsset?) -> AnimalMotionProfile {
         guard let asset else { return .generic }
         if let overrideLabel = asset.doodleOverrideLabel {
-            return profile(forLabel: overrideLabel, confidence: 1)
+            return profile(forLabel: overrideLabel)
         }
         guard let classification = asset.doodleClassification else { return .generic }
-        return profile(forLabel: classification.label, confidence: classification.confidence)
+        return profile(forLabel: classification.label)
     }
 
-    static func profile(forLabel label: String, confidence: Float) -> AnimalMotionProfile {
-        guard confidence >= confidenceThreshold,
-              let species = DoodleSpecies(rawValue: label.lowercased()),
+    static func profile(forLabel label: String) -> AnimalMotionProfile {
+        guard let species = DoodleSpecies(rawValue: label.lowercased()),
               species != .other else {
             return .generic
         }
