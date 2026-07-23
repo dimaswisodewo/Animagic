@@ -46,6 +46,12 @@ Blender-derived RealityKit assets follow the documented [AR asset pipeline](docs
 
 See the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) for conversion steps and [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md) for delivery gates and known failure modes.
 
+Hand-drawn doodles use a separate runtime pipeline. See
+[Hand Drawing to Animated AR](docs/HAND_DRAWING_TO_ANIMATED_AR.md) for the
+technical path from PencilKit rasterization and Core ML classification through
+procedural cardboard mesh generation, RealityKit placement, and Metal-driven
+animation.
+
 For supported static props, run `./scripts/ar-asset` for a guided terminal workflow, or `./scripts/ar-asset build /path/to/Asset.blend` for automation. Both produce an auditable validation report under `build/asset-pipeline/`.
 
 See the [`ar-asset` operator guide](scripts/README.md) for installation, guided and explicit workflows, output files, review, and troubleshooting.
