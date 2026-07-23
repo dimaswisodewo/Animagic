@@ -41,7 +41,7 @@ private final class MotionLabModel {
         sample = simulator.update(deltaTime: 1 / 60, locomotion: locomotion, configuration: configuration, initialYaw: 0)
     }
 
-    func react() { simulator.receive(.tapped) }
+    func react() { simulator.receive(.tapped, locomotion: locomotion) }
 
     func reset() {
         configuration = MotionInstanceConfiguration.make(for: locomotion, spawnMode: .plane, physicalWidth: 0.35, seed: 42)

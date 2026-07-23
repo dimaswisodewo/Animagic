@@ -97,8 +97,6 @@ enum AnimalBodyStyle: Int, CaseIterable {
     case crustacean
     case flippered
     case softBodied
-
-    var shaderIndex: Float { Float(rawValue) }
 }
 
 struct AnimalMotionProfile: Equatable {
@@ -237,7 +235,7 @@ struct AnimalMotionPreset {
         case .fly:
             Self(cruiseSpeed: 0.32, energeticSpeed: 0.65, acceleration: 1.45,
                  planeLaneRadius: 0.58, roamLaneRadius: 1.45, gaitFrequency: 5.6,
-                 bobAmount: 0.018, bankAmount: 0.30, pitchAmount: 0.12,
+                 bobAmount: 0.0144, bankAmount: 0.30, pitchAmount: 0.12,
                  pulseAmount: 0.040, noiseAmplitude: 0.014, noiseFrequency: 0.48,
                  altitudeScaleRange: 1.2...4.5, altitudeBounds: 0.35...1.80,
                  roamAltitudeRange: 0...0.75,
@@ -246,7 +244,7 @@ struct AnimalMotionPreset {
         case .flutter:
             Self(cruiseSpeed: 0.11, energeticSpeed: 0.34, acceleration: 0.9,
                  planeLaneRadius: 0.42, roamLaneRadius: 1.05, gaitFrequency: 8.2,
-                 bobAmount: 0.026, bankAmount: 0.24, pitchAmount: 0.12,
+                 bobAmount: 0.0208, bankAmount: 0.24, pitchAmount: 0.12,
                  pulseAmount: 0.055, noiseAmplitude: 0.024, noiseFrequency: 1.05,
                  altitudeScaleRange: 0.8...3.2, altitudeBounds: 0.20...1.20,
                  roamAltitudeRange: 0...0.55,
@@ -254,12 +252,12 @@ struct AnimalMotionPreset {
                  depthRatio: 0.08, depthNoiseMultiplier: 0.18, turnaroundDuration: 0.22)
         case .walk:
             Self.grounded(cruise: 0.12, energetic: 0.46, acceleration: 1.6,
-                          planeRadius: 0.44, roamRadius: 1.10, gait: 3.8, bob: 0.018,
+                          planeRadius: 0.44, roamRadius: 1.10, gait: 3.8, bob: 0.0135,
                           bank: 0.09, pitch: 0.14, pulse: 0.032, noise: 0.009,
                           noiseFrequency: 0.55, depth: 0.04, turn: 0.28)
         case .stomp:
             Self.grounded(cruise: 0.075, energetic: 0.14, acceleration: 0.65,
-                          planeRadius: 0.38, roamRadius: 0.98, gait: 2.0, bob: 0.012,
+                          planeRadius: 0.38, roamRadius: 0.98, gait: 2.0, bob: 0.009,
                           bank: 0.045, pitch: 0.075, pulse: 0.018, noise: 0.005,
                           noiseFrequency: 0.32, depth: 0.025, turn: 0.34)
         case .hop:
@@ -274,22 +272,22 @@ struct AnimalMotionPreset {
                           noiseFrequency: 0.42, depth: 0.025, turn: 0.28)
         case .scuttle:
             Self.grounded(cruise: 0.09, energetic: 0.31, acceleration: 1.5,
-                          planeRadius: 0.37, roamRadius: 0.94, gait: 6.5, bob: 0.008,
+                          planeRadius: 0.37, roamRadius: 0.94, gait: 6.5, bob: 0.006,
                           bank: 0.07, pitch: 0.045, pulse: 0.03, noise: 0.01,
                           noiseFrequency: 0.7, depth: 0.035, turn: 0.22)
         case .crawl:
             Self.grounded(cruise: 0.07, energetic: 0.20, acceleration: 1.05,
-                          planeRadius: 0.36, roamRadius: 0.92, gait: 5.2, bob: 0.005,
+                          planeRadius: 0.36, roamRadius: 0.92, gait: 5.2, bob: 0.00375,
                           bank: 0.055, pitch: 0.035, pulse: 0.02, noise: 0.008,
                           noiseFrequency: 0.62, depth: 0.03, turn: 0.26)
         case .waddle:
             Self.grounded(cruise: 0.065, energetic: 0.18, acceleration: 0.8,
-                          planeRadius: 0.38, roamRadius: 0.96, gait: 3.1, bob: 0.022,
+                          planeRadius: 0.38, roamRadius: 0.96, gait: 3.1, bob: 0.0165,
                           bank: 0.16, pitch: 0.06, pulse: 0.026, noise: 0.006,
                           noiseFrequency: 0.38, depth: 0.03, turn: 0.32)
         case .generic:
             Self.grounded(cruise: 0.055, energetic: 0.10, acceleration: 0.65,
-                          planeRadius: 0.32, roamRadius: 0.82, gait: 1.8, bob: 0.006,
+                          planeRadius: 0.32, roamRadius: 0.82, gait: 1.8, bob: 0.0045,
                           bank: 0.035, pitch: 0.035, pulse: 0.014, noise: 0.004,
                           noiseFrequency: 0.28, depth: 0.025, turn: 0.38)
         }

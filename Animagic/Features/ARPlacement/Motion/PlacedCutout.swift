@@ -18,20 +18,16 @@ final class PlacedCutout: PlacedSceneObject {
     private let shadowEntity: ModelEntity?
     private let frontEntity: ModelEntity
     private let backEntity: ModelEntity
-    private var frontMaterials: CutoutMaterialSet
-    private var backMaterials: CutoutMaterialSet
+    private let deformationController: CutoutDeformationMaterialController
     private let spawnMode: SpawnMode
     private let initialYaw: Float
     private let initialRoll: Float
     private let physicalWidth: Float
-    private let bodyStyle: AnimalBodyStyle
     private var configuration: MotionInstanceConfiguration
     private var simulator: MotionSimulator
     private var previousSample: MotionSample?
     private var transitionSample: MotionSample?
     private var transitionElapsed: Float = 1
-    private var lastMaterialLocomotion: AnimalLocomotion?
-    private var lastMaterialBehavior: AnimalBehavior?
     private var facingOverride: Float = 1
     private let meshes: [CutoutRenderQuality: MeshResource]
     private var renderQuality: CutoutRenderQuality = .balanced
@@ -68,13 +64,11 @@ final class PlacedCutout: PlacedSceneObject {
         shadowEntity = parts.shadow
         frontEntity = parts.front
         backEntity = parts.back
-        frontMaterials = parts.frontMaterials
-        backMaterials = parts.backMaterials
+        deformationController = parts.deformationController
         self.spawnMode = spawnMode
         self.initialYaw = initialYaw
         self.initialRoll = initialRoll
         physicalWidth = parts.physicalSize.x
-        bodyStyle = parts.bodyStyle
         meshes = parts.meshes
         facingOverride = parts.defaultFacing
         animalLocomotion = locomotion
@@ -126,7 +120,7 @@ final class PlacedCutout: PlacedSceneObject {
         guard locomotion != animalLocomotion else { return }
         transitionElapsed = 0
         animalLocomotion = locomotion
-        lastMaterialLocomotion = nil
+        applyMaterials(deformationController.setLocomotion(locomotion))
 
         let previousConfiguration = configuration
         let nextConfiguration = MotionInstanceConfiguration.make(
@@ -157,12 +151,11 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     func receiveMotionStimulus(_ stimulus: AnimalMotionStimulus) {
-        simulator.receive(stimulus)
+        simulator.receive(stimulus, locomotion: animalLocomotion)
     }
 
     func flipFacing() {
         facingOverride *= -1
-        lastMaterialLocomotion = nil
     }
 
     func setViewerDistance(_ distance: Float) {
@@ -216,65 +209,21 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     private func updateDeformationMaterialIfNeeded(_ sample: MotionSample) {
-        lastMaterialLocomotion = animalLocomotion
-        lastMaterialBehavior = sample.behavior
-        updateDeformationMaterial(on: frontEntity, sample: sample, faceDirection: 1)
-        updateDeformationMaterial(on: backEntity, sample: sample, faceDirection: -1)
+        let state = CutoutDeformationState(
+            sample: sample,
+            facing: facingOverride
+        )
+        applyMaterials(deformationController.update(with: state))
     }
 
-    private func updateDeformationMaterial(
-        on entity: ModelEntity,
-        sample: MotionSample,
-        faceDirection: Float
-    ) {
-        guard var model = entity.model else { return }
-        let isFront = entity === frontEntity
-        var materialSet = isFront ? frontMaterials : backMaterials
-        var material: CustomMaterial
-        if animalLocomotion == .swim {
-            material = materialSet.swim
-            CutoutDeformationMaterial.updateSwim(
-                material: &material,
-                sample: sample,
-                faceDirection: faceDirection * facingOverride
-            )
-            materialSet.swim = material
-        } else {
-            material = materialSet.legacy
-            material.custom.value = [
-                bodyStyle.shaderIndex
-                    + animalLocomotion.shaderIndex * 0.01
-                    + Float(sample.behavior.rawValue) * 0.0001,
-                min(sample.deformationActivity + sample.attention * 0.35, 1.25),
-                sample.deformationPhase,
-                faceDirection * facingOverride
-            ]
-            materialSet.legacy = material
+    private func applyMaterials(_ materials: CutoutDeformationMaterialPair) {
+        if var model = frontEntity.model {
+            model.materials = [materials.front]
+            frontEntity.model = model
         }
-        if isFront {
-            frontMaterials = materialSet
-        } else {
-            backMaterials = materialSet
-        }
-        model.materials = [material]
-        entity.model = model
-    }
-}
-
-extension AnimalLocomotion {
-    var shaderIndex: Float {
-        switch self {
-        case .swim: 0
-        case .fly: 1
-        case .flutter: 2
-        case .walk: 3
-        case .stomp: 4
-        case .hop: 5
-        case .slither: 6
-        case .scuttle: 7
-        case .crawl: 8
-        case .waddle: 9
-        case .generic: 10
+        if var model = backEntity.model {
+            model.materials = [materials.back]
+            backEntity.model = model
         }
     }
 }

@@ -16,13 +16,16 @@ struct MotionSample {
     var scaleX: Float
     var scaleY: Float
     var behavior: AnimalBehavior
+    var behaviorProgress: Float
     var deformationActivity: Float
     var deformationPhase: Float
+    var deformationIrregularity: Float
     var normalizedSpeed: Float
     var steering: Float
     var reactionProgress: Float
     var reactionStrength: Float
     var contact: Float
+    var contactProgress: Float
     var attention: Float
 }
 
@@ -81,6 +84,8 @@ struct MotionSimulator {
     private var reactionStrength: Float = 0
     private var reaction: MotionReaction?
     private var proximityCooldown: Float = 0
+    private var previousGait: Float?
+    private var contactElapsed: Float = 0.32
     private let random: GKRandomSource
     private let noise: OrganicNoiseField
 
@@ -98,10 +103,19 @@ struct MotionSimulator {
         noise = OrganicNoiseField(seed: configuration.noiseSeed)
     }
 
-    mutating func receive(_ stimulus: AnimalMotionStimulus) {
+    mutating func receive(
+        _ stimulus: AnimalMotionStimulus,
+        locomotion: AnimalLocomotion
+    ) {
         switch stimulus {
         case .tapped:
-            reactionDuration = 0.9
+            if locomotion == .hop {
+                guard behavior != .energetic else { return }
+                behavior = .energetic
+                behaviorElapsed = 0
+                behaviorDuration = 0.7
+            }
+            reactionDuration = locomotion.tapReactionDuration
             reactionStrength = 1
             reaction = .tap
         case .proximity(let distance):
@@ -209,6 +223,13 @@ struct MotionSimulator {
         let steering = min(max(turnDifference / (.pi / 2), -1), 1)
         let gait = sin(motionPhase)
         let footfall = abs(gait)
+        contactElapsed += deltaTime
+        if let previousGait,
+           (previousGait <= 0 && gait > 0) || (previousGait >= 0 && gait < 0) {
+            contactElapsed = 0
+        }
+        previousGait = gait
+        let contactProgress = min(contactElapsed / 0.32, 1)
         let desiredRoll = rollIntent(
             locomotion: locomotion,
             configuration: configuration,
@@ -229,12 +250,14 @@ struct MotionSimulator {
         let stateProgress = min(behaviorElapsed / max(behaviorDuration, 0.001), 1)
         let compression: Float
         if locomotion == .hop && behavior == .energetic {
-            compression = sin(stateProgress * .pi) * configuration.pulseAmount
+            compression = 0
         } else if locomotion == .swim {
             compression = swimDartCompression(progress: dartProgress) * dartStrength
                 + footfall * configuration.pulseAmount * normalizedSpeed * 0.35
         } else {
-            compression = footfall * configuration.pulseAmount * normalizedSpeed
+            let scaleContribution: Float = locomotion == .generic ? 0.5 : 1
+            compression = footfall * configuration.pulseAmount
+                * normalizedSpeed * scaleContribution
         }
         let turnScale: Float
         if isTurning {
@@ -249,8 +272,16 @@ struct MotionSimulator {
             scaleX = (1 - compression * 0.65) * turnScale
             scaleY = (1 + compression * 0.35) * (1 + (1 - turnScale) * 0.12)
         } else {
-            scaleX = (1 + compression * 0.55 + reactionEnvelope * 0.035) * turnScale
-            scaleY = (1 - compression - reactionEnvelope * 0.055)
+            let reactionScale: Float = switch locomotion {
+            case .hop: 0
+            case .generic: 0.5
+            default: 1
+            }
+            scaleX = (
+                1 + compression * 0.55
+                    + reactionEnvelope * 0.035 * reactionScale
+            ) * turnScale
+            scaleY = (1 - compression - reactionEnvelope * 0.055 * reactionScale)
                 * (1 + (1 - turnScale) * 0.12)
         }
         return MotionSample(
@@ -261,13 +292,18 @@ struct MotionSimulator {
             scaleX: scaleX,
             scaleY: scaleY,
             behavior: behavior,
+            behaviorProgress: stateProgress,
             deformationActivity: deformationActivity * configuration.personality,
             deformationPhase: motionPhase,
+            deformationIrregularity: configuration.noiseAmplitude > 0
+                ? min(max(noiseOffset.x / configuration.noiseAmplitude, -1), 1)
+                : 0,
             normalizedSpeed: normalizedSpeed,
             steering: steering,
             reactionProgress: dartProgress,
             reactionStrength: dartStrength,
             contact: locomotion.verticalStyle == .grounded ? 1 - min(footfall, 1) : 0,
+            contactProgress: contactProgress,
             attention: reactionEnvelope
         )
     }
@@ -283,8 +319,13 @@ struct MotionSimulator {
         switch locomotion.verticalStyle {
         case .floating, .flying:
             let verticalFrequency: Float = locomotion == .fly ? 0.22 : 0.31
-            let oscillation = sin(motionPhase * verticalFrequency) * configuration.verticalAmplitude
-                + noiseOffset.y
+            let deformationFocus: Float = locomotion == .fly || locomotion == .flutter
+                ? 0.8
+                : 1
+            let oscillation = (
+                sin(motionPhase * verticalFrequency) * configuration.verticalAmplitude
+                    + noiseOffset.y
+            ) * deformationFocus
             let desiredAltitude = min(max(
                 configuration.baseAltitude + oscillation,
                 configuration.altitudeBounds.lowerBound
@@ -360,8 +401,8 @@ struct MotionSimulator {
         switch behavior {
         case .moving: 1
         case .energetic: 1.75
-        case .coasting: 0.55
-        case .resting: 0.18
+        case .coasting: 0.75
+        case .resting: 0.55
         }
     }
 
@@ -392,8 +433,8 @@ struct MotionSimulator {
             .fly: [.moving, .coasting, .moving, .energetic],
             .flutter: [.energetic, .moving, .resting, .energetic],
             .walk: [.coasting, .resting, .moving, .energetic],
-            .stomp: [.moving, .resting, .coasting, .resting],
-            .hop: [.resting, .energetic, .resting, .energetic],
+            .stomp: [.moving, .resting, .coasting, .energetic],
+            .hop: [.moving, .energetic, .resting, .energetic],
             .slither: [.moving, .coasting, .resting, .moving],
             .scuttle: [.energetic, .resting, .moving, .energetic],
             .crawl: [.moving, .coasting, .resting, .moving],
@@ -409,9 +450,12 @@ struct MotionSimulator {
         case .moving: durationRange = 1.8...4.0
         case .energetic: durationRange = locomotion == .hop ? 0.55...0.85 : 0.7...1.6
         case .coasting: durationRange = 1.2...3.0
-        case .resting: durationRange = 0.8...2.6
+        case .resting: durationRange = 0.35...0.9
         }
-        behaviorDuration = randomFloat(in: durationRange) * configuration.personality
+        let personalityDuration = randomFloat(in: durationRange) * configuration.personality
+        behaviorDuration = behavior == .resting
+            ? min(max(personalityDuration, 0.35), 0.9)
+            : personalityDuration
     }
 
     private mutating func chooseTarget(
@@ -489,15 +533,40 @@ func blend(from: MotionSample, to: MotionSample, amount: Float) -> MotionSample 
         scaleX: mix(from.scaleX, to.scaleX, t: amount),
         scaleY: mix(from.scaleY, to.scaleY, t: amount),
         behavior: to.behavior,
+        behaviorProgress: mix(from.behaviorProgress, to.behaviorProgress, t: amount),
         deformationActivity: mix(from.deformationActivity, to.deformationActivity, t: amount),
         deformationPhase: mix(from.deformationPhase, to.deformationPhase, t: amount),
+        deformationIrregularity: mix(
+            from.deformationIrregularity,
+            to.deformationIrregularity,
+            t: amount
+        ),
         normalizedSpeed: mix(from.normalizedSpeed, to.normalizedSpeed, t: amount),
         steering: mix(from.steering, to.steering, t: amount),
         reactionProgress: mix(from.reactionProgress, to.reactionProgress, t: amount),
         reactionStrength: mix(from.reactionStrength, to.reactionStrength, t: amount),
         contact: mix(from.contact, to.contact, t: amount),
+        contactProgress: mix(from.contactProgress, to.contactProgress, t: amount),
         attention: mix(from.attention, to.attention, t: amount)
     )
+}
+
+private extension AnimalLocomotion {
+    var tapReactionDuration: Float {
+        switch self {
+        case .swim: 0.9
+        case .fly: 0.7
+        case .flutter: 0.6
+        case .walk: 0.65
+        case .stomp: 0.65
+        case .waddle: 0.75
+        case .hop: 0.7
+        case .slither: 0.8
+        case .crawl: 0.7
+        case .scuttle: 0.65
+        case .generic: 0.6
+        }
+    }
 }
 
 private func mix(_ a: Float, _ b: Float, t: Float) -> Float { a + (b - a) * t }
