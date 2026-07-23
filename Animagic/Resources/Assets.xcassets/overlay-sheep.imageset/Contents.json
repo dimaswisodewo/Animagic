@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "ani-guide-bird.png",
+      "filename" : "overlay-sheep.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "ani-guide-bird 1.png",
+      "filename" : "overlay-sheep 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "ani-guide-bird 2.png",
+      "filename" : "overlay-sheep 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
