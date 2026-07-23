@@ -73,6 +73,7 @@ private struct EditableDrawingTitleField: View {
                 .lineLimit(1)
                 .submitLabel(.done)
                 .focused($isFocused)
+                .autocorrectionDisabled(true)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
