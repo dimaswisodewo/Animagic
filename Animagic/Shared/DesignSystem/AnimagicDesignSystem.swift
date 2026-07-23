@@ -298,6 +298,7 @@ struct AnimagicTextField: View {
             )
                 .font(.custom("Belanosima-Regular", size: 30))
                 .foregroundColor(textColor)
+                .autocorrectionDisabled(true)
                 
             if iconPosition == .trailing {
                 Image(systemName: icon)

@@ -646,7 +646,7 @@ struct NewARPlacementView: View {
            let cutoutID = UUID(uuidString: String(rawID)),
            let item = arCutoutItems.first(where: { $0.id == cutoutID }) {
             return AnyView(
-                ARSelectionCard(
+                BackpackSidebarItemCard(
                     title: item.title,
                     isSelected: selectedCutoutID == item.id
                 ) {
@@ -663,7 +663,7 @@ struct NewARPlacementView: View {
            let modelID = PlaceableUSDZModel.ID(rawValue: String(rawID)),
            let model = PlaceableUSDZModel.model(withID: modelID) {
             return AnyView(
-                ARSelectionCard(title: model.title, isSelected: selectedModelID == model.id) {
+                BackpackSidebarItemCard(title: model.title, isSelected: selectedModelID == model.id) {
                     ARUSDZThumbnail(model: model)
                 }
             )
