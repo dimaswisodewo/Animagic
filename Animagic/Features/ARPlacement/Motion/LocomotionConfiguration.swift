@@ -226,14 +226,14 @@ struct AnimalMotionPreset {
     static func forLocomotion(_ locomotion: AnimalLocomotion) -> Self {
         switch locomotion {
         case .swim:
-            Self(cruiseSpeed: 0.12, energeticSpeed: 0.25, acceleration: 0.72,
+            Self(cruiseSpeed: 0.13, energeticSpeed: 0.28, acceleration: 0.78,
                  planeLaneRadius: 0.50, roamLaneRadius: 1.30, gaitFrequency: 3.8,
-                 bobAmount: 0.012, bankAmount: 0.10, pitchAmount: 0.08,
-                 pulseAmount: 0.025, noiseAmplitude: 0.012, noiseFrequency: 0.42,
+                 bobAmount: 0.012, bankAmount: 0.18, pitchAmount: 0.08,
+                 pulseAmount: 0.028, noiseAmplitude: 0.012, noiseFrequency: 0.42,
                  altitudeScaleRange: 0.5...1.8, altitudeBounds: 0.12...0.80,
                  roamAltitudeRange: -0.10...0.35,
                  verticalAmplitudeScale: 0.15...0.30, verticalAmplitudeBounds: 0.03...0.12,
-                 depthRatio: 0.06, depthNoiseMultiplier: 0.14, turnaroundDuration: 0.28)
+                 depthRatio: 0.34, depthNoiseMultiplier: 0.18, turnaroundDuration: 0.28)
         case .fly:
             Self(cruiseSpeed: 0.32, energeticSpeed: 0.65, acceleration: 1.45,
                  planeLaneRadius: 0.58, roamLaneRadius: 1.45, gaitFrequency: 5.6,

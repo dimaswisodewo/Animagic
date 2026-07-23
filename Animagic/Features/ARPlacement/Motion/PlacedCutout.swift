@@ -18,6 +18,8 @@ final class PlacedCutout: PlacedSceneObject {
     private let shadowEntity: ModelEntity?
     private let frontEntity: ModelEntity
     private let backEntity: ModelEntity
+    private var frontMaterials: CutoutMaterialSet
+    private var backMaterials: CutoutMaterialSet
     private let spawnMode: SpawnMode
     private let initialYaw: Float
     private let initialRoll: Float
@@ -66,6 +68,8 @@ final class PlacedCutout: PlacedSceneObject {
         shadowEntity = parts.shadow
         frontEntity = parts.front
         backEntity = parts.back
+        frontMaterials = parts.frontMaterials
+        backMaterials = parts.backMaterials
         self.spawnMode = spawnMode
         self.initialYaw = initialYaw
         self.initialRoll = initialRoll
@@ -223,16 +227,35 @@ final class PlacedCutout: PlacedSceneObject {
         sample: MotionSample,
         faceDirection: Float
     ) {
-        guard var model = entity.model,
-              var material = model.materials.first as? CustomMaterial else { return }
-        material.custom.value = [
-            bodyStyle.shaderIndex
-                + animalLocomotion.shaderIndex * 0.01
-                + Float(sample.behavior.rawValue) * 0.0001,
-            min(sample.deformationActivity + sample.attention * 0.35, 1.25),
-            sample.deformationPhase,
-            faceDirection * facingOverride
-        ]
+        guard var model = entity.model else { return }
+        let isFront = entity === frontEntity
+        var materialSet = isFront ? frontMaterials : backMaterials
+        var material: CustomMaterial
+        if animalLocomotion == .swim {
+            material = materialSet.swim
+            CutoutDeformationMaterial.updateSwim(
+                material: &material,
+                sample: sample,
+                faceDirection: faceDirection * facingOverride
+            )
+            materialSet.swim = material
+        } else {
+            material = materialSet.legacy
+            material.custom.value = [
+                bodyStyle.shaderIndex
+                    + animalLocomotion.shaderIndex * 0.01
+                    + Float(sample.behavior.rawValue) * 0.0001,
+                min(sample.deformationActivity + sample.attention * 0.35, 1.25),
+                sample.deformationPhase,
+                faceDirection * facingOverride
+            ]
+            materialSet.legacy = material
+        }
+        if isFront {
+            frontMaterials = materialSet
+        } else {
+            backMaterials = materialSet
+        }
         model.materials = [material]
         entity.model = model
     }

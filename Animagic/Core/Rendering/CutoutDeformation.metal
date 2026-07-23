@@ -10,6 +10,14 @@
 
 using namespace metal;
 
+struct SwimGeometryUniforms {
+    // This layout must match SwimGeometryUniforms in CutoutRenderingResources.swift.
+    float4 motion;
+    float4 reaction;
+    float4 geometry;
+    float4 texture;
+};
+
 [[visible]]
 void cutoutSurface(realitykit::surface_parameters params)
 {
@@ -131,4 +139,99 @@ void cutoutGeometryModifier(realitykit::geometry_parameters params)
     offset *= activity;
     offset = clamp(offset, float3(-0.045), float3(0.045));
     geometry.set_model_position_offset(float3(offset.x * faceDirection, offset.y, offset.z * faceDirection));
+}
+
+[[stitchable]]
+void swimGeometryModifier(
+    realitykit::geometry_parameters params,
+    constant SwimGeometryUniforms &uniforms
+)
+{
+    auto geometry = params.geometry();
+    float phase = uniforms.motion.x;
+    float activity = uniforms.motion.y;
+    float normalizedSpeed = uniforms.motion.z;
+    float steering = uniforms.motion.w;
+    float reactionProgress = uniforms.reaction.x;
+    float reactionStrength = uniforms.reaction.y;
+    float behavior = uniforms.reaction.z;
+    float faceDirection = uniforms.reaction.w;
+    float physicalWidth = uniforms.geometry.x;
+    float2 textureOrigin = uniforms.geometry.yz;
+    float2 textureSize = max(
+        float2(uniforms.geometry.w, uniforms.texture.x),
+        float2(0.0001)
+    );
+
+    float2 localUV = clamp(
+        (geometry.uv0() - textureOrigin) / textureSize,
+        float2(0.0),
+        float2(1.0)
+    );
+    float orientedU = faceDirection < 0.0 ? 1.0 - localUV.x : localUV.x;
+    float rear = 1.0 - orientedU;
+    float2 centered = (localUV - 0.5) * 2.0;
+    float edgeFalloff = smoothstep(0.0, 0.05, localUV.x)
+        * smoothstep(0.0, 0.05, 1.0 - localUV.x)
+        * smoothstep(0.0, 0.04, localUV.y)
+        * smoothstep(0.0, 0.04, 1.0 - localUV.y);
+    float rearWeight = smoothstep(0.12, 0.96, rear);
+    float flexibleBody = mix(0.12, 1.0, rearWeight);
+
+    float phraseAmplitude = 0.82;
+    float phraseCadence = 1.0;
+    if (behavior > 0.5 && behavior < 1.5) {
+        phraseAmplitude = 1.18;
+        phraseCadence = 1.12;
+    } else if (behavior > 1.5 && behavior < 2.5) {
+        phraseAmplitude = 0.62;
+        phraseCadence = 0.95;
+    } else if (behavior > 2.5) {
+        phraseAmplitude = 0.14;
+        phraseCadence = 0.42;
+    }
+    phraseAmplitude *= mix(0.72, 1.12, normalizedSpeed);
+
+    float maxDepth = clamp(physicalWidth * 0.075, 0.012, 0.040);
+    float maxVertical = clamp(physicalWidth * 0.018, 0.003, 0.009);
+    float travelingWave = sin(phase * phraseCadence - rear * 6.4);
+    float secondaryWave = sin(phase * phraseCadence * 1.7 - rear * 10.5 + centered.y);
+    float residualWave = sin(phase * 0.38 - rear * 4.2);
+    float breathing = sin(phase * 0.22 + centered.y * 0.7);
+
+    float3 offset = float3(0.0);
+    offset.z += travelingWave * flexibleBody * maxDepth * phraseAmplitude;
+    offset.z += secondaryWave * rearWeight * edgeFalloff * maxDepth * 0.18 * phraseAmplitude;
+    offset.z += residualWave * (1.0 - normalizedSpeed) * flexibleBody * maxDepth * 0.12;
+    offset.y += travelingWave * rearWeight * maxVertical * phraseAmplitude;
+    offset.y += breathing * (1.0 - rearWeight * 0.35) * maxVertical * 0.24;
+    offset.z += steering * centered.x * centered.x * maxDepth * 0.35;
+
+    if (reactionStrength > 0.0) {
+        float anticipation = 0.0;
+        float propulsion = 0.0;
+        float settling = 0.0;
+        if (reactionProgress < 0.133) {
+            anticipation = smoothstep(0.0, 0.133, reactionProgress);
+        } else if (reactionProgress < 0.444) {
+            float propulsionProgress = (reactionProgress - 0.133) / 0.311;
+            propulsion = sin(propulsionProgress * M_PI_F);
+        } else {
+            float settleProgress = (reactionProgress - 0.444) / 0.556;
+            settling = sin(settleProgress * M_PI_F * 3.0) * (1.0 - settleProgress);
+        }
+        offset.x -= centered.x * anticipation * physicalWidth * 0.035 * reactionStrength;
+        offset.x += centered.x * propulsion * physicalWidth * 0.016 * reactionStrength;
+        offset.z += sin(phase * 1.9 - rear * 8.5)
+            * rearWeight
+            * maxDepth
+            * (propulsion * 0.9 + settling * 0.35)
+            * reactionStrength;
+    }
+
+    offset *= activity * edgeFalloff;
+    offset = clamp(offset, float3(-0.045), float3(0.045));
+    geometry.set_model_position_offset(
+        float3(offset.x * faceDirection, offset.y, offset.z * faceDirection)
+    );
 }

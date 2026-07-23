@@ -19,7 +19,14 @@ struct CutoutEntityParts {
     let physicalSize: SIMD2<Float>
     let bodyStyle: AnimalBodyStyle
     let meshes: [CutoutRenderQuality: MeshResource]
+    let frontMaterials: CutoutMaterialSet
+    let backMaterials: CutoutMaterialSet
     let defaultFacing: Float
+}
+
+struct CutoutMaterialSet {
+    var legacy: CustomMaterial
+    var swim: CustomMaterial
 }
 
 final class CutoutEntityFactory {
@@ -32,7 +39,7 @@ final class CutoutEntityFactory {
     private var rigCache: [CutoutAsset.ID: CutoutRigDescriptor] = [:]
     private var textureCache: [CutoutAsset.ID: TexturePair] = [:]
     private var meshCache: [MeshKey: MeshResource] = [:]
-    private var materialTemplate: CustomMaterial?
+    private var materialTemplates: [String: CustomMaterial] = [:]
 
     private struct MeshKey: Hashable {
         let width: Int
@@ -64,7 +71,8 @@ final class CutoutEntityFactory {
         let size = physicalSize(for: asset, cgImage: cgImage, rig: rig, physicalWidth: physicalWidth)
         _ = try textures(for: asset, cgImage: cgImage)
         _ = try meshes(width: size.x, height: size.y, visibleBounds: rig.visibleBounds)
-        _ = try deformationMaterialTemplate()
+        _ = try deformationMaterialTemplate(for: .swim)
+        _ = try deformationMaterialTemplate(for: .generic)
     }
 
     func makeEntity(
@@ -89,23 +97,55 @@ final class CutoutEntityFactory {
         let phase = Float.random(in: 0...(2 * Float.pi))
         let bodyStyle = AnimalMotionProfileResolver.profile(for: asset).bodyStyle
         let textures = try textures(for: asset, cgImage: cgImage)
-        let materialTemplate = try deformationMaterialTemplate()
-        let frontMaterial = CutoutDeformationMaterial.make(
-            from: materialTemplate,
-            texture: textures.front,
-            bodyStyle: bodyStyle,
-            locomotion: locomotion,
-            phase: phase,
-            faceDirection: 1
+        let legacyLocomotion: AnimalLocomotion = locomotion == .swim ? .generic : locomotion
+        let legacyTemplate = try deformationMaterialTemplate(for: legacyLocomotion)
+        let swimTemplate = try deformationMaterialTemplate(for: .swim)
+        let frontMaterials = CutoutMaterialSet(
+            legacy: CutoutDeformationMaterial.make(
+                from: legacyTemplate,
+                texture: textures.front,
+                bodyStyle: bodyStyle,
+                locomotion: legacyLocomotion,
+                phase: phase,
+                faceDirection: 1,
+                physicalWidth: width,
+                textureBounds: visibleBounds
+            ),
+            swim: CutoutDeformationMaterial.make(
+                from: swimTemplate,
+                texture: textures.front,
+                bodyStyle: bodyStyle,
+                locomotion: .swim,
+                phase: phase,
+                faceDirection: 1,
+                physicalWidth: width,
+                textureBounds: visibleBounds
+            )
         )
-        let backMaterial = CutoutDeformationMaterial.make(
-            from: materialTemplate,
-            texture: textures.back,
-            bodyStyle: bodyStyle,
-            locomotion: locomotion,
-            phase: phase,
-            faceDirection: -1
+        let backMaterials = CutoutMaterialSet(
+            legacy: CutoutDeformationMaterial.make(
+                from: legacyTemplate,
+                texture: textures.back,
+                bodyStyle: bodyStyle,
+                locomotion: legacyLocomotion,
+                phase: phase,
+                faceDirection: -1,
+                physicalWidth: width,
+                textureBounds: visibleBounds
+            ),
+            swim: CutoutDeformationMaterial.make(
+                from: swimTemplate,
+                texture: textures.back,
+                bodyStyle: bodyStyle,
+                locomotion: .swim,
+                phase: phase,
+                faceDirection: -1,
+                physicalWidth: width,
+                textureBounds: visibleBounds
+            )
         )
+        let frontMaterial = locomotion == .swim ? frontMaterials.swim : frontMaterials.legacy
+        let backMaterial = locomotion == .swim ? backMaterials.swim : backMaterials.legacy
 
         let meshes = try meshes(width: width, height: height, visibleBounds: visibleBounds)
         guard let mesh = meshes[.balanced] else { throw CutoutEntityFactoryError.invalidImage }
@@ -159,6 +199,8 @@ final class CutoutEntityFactory {
             physicalSize: [width, height],
             bodyStyle: bodyStyle,
             meshes: meshes,
+            frontMaterials: frontMaterials,
+            backMaterials: backMaterials,
             defaultFacing: rig.defaultFacing
         )
     }
@@ -210,12 +252,15 @@ final class CutoutEntityFactory {
         })
     }
 
-    private func deformationMaterialTemplate() throws -> CustomMaterial {
-        if let materialTemplate {
+    private func deformationMaterialTemplate(
+        for locomotion: AnimalLocomotion
+    ) throws -> CustomMaterial {
+        let key = locomotion == .swim ? "swim" : "legacy"
+        if let materialTemplate = materialTemplates[key] {
             return materialTemplate
         }
-        let template = try CutoutDeformationMaterial.makeTemplate()
-        materialTemplate = template
+        let template = try CutoutDeformationMaterial.makeTemplate(for: locomotion)
+        materialTemplates[key] = template
         return template
     }
 
