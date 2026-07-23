@@ -16,8 +16,11 @@ struct CutoutEntityParts {
     let shadow: ModelEntity?
     let front: ModelEntity
     let back: ModelEntity
+    let rim: ModelEntity?
     let physicalSize: SIMD2<Float>
     let meshes: [CutoutRenderQuality: MeshResource]
+    let backMeshes: [CutoutRenderQuality: MeshResource]
+    let rimMeshes: CardboardRimMeshes?
     let deformationController: CutoutDeformationMaterialController
     let defaultFacing: Float
 }
@@ -30,7 +33,9 @@ final class CutoutEntityFactory {
 
     private let shadowFactory: ShadowEntityFactory
     private var rigCache: [CutoutAsset.ID: CutoutRigDescriptor] = [:]
+    private var contourCache: [CutoutAsset.ID: CutoutContourDescriptor] = [:]
     private var textureCache: [CutoutAsset.ID: TexturePair] = [:]
+    private var surfaceFieldTextureCache: [UInt64: TextureResource] = [:]
     private var meshCache: [MeshKey: MeshResource] = [:]
     private let shaderLibrary = CutoutShaderLibrary()
 
@@ -39,6 +44,9 @@ final class CutoutEntityFactory {
         let height: Int
         let bounds: [Int]
         let subdivisions: Int
+        let surfaceFingerprint: UInt64
+        let crownHeight: Int
+        let mirrorsSurfaceField: Bool
     }
 
     private struct TexturePair {
@@ -62,8 +70,36 @@ final class CutoutEntityFactory {
         }
         let rig = rig(for: asset, cgImage: cgImage)
         let size = physicalSize(for: asset, cgImage: cgImage, rig: rig, physicalWidth: physicalWidth)
-        _ = try textures(for: asset, cgImage: cgImage)
-        _ = try meshes(width: size.x, height: size.y, visibleBounds: rig.visibleBounds)
+        _ = try textures(
+            for: asset,
+            cgImage: cgImage,
+            visibleBounds: rig.visibleBounds
+        )
+        let rimMeshes = contours(for: asset, cgImage: cgImage).flatMap {
+            try? CardboardRimMeshGenerator.generate(
+                contours: $0.mapped(to: rig.visibleBounds),
+                physicalSize: size
+            )
+        }
+        _ = try meshes(
+            width: size.x,
+            height: size.y,
+            visibleBounds: rig.visibleBounds,
+            surfaceField: rimMeshes?.surfaceField,
+            crownHeight: rimMeshes?.crownHeight ?? 0,
+            mirrorsSurfaceField: false
+        )
+        _ = try meshes(
+            width: size.x,
+            height: size.y,
+            visibleBounds: rig.visibleBounds,
+            surfaceField: rimMeshes?.surfaceField,
+            crownHeight: rimMeshes?.crownHeight ?? 0,
+            mirrorsSurfaceField: true
+        )
+        if let field = rimMeshes?.surfaceField {
+            _ = try? surfaceFieldTexture(for: field)
+        }
         try shaderLibrary.prepareAllTemplates()
     }
 
@@ -87,12 +123,34 @@ final class CutoutEntityFactory {
         let width = size.x
         let height = size.y
         let phase = Float.random(in: 0...(2 * Float.pi))
-        let textures = try textures(for: asset, cgImage: cgImage)
+        let textures = try textures(
+            for: asset,
+            cgImage: cgImage,
+            visibleBounds: visibleBounds
+        )
+        let generatedRimMeshes = contours(for: asset, cgImage: cgImage).flatMap {
+            try? CardboardRimMeshGenerator.generate(
+                contours: $0.mapped(to: visibleBounds),
+                physicalSize: size
+            )
+        }
+        let fieldTexture = generatedRimMeshes?.surfaceField.flatMap {
+            try? surfaceFieldTexture(for: $0)
+        }
+        let rimMeshes: CardboardRimMeshes?
+        if generatedRimMeshes?.style == .softened, fieldTexture == nil {
+            Self.signposter.emitEvent("Cardboard Surface Field Flat Fallback")
+            rimMeshes = nil
+        } else {
+            rimMeshes = generatedRimMeshes
+        }
         try shaderLibrary.prepareAllTemplates()
         let deformationController = CutoutDeformationMaterialController(
             shaderLibrary: shaderLibrary,
             frontTexture: textures.front,
             backTexture: textures.back,
+            surfaceFieldTexture: fieldTexture,
+            usesSoftenedCardboard: rimMeshes?.style == .softened,
             physicalSize: size,
             textureBounds: visibleBounds,
             locomotion: locomotion,
@@ -101,21 +159,54 @@ final class CutoutEntityFactory {
         )
         let activeMaterials = deformationController.activeMaterials
 
-        let meshes = try meshes(width: width, height: height, visibleBounds: visibleBounds)
-        guard let mesh = meshes[.balanced] else { throw CutoutEntityFactoryError.invalidImage }
+        let frontMeshes = try meshes(
+            width: width,
+            height: height,
+            visibleBounds: visibleBounds,
+            surfaceField: rimMeshes?.surfaceField,
+            crownHeight: rimMeshes?.crownHeight ?? 0,
+            mirrorsSurfaceField: false
+        )
+        let backMeshes = try meshes(
+            width: width,
+            height: height,
+            visibleBounds: visibleBounds,
+            surfaceField: rimMeshes?.surfaceField,
+            crownHeight: rimMeshes?.crownHeight ?? 0,
+            mirrorsSurfaceField: true
+        )
+        guard let mesh = frontMeshes[.balanced],
+              let backMesh = backMeshes[.balanced] else {
+            throw CutoutEntityFactoryError.invalidImage
+        }
+        let surfaceDepth = rimMeshes?.thickness ?? 0.001
         let frontEntity = ModelEntity(mesh: mesh, materials: [activeMaterials.front])
-        frontEntity.position = [0, height / 2, 0.0005]
+        frontEntity.position = [0, height / 2, surfaceDepth / 2]
         let shadowComp = GroundingShadowComponent(castsShadow: false)
         frontEntity.components.set(shadowComp)
 
-        let backEntity = ModelEntity(mesh: mesh, materials: [activeMaterials.back])
-        backEntity.position = [0, height / 2, -0.0005]
+        let backEntity = ModelEntity(mesh: backMesh, materials: [activeMaterials.back])
+        backEntity.position = [0, height / 2, -surfaceDepth / 2]
         backEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
         backEntity.components.set(shadowComp)
 
         let bodyEntity = Entity()
         bodyEntity.addChild(frontEntity)
         bodyEntity.addChild(backEntity)
+        let rimEntity: ModelEntity?
+        if let rimMeshes {
+            let entity = ModelEntity(
+                mesh: rimMeshes[.balanced],
+                materials: [activeMaterials.rim]
+            )
+            entity.position = [0, height / 2, 0]
+            entity.components.set(shadowComp)
+            bodyEntity.addChild(entity)
+            rimEntity = entity
+        } else {
+            Self.signposter.emitEvent("Cardboard Rim Flat Fallback")
+            rimEntity = nil
+        }
         bodyEntity.components.set(
             CollisionComponent(
                 shapes: [
@@ -150,8 +241,11 @@ final class CutoutEntityFactory {
             shadow: shadowEntity,
             front: frontEntity,
             back: backEntity,
+            rim: rimEntity,
             physicalSize: [width, height],
-            meshes: meshes,
+            meshes: frontMeshes,
+            backMeshes: backMeshes,
+            rimMeshes: rimMeshes,
             deformationController: deformationController,
             defaultFacing: rig.defaultFacing
         )
@@ -164,6 +258,20 @@ final class CutoutEntityFactory {
         let rig = CutoutRigAnalyzer.analyze(cgImage)
         rigCache[asset.id] = rig
         return rig
+    }
+
+    private func contours(
+        for asset: CutoutAsset,
+        cgImage: CGImage
+    ) -> CutoutContourDescriptor? {
+        if let cached = contourCache[asset.id] {
+            return cached
+        }
+        guard let contours = CutoutContourExtractor.extract(from: cgImage) else {
+            return nil
+        }
+        contourCache[asset.id] = contours
+        return contours
     }
 
     private func physicalSize(
@@ -182,7 +290,10 @@ final class CutoutEntityFactory {
     private func meshes(
         width: Float,
         height: Float,
-        visibleBounds: CGRect
+        visibleBounds: CGRect,
+        surfaceField: CardboardSurfaceField?,
+        crownHeight: Float,
+        mirrorsSurfaceField: Bool
     ) throws -> [CutoutRenderQuality: MeshResource] {
         try Dictionary(uniqueKeysWithValues: CutoutRenderQuality.allCases.map { quality in
             let key = MeshKey(
@@ -190,30 +301,56 @@ final class CutoutEntityFactory {
                 height: Int((height * 10_000).rounded()),
                 bounds: [visibleBounds.minX, visibleBounds.minY, visibleBounds.width, visibleBounds.height]
                     .map { Int(($0 * 1_000).rounded()) },
-                subdivisions: quality.rawValue
+                subdivisions: quality.rawValue,
+                surfaceFingerprint: surfaceField?.fingerprint ?? 0,
+                crownHeight: Int((crownHeight * 1_000_000).rounded()),
+                mirrorsSurfaceField: mirrorsSurfaceField
             )
             if let cached = meshCache[key] { return (quality, cached) }
             let mesh = try DenseCutoutMesh.generate(
                 width: width,
                 height: height,
                 subdivisions: quality.rawValue,
-                textureBounds: visibleBounds
+                textureBounds: visibleBounds,
+                surfaceField: surfaceField,
+                crownHeight: crownHeight,
+                mirrorsSurfaceField: mirrorsSurfaceField
             )
             meshCache[key] = mesh
             return (quality, mesh)
         })
     }
 
-    private func textures(for asset: CutoutAsset, cgImage: CGImage) throws -> TexturePair {
+    private func textures(
+        for asset: CutoutAsset,
+        cgImage: CGImage,
+        visibleBounds: CGRect
+    ) throws -> TexturePair {
         if let cached = textureCache[asset.id] {
             return cached
         }
         let front = try TextureResource(image: cgImage, options: .init(semantic: .color))
-        let backImage = asset.image.mirroredHorizontally()?.cgImage ?? cgImage
+        let backImage = asset.image.mirroredHorizontally(
+            aroundNormalizedX: visibleBounds.midX
+        )?.cgImage ?? cgImage
         let back = try TextureResource(image: backImage, options: .init(semantic: .color))
         let pair = TexturePair(front: front, back: back)
         textureCache[asset.id] = pair
         return pair
+    }
+
+    private func surfaceFieldTexture(
+        for field: CardboardSurfaceField
+    ) throws -> TextureResource {
+        if let cached = surfaceFieldTextureCache[field.fingerprint] {
+            return cached
+        }
+        guard let image = field.makeImage() else {
+            throw CutoutEntityFactoryError.invalidImage
+        }
+        let texture = try TextureResource(image: image, options: .init(semantic: .raw))
+        surfaceFieldTextureCache[field.fingerprint] = texture
+        return texture
     }
 }
 

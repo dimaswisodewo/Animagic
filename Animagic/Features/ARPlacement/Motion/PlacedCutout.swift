@@ -18,6 +18,7 @@ final class PlacedCutout: PlacedSceneObject {
     private let shadowEntity: ModelEntity?
     private let frontEntity: ModelEntity
     private let backEntity: ModelEntity
+    private let rimEntity: ModelEntity?
     private let deformationController: CutoutDeformationMaterialController
     private let spawnMode: SpawnMode
     private let initialYaw: Float
@@ -30,6 +31,8 @@ final class PlacedCutout: PlacedSceneObject {
     private var transitionElapsed: Float = 1
     private var facingOverride: Float = 1
     private let meshes: [CutoutRenderQuality: MeshResource]
+    private let backMeshes: [CutoutRenderQuality: MeshResource]
+    private let rimMeshes: CardboardRimMeshes?
     private var renderQuality: CutoutRenderQuality = .balanced
     private var isSelected = false
     private var viewerDistance: Float = 1.5
@@ -64,12 +67,15 @@ final class PlacedCutout: PlacedSceneObject {
         shadowEntity = parts.shadow
         frontEntity = parts.front
         backEntity = parts.back
+        rimEntity = parts.rim
         deformationController = parts.deformationController
         self.spawnMode = spawnMode
         self.initialYaw = initialYaw
         self.initialRoll = initialRoll
         physicalWidth = parts.physicalSize.x
         meshes = parts.meshes
+        backMeshes = parts.backMeshes
+        rimMeshes = parts.rimMeshes
         facingOverride = parts.defaultFacing
         animalLocomotion = locomotion
         self.supportSurfaceNormal = supportSurfaceNormal
@@ -165,12 +171,23 @@ final class PlacedCutout: PlacedSceneObject {
     }
 
     private func applyRenderQuality(_ quality: CutoutRenderQuality) {
-        guard quality != renderQuality, let mesh = meshes[quality] else { return }
+        guard quality != renderQuality,
+              let mesh = meshes[quality],
+              let backMesh = backMeshes[quality] else {
+            return
+        }
         renderQuality = quality
-        for entity in [frontEntity, backEntity] {
-            guard var model = entity.model else { continue }
+        if var model = frontEntity.model {
             model.mesh = mesh
-            entity.model = model
+            frontEntity.model = model
+        }
+        if var model = backEntity.model {
+            model.mesh = backMesh
+            backEntity.model = model
+        }
+        if let rimEntity, let rimMeshes, var model = rimEntity.model {
+            model.mesh = rimMeshes[quality]
+            rimEntity.model = model
         }
     }
 
@@ -224,6 +241,10 @@ final class PlacedCutout: PlacedSceneObject {
         if var model = backEntity.model {
             model.materials = [materials.back]
             backEntity.model = model
+        }
+        if let rimEntity, var model = rimEntity.model {
+            model.materials = [materials.rim]
+            rimEntity.model = model
         }
     }
 }

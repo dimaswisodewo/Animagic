@@ -9,13 +9,13 @@ import UIKit
 import simd
 
 extension UIImage {
-    func mirroredHorizontally() -> UIImage? {
+    func mirroredHorizontally(aroundNormalizedX axis: CGFloat = 0.5) -> UIImage? {
         let format = UIGraphicsImageRendererFormat()
         format.scale = scale
         let renderer = UIGraphicsImageRenderer(size: size, format: format)
         return renderer.image { context in
             let cgContext = context.cgContext
-            cgContext.translateBy(x: size.width, y: 0)
+            cgContext.translateBy(x: size.width * axis * 2, y: 0)
             cgContext.scaleBy(x: -1, y: 1)
             draw(in: CGRect(origin: .zero, size: size))
         }

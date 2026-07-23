@@ -15,7 +15,10 @@ enum DenseCutoutMesh {
         height: Float,
         subdivisions: Int = 20,
         textureBounds: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1),
-        deformationMargin: Float = 0.06
+        deformationMargin: Float = 0.06,
+        surfaceField: CardboardSurfaceField? = nil,
+        crownHeight: Float = 0,
+        mirrorsSurfaceField: Bool = false
     ) throws -> MeshResource {
         let columns = subdivisions + 1
         let rows = subdivisions + 1
@@ -35,12 +38,38 @@ enum DenseCutoutMesh {
             for column in 0..<columns {
                 let normalizedU = Float(column) / Float(subdivisions)
                 let u = mix(-deformationMargin, 1 + deformationMargin, normalizedU)
-                positions.append([(u - 0.5) * width, (0.5 - v) * height, 0])
-                normals.append([0, 0, 1])
-                textureCoordinates.append([
+                let textureCoordinate = SIMD2<Float>(
                     Float(textureBounds.minX) + u * Float(textureBounds.width),
                     Float(textureBounds.minY) + v * Float(textureBounds.height)
-                ])
+                )
+                let surfaceCoordinate = mirrorsSurfaceField
+                    ? SIMD2<Float>(
+                        Float(textureBounds.minX + textureBounds.maxX)
+                            - textureCoordinate.x,
+                        textureCoordinate.y
+                    )
+                    : textureCoordinate
+                let crown = crownHeight * crownWeight(
+                    at: surfaceCoordinate,
+                    surfaceField: surfaceField
+                )
+                positions.append([(u - 0.5) * width, (0.5 - v) * height, crown])
+                normals.append([0, 0, 1])
+                textureCoordinates.append(textureCoordinate)
+            }
+        }
+
+        if crownHeight > 0, surfaceField != nil {
+            for row in 0..<rows {
+                for column in 0..<columns {
+                    let left = positions[row * columns + max(column - 1, 0)]
+                    let right = positions[row * columns + min(column + 1, columns - 1)]
+                    let top = positions[max(row - 1, 0) * columns + column]
+                    let bottom = positions[min(row + 1, rows - 1) * columns + column]
+                    var normal = simd_normalize(simd_cross(right - left, top - bottom))
+                    if normal.z < 0 { normal = -normal }
+                    normals[row * columns + column] = normal
+                }
             }
         }
 
@@ -67,6 +96,20 @@ enum DenseCutoutMesh {
 
     private static func mix(_ lower: Float, _ upper: Float, _ amount: Float) -> Float {
         lower + (upper - lower) * amount
+    }
+
+    private static func crownWeight(
+        at textureCoordinate: SIMD2<Float>,
+        surfaceField: CardboardSurfaceField?
+    ) -> Float {
+        guard let surfaceField else { return 0 }
+        let value = surfaceField.sample(textureCoordinate)
+        let availableDistance = max(
+            surfaceField.maximumInteriorDistance - value.y,
+            0.0001
+        )
+        let amount = min(max((value.x - value.y) / availableDistance, 0), 1)
+        return amount * amount * (3 - 2 * amount)
     }
 }
 
@@ -209,6 +252,17 @@ private struct GeometryUniformValues {
             0
         ]
     }
+}
+
+private struct CutoutSurfaceUniforms {
+    var surfaceField: UInt64 = 0
+    var parameters: SIMD4<Float> = .zero
+}
+
+private struct CardboardSurfaceUniforms {
+    var frontTexture: UInt64 = 0
+    var backTexture: UInt64 = 0
+    var parameters: SIMD4<Float> = .zero
 }
 
 private protocol GeometryUniformPack {
@@ -445,7 +499,8 @@ final class CutoutShaderLibrary {
             throw CutoutDeformationError.metalLibraryUnavailable
         }
 
-        let surfaceShader = CustomMaterial.SurfaceShader(named: "cutoutSurface", in: library)
+        let cutoutSurfaceShader = CustomMaterial.SurfaceShader(named: "cutoutSurface", in: library)
+        let rimSurfaceShader = CustomMaterial.SurfaceShader(named: "cardboardRimSurface", in: library)
         for locomotion in AnimalLocomotion.allCases {
             for surfaceRole in [CutoutSurfaceRole.front, .back, .rim] {
                 let key = TemplateKey(locomotion: locomotion, surfaceRole: surfaceRole)
@@ -455,11 +510,13 @@ final class CutoutShaderLibrary {
                     in: library
                 )
                 var material = try CustomMaterial(
-                    surfaceShader: surfaceShader,
+                    surfaceShader: surfaceRole == .rim ? rimSurfaceShader : cutoutSurfaceShader,
                     geometryModifier: geometryModifier,
                     lightingModel: .lit
                 )
-                material.blending = .transparent(opacity: .init(floatLiteral: 1))
+                if surfaceRole != .rim {
+                    material.blending = .transparent(opacity: .init(floatLiteral: 1))
+                }
                 templates[key] = material
             }
         }
@@ -481,12 +538,15 @@ final class CutoutShaderLibrary {
 struct CutoutDeformationMaterialPair {
     var front: CustomMaterial
     var back: CustomMaterial
+    var rim: CustomMaterial
 }
 
 final class CutoutDeformationMaterialController {
     private let shaderLibrary: CutoutShaderLibrary
     private let frontTexture: TextureResource
     private let backTexture: TextureResource
+    private let surfaceFieldTexture: TextureResource?
+    private let usesSoftenedCardboard: Bool
     private let physicalSize: SIMD2<Float>
     private let textureBounds: CGRect
     private var locomotion: AnimalLocomotion
@@ -497,6 +557,8 @@ final class CutoutDeformationMaterialController {
         shaderLibrary: CutoutShaderLibrary,
         frontTexture: TextureResource,
         backTexture: TextureResource,
+        surfaceFieldTexture: TextureResource?,
+        usesSoftenedCardboard: Bool,
         physicalSize: SIMD2<Float>,
         textureBounds: CGRect,
         locomotion: AnimalLocomotion,
@@ -506,6 +568,8 @@ final class CutoutDeformationMaterialController {
         self.shaderLibrary = shaderLibrary
         self.frontTexture = frontTexture
         self.backTexture = backTexture
+        self.surfaceFieldTexture = surfaceFieldTexture
+        self.usesSoftenedCardboard = usesSoftenedCardboard
         self.physicalSize = physicalSize
         self.textureBounds = textureBounds
         self.locomotion = locomotion
@@ -514,6 +578,8 @@ final class CutoutDeformationMaterialController {
             shaderLibrary: shaderLibrary,
             frontTexture: frontTexture,
             backTexture: backTexture,
+            surfaceFieldTexture: surfaceFieldTexture,
+            usesSoftenedCardboard: usesSoftenedCardboard,
             physicalSize: physicalSize,
             textureBounds: textureBounds,
             locomotion: locomotion,
@@ -528,6 +594,8 @@ final class CutoutDeformationMaterialController {
             shaderLibrary: shaderLibrary,
             frontTexture: frontTexture,
             backTexture: backTexture,
+            surfaceFieldTexture: surfaceFieldTexture,
+            usesSoftenedCardboard: usesSoftenedCardboard,
             physicalSize: physicalSize,
             textureBounds: textureBounds,
             locomotion: locomotion,
@@ -553,6 +621,13 @@ final class CutoutDeformationMaterialController {
             textureBounds: textureBounds,
             surfaceRole: .back
         )
+        adapter.update(
+            material: &activeMaterials.rim,
+            state: state,
+            physicalSize: physicalSize,
+            textureBounds: textureBounds,
+            surfaceRole: .rim
+        )
         return activeMaterials
     }
 
@@ -560,6 +635,8 @@ final class CutoutDeformationMaterialController {
         shaderLibrary: CutoutShaderLibrary,
         frontTexture: TextureResource,
         backTexture: TextureResource,
+        surfaceFieldTexture: TextureResource?,
+        usesSoftenedCardboard: Bool,
         physicalSize: SIMD2<Float>,
         textureBounds: CGRect,
         locomotion: AnimalLocomotion,
@@ -575,6 +652,12 @@ final class CutoutDeformationMaterialController {
             textureBounds: textureBounds,
             surfaceRole: .front
         )
+        configureFaceSurface(
+            material: &front,
+            surfaceFieldTexture: surfaceFieldTexture,
+            surfaceRole: .front,
+            textureBounds: textureBounds
+        )
 
         var back = shaderLibrary.template(for: locomotion, surfaceRole: .back)
         back.custom.texture = .init(backTexture)
@@ -585,7 +668,52 @@ final class CutoutDeformationMaterialController {
             textureBounds: textureBounds,
             surfaceRole: .back
         )
-        return CutoutDeformationMaterialPair(front: front, back: back)
+        configureFaceSurface(
+            material: &back,
+            surfaceFieldTexture: surfaceFieldTexture,
+            surfaceRole: .back,
+            textureBounds: textureBounds
+        )
+
+        var rim = shaderLibrary.template(for: locomotion, surfaceRole: .rim)
+        adapter.initialize(
+            material: &rim,
+            state: state,
+            physicalSize: physicalSize,
+            textureBounds: textureBounds,
+            surfaceRole: .rim
+        )
+        rim.withMutableUniforms(
+            ofType: CardboardSurfaceUniforms.self,
+            stage: .surfaceShader
+        ) { uniforms, resources in
+            uniforms.parameters.x = usesSoftenedCardboard ? 1 : 0
+            uniforms.parameters.y = Float(textureBounds.minX)
+            uniforms.parameters.z = Float(textureBounds.maxX)
+            resources[textureResource: \.frontTexture] = frontTexture
+            resources[textureResource: \.backTexture] = backTexture
+        }
+        return CutoutDeformationMaterialPair(front: front, back: back, rim: rim)
+    }
+
+    private static func configureFaceSurface(
+        material: inout CustomMaterial,
+        surfaceFieldTexture: TextureResource?,
+        surfaceRole: CutoutSurfaceRole,
+        textureBounds: CGRect
+    ) {
+        material.withMutableUniforms(
+            ofType: CutoutSurfaceUniforms.self,
+            stage: .surfaceShader
+        ) { uniforms, resources in
+            uniforms.parameters.x = surfaceFieldTexture == nil ? 0 : 1
+            uniforms.parameters.y = surfaceRole == .back ? 1 : 0
+            uniforms.parameters.z = Float(textureBounds.minX)
+            uniforms.parameters.w = Float(textureBounds.maxX)
+            if let surfaceFieldTexture {
+                resources[textureResource: \.surfaceField] = surfaceFieldTexture
+            }
+        }
     }
 }
 

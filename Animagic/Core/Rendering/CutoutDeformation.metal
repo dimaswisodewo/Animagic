@@ -65,10 +65,16 @@ inline CutoutGeometryContext cutoutContext(
 ) {
     float2 textureOrigin = geometry.zw;
     float2 textureSize = max(texture.xy, float2(0.0001));
-    float2 uv = clamp(
+    float2 sourceUV = clamp(
         (params.geometry().uv0() - textureOrigin) / textureSize,
         float2(0.0),
         float2(1.0)
+    );
+    // The back entity is rotated around Y, so its matching artwork point is at 1 - U.
+    // Normalize only deformation space; surface texture sampling keeps the authored UV.
+    float2 uv = float2(
+        texture.z < 0.0 ? 1.0 - sourceUV.x : sourceUV.x,
+        sourceUV.y
     );
     float facing = reaction.w;
     float orientedU = facing < 0.0 ? 1.0 - uv.x : uv.x;
@@ -130,8 +136,22 @@ inline float localReactionBoost(CutoutGeometryContext context) {
         * context.reactionStrength * 0.25;
 }
 
-[[visible]]
-void cutoutSurface(realitykit::surface_parameters params)
+struct CutoutSurfaceUniforms {
+    texture2d<half> surfaceField;
+    float4 parameters;
+};
+
+struct CardboardSurfaceUniforms {
+    texture2d<half> frontTexture;
+    texture2d<half> backTexture;
+    float4 parameters;
+};
+
+[[stitchable]]
+void cutoutSurface(
+    realitykit::surface_parameters params,
+    constant CutoutSurfaceUniforms &uniforms
+)
 {
     constexpr sampler textureSampler(
         coord::normalized,
@@ -143,11 +163,67 @@ void cutoutSurface(realitykit::surface_parameters params)
         textureSampler,
         params.geometry().uv0()
     );
+    half opacity = color.a;
+    if (uniforms.parameters.x > 0.5) {
+        float2 fieldUV = params.geometry().uv0();
+        if (uniforms.parameters.y > 0.5) {
+            fieldUV.x = uniforms.parameters.z + uniforms.parameters.w - fieldUV.x;
+        }
+        half2 field = uniforms.surfaceField.sample(
+            textureSampler,
+            fieldUV
+        ).rg;
+        constexpr half transition = 1.5h / 255.0h;
+        opacity *= smoothstep(field.g - transition, field.g + transition, field.r);
+    }
     params.surface().set_base_color(color.rgb);
     params.surface().set_emissive_color(color.rgb * half3(0.12));
     params.surface().set_roughness(0.92h);
     params.surface().set_metallic(0.0h);
-    params.surface().set_opacity(color.a);
+    params.surface().set_opacity(opacity);
+}
+
+[[stitchable]]
+void cardboardRimSurface(
+    realitykit::surface_parameters params,
+    constant CardboardSurfaceUniforms &uniforms
+)
+{
+    constexpr half3 kraftColor = half3(0.479h, 0.242h, 0.091h);
+    half3 color = kraftColor;
+    half emissiveStrength = 0.025h;
+    half roughness = 0.92h;
+    if (uniforms.parameters.x > 0.5) {
+        constexpr sampler textureSampler(
+            coord::normalized,
+            address::clamp_to_edge,
+            filter::linear,
+            mip_filter::linear
+        );
+        float3 normal = normalize(params.geometry().normal());
+        half frontAmount = half(step(0.0, normal.z));
+        half3 front = uniforms.frontTexture.sample(
+            textureSampler,
+            params.geometry().uv0()
+        ).rgb;
+        float2 backUV = params.geometry().uv0();
+        backUV.x = uniforms.parameters.y + uniforms.parameters.z - backUV.x;
+        half3 back = uniforms.backTexture.sample(
+            textureSampler,
+            backUV
+        ).rgb;
+        half3 artwork = mix(back, front, frontAmount);
+        half faceAmount = half(smoothstep(0.15, 0.85, abs(normal.z)));
+        color = mix(kraftColor, artwork, faceAmount);
+        half bevelHighlight = 4.0h * faceAmount * (1.0h - faceAmount);
+        roughness = mix(0.92h, 0.76h, bevelHighlight);
+        emissiveStrength = mix(0.025h, 0.08h, faceAmount);
+    }
+    params.surface().set_base_color(color);
+    params.surface().set_emissive_color(color * half3(emissiveStrength));
+    params.surface().set_roughness(roughness);
+    params.surface().set_metallic(0.0h);
+    params.surface().set_opacity(1.0h);
 }
 
 [[stitchable]]
