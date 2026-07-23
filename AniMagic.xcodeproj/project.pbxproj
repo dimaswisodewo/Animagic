@@ -127,9 +127,9 @@
 		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
 		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
 		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
-		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
-		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
+		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
 		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
 		A3E2D9C7B4F8106A23D1C5E8 /* ARReturnRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARReturnRecoveryView.swift; sourceTree = "<group>"; };
 		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
@@ -839,10 +839,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = DP5XP7C2AM;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
@@ -850,10 +847,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -951,10 +945,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic;

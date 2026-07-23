@@ -2,7 +2,6 @@ import PencilKit
 import SwiftUI
 
 struct HanddrawnDetailView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(NavigationRouter.self) private var router
     @EnvironmentObject private var artworkStore: ArtworkLibraryStore
     @Environment(\.displayScale) private var displayScale
@@ -29,7 +28,7 @@ struct HanddrawnDetailView: View {
                 HanddrawnDetailHeader(
                     title: $titleDraft,
                     onTitleCommit: { commitTitleChange() },
-                    onBack: { commitTitleChange(onSuccess: dismiss.callAsFunction) },
+                    onBack: { commitTitleChange(onSuccess: router.pop) },
                     onOpenAR: classifyAndOpenAR,
                     onShare: { showShareSheet = true },
                     onSave: saveToGallery,
@@ -207,7 +206,7 @@ struct HanddrawnDetailView: View {
 
     private func deleteDrawing() {
         artworkStore.deleteDrawing(id: drawing.id) {
-            dismiss()
+            router.pop()
         }
     }
 }

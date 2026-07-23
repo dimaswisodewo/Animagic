@@ -120,30 +120,78 @@ struct BackpackDrawingCard: View {
     let classificationError: String?
 
     var body: some View {
-        VStack(spacing: 8) {
-            AnimagicCard(title: ArtworkLibraryPresentation.displayName(for: drawing)) {
-                if drawing.drawing.bounds.isEmpty {
-                    Text("Empty Drawing")
-                        .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
-                        .foregroundStyle(.gray)
-                } else {
-                    Image(
-                        uiImage: drawing.drawing.image(
-                            from: drawing.drawing.bounds,
-                            scale: displayScale
-                        )
-                    )
-                        .resizable()
-                        .scaledToFit()
-                }
-            }
+        drawingCard
+            .frame(maxWidth: .infinity)
+    }
+
+    private var drawingCard: some View {
+        VStack(spacing: 12) {
+            drawingPreview
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .layoutPriority(1)
+
+            Text(ArtworkLibraryPresentation.displayName(for: drawing))
+                .font(.custom("Belanosima-SemiBold", size: 24, relativeTo: .headline))
+                .foregroundStyle(Color.Palette.n70)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(16)
+        .background(Color.Token.Card.primary, in: cardShape)
+        .overlay {
+            cardShape
+                .strokeBorder(Color.Token.Border.secondary, lineWidth: 4)
+        }
+        .padding(8)
+        .background(Color.Token.Background.surface, in: outerShape)
+        .aspectRatio(1, contentMode: .fit)
+        .overlay(alignment: .topTrailing) {
             if classificationError != nil {
-                Label("AI retry available", systemImage: "exclamationmark.triangle.fill")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.orange)
+                classificationRetryBadge
+                    .padding(14)
             }
         }
-        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var drawingPreview: some View {
+        if drawing.drawing.bounds.isEmpty {
+            Text("Empty Drawing")
+                .font(.custom("Belanosima-Regular", size: 16, relativeTo: .subheadline))
+                .foregroundStyle(Color.Palette.n60)
+        } else {
+            Image(
+                uiImage: drawing.drawing.image(
+                    from: drawing.drawing.bounds,
+                    scale: displayScale
+                )
+            )
+            .resizable()
+            .scaledToFit()
+        }
+    }
+
+    private var classificationRetryBadge: some View {
+        Label("AI retry available", systemImage: "exclamationmark.triangle.fill")
+            .font(.custom("Belanosima-SemiBold", size: 13, relativeTo: .caption))
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(Color.Palette.o300, in: Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(.white, lineWidth: 2)
+            }
+    }
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 22, style: .continuous)
+    }
+
+    private var outerShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 30, style: .continuous)
     }
 }
 

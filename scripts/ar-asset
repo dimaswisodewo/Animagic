@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+#  ar-asset
+#  AniMagic
+#
+#  Created by dimaswisodewo on 22/07/26.
+#
+
+set -eu
+
+script_directory=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repository_root=$(CDPATH= cd -- "$script_directory/.." && pwd)
+cd "$repository_root"
+export ANIMAGIC_AR_ASSET_OUTPUT_ROOT="$repository_root/build/asset-pipeline"
+
+if [ "$#" -eq 0 ]; then
+    exec "$script_directory/asset-pipeline/ar_asset_pipeline.py" guided
+fi
+
+exec "$script_directory/asset-pipeline/ar_asset_pipeline.py" "$@"

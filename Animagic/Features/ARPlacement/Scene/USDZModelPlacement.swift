@@ -56,7 +56,7 @@ struct PlaceableUSDZModel: Identifiable, Hashable {
             id: .treeTrunk,
             title: "Tree Trunk",
             systemImageName: "tree.fill",
-            resourceName: "TreeNoLeaf",
+            resourceName: "TreeTrunk",
             resourceSubdirectory: nil
         ),
         Self(

@@ -132,10 +132,10 @@ struct BackpackSidebar: View {
             if let itemContent {
                 itemContent(item)
             } else {
-                defaultItemContent
+                defaultItemContent(for: item)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.animagicPress)
         .accessibilityLabel(item)
     }
 
@@ -148,15 +148,12 @@ struct BackpackSidebar: View {
         )
     }
 
-    private var defaultItemContent: some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(Color(Color.Palette.n10))
-            .frame(width: 140, height: 128)
-            .overlay {
-                Image(systemName: "square")
-                    .font(.system(size: 40, weight: .medium))
-                    .foregroundStyle(Color.Palette.n70)
-            }
+    private func defaultItemContent(for item: String) -> some View {
+        BackpackSidebarItemCard(title: item, isSelected: false) {
+            Image(systemName: "square")
+                .font(.system(size: 40, weight: .medium))
+                .foregroundStyle(Color.Palette.n70)
+        }
     }
 
     private var defaultEmptyContent: some View {
@@ -166,6 +163,67 @@ struct BackpackSidebar: View {
             message: "Add something to your backpack to see it here.",
             isCompact: true
         )
+    }
+}
+
+struct BackpackSidebarItemCard<Preview: View>: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let title: String
+    let isSelected: Bool
+    @ViewBuilder let preview: Preview
+
+    var body: some View {
+        VStack(spacing: 6) {
+            preview
+                .frame(maxWidth: .infinity)
+                .frame(height: 76)
+
+            Text(title)
+                .font(.custom("Belanosima-SemiBold", size: 16, relativeTo: .subheadline))
+                .foregroundStyle(Color.Palette.n70)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity, minHeight: 116)
+        .background(cardBackgroundColor, in: cardShape)
+        .overlay {
+            cardShape
+                .strokeBorder(cardBorderColor, lineWidth: 4)
+        }
+        .padding(6)
+        .background(Color.Token.Background.surface, in: outerShape)
+        .overlay(alignment: .topTrailing) {
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.white, Color.Palette.o300)
+                    .padding(10)
+            }
+        }
+        .animation(
+            reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.selection,
+            value: isSelected
+        )
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private var cardBackgroundColor: Color {
+        isSelected ? Color.Token.Card.selected : Color.Token.Card.primary
+    }
+
+    private var cardBorderColor: Color {
+        isSelected ? Color.Token.Border.primary : Color.Token.Border.secondary
+    }
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+    }
+
+    private var outerShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 22, style: .continuous)
     }
 }
 
