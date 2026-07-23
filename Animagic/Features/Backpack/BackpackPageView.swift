@@ -36,12 +36,10 @@ struct BackpackPageView: View {
 
     @ViewBuilder
     private var drawingContent: some View {
-        if filteredDrawings.isEmpty {
-            ContentUnavailableView(
-                "No Drawings Found",
-                systemImage: "paintpalette",
-                description: Text("Try another filter or draw a new animal.")
-            )
+        if artworkStore.savedDrawings.isEmpty {
+            emptyLibraryView
+        } else if filteredDrawings.isEmpty {
+            emptyResultsView
         } else {
             ZStack(alignment: .trailing) {
                 drawingGrid
@@ -51,6 +49,33 @@ struct BackpackPageView: View {
                 )
             }
         }
+    }
+
+    private var emptyLibraryView: some View {
+        AnimagicEmptyState(
+            icon: "backpack.fill",
+            title: "Your Backpack Is Empty",
+            message: "Draw your first doodle and it will appear here.",
+            actionTitle: "Draw a Doodle",
+            actionIcon: "paintbrush.fill",
+            action: startNewDrawing
+        )
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var emptyResultsView: some View {
+        AnimagicEmptyState(
+            icon: "magnifyingglass",
+            title: "No Drawings Found",
+            message: "Try a different search or show every backpack category.",
+            actionTitle: "Clear Filters",
+            actionIcon: "arrow.counterclockwise",
+            actionColor: AnimagicTheme.blue,
+            action: clearFilters
+        )
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var drawingGrid: some View {
@@ -97,6 +122,11 @@ struct BackpackPageView: View {
     private func startNewDrawing() {
         drawingSession.startNewDrawing()
         router.push(.canvas)
+    }
+
+    private func clearFilters() {
+        searchText = ""
+        selectedCategory = nil
     }
 
     private func openAR() {

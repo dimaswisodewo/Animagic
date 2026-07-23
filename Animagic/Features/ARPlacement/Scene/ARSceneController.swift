@@ -22,7 +22,7 @@ enum ARPlacementStatus: Equatable {
 final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSessionDelegate {
     var cutoutAssets: [CutoutAsset] {
         get { sceneEditor.cutoutAssets }
-        set { sceneEditor.cutoutAssets = newValue }
+        set { sceneEditor.updateCutoutAssets(newValue) }
     }
     var selectedCutoutID: CutoutAsset.ID? {
         get { sceneEditor.selectedCutoutID }
@@ -64,7 +64,7 @@ final class ARSceneController: NSObject, SceneEditing, @preconcurrency ARSession
         selectedSpawnMode: SpawnMode,
         selectedContentType: PlacementContentType,
         selectedModelID: PlaceableUSDZModel.ID?,
-        entityFactory: CutoutEntityFactory = CutoutEntityFactory(),
+        entityFactory: CutoutEntityFactory? = nil,
         onSelectionChanged: ((PlacedObjectSelection?) -> Void)? = nil,
         onPlacementStatusChanged: ((ARPlacementStatus) -> Void)? = nil
     ) {

@@ -51,7 +51,7 @@ final class ApplePencilARInteractionAdapter: NSObject, UIPencilInteractionDelega
     }
 
     @objc private func handleHover(_ recognizer: UIHoverGestureRecognizer) {
-        guard let arView, let controller else { return }
+        guard let arView, let controller, controller.isInteractionReady else { return }
 
         switch recognizer.state {
         case .began, .changed:
@@ -69,7 +69,7 @@ final class ApplePencilARInteractionAdapter: NSObject, UIPencilInteractionDelega
         _ interaction: UIPencilInteraction,
         didReceiveSqueeze squeeze: UIPencilInteraction.Squeeze
     ) {
-        guard let controller else { return }
+        guard let controller, controller.isInteractionReady else { return }
 
         switch squeeze.phase {
         case .began:

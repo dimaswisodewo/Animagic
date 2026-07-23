@@ -28,8 +28,8 @@ struct HanddrawnDetailView: View {
             VStack(spacing: 0) {
                 HanddrawnDetailHeader(
                     title: $titleDraft,
-                    onTitleCommit: commitTitleChange,
-                    onBack: dismiss.callAsFunction,
+                    onTitleCommit: { commitTitleChange() },
+                    onBack: { commitTitleChange(onSuccess: dismiss.callAsFunction) },
                     onOpenAR: classifyAndOpenAR,
                     onShare: { showShareSheet = true },
                     onSave: saveToGallery,
@@ -51,7 +51,7 @@ struct HanddrawnDetailView: View {
             Button("Yes", role: .destructive, action: deleteDrawing)
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Are you sure you want to delete '\(drawing.name.isEmpty ? "Untitled" : drawing.name)'?")
+            Text("This also removes its cutout from AR. Delete '\(ArtworkLibraryPresentation.displayName(for: drawing))'?")
         }
         .alert("Saved Successfully", isPresented: $showSaveSuccess) {
             Button("OK", role: .cancel) {}
@@ -80,19 +80,21 @@ struct HanddrawnDetailView: View {
     }
 
     private func synchronizeTitleDraft() {
-        titleDraft = drawing.name.isEmpty ? "Untitled" : drawing.name
+        titleDraft = ArtworkLibraryPresentation.displayName(for: drawing)
     }
 
-    private func commitTitleChange() {
+    private func commitTitleChange(onSuccess: @escaping @MainActor () -> Void = {}) {
         let normalizedTitle = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
-        let savedTitle = drawing.name.isEmpty ? "Untitled" : drawing.name
+        let savedTitle = ArtworkLibraryPresentation.displayName(for: drawing)
 
         guard !normalizedTitle.isEmpty else {
             titleDraft = savedTitle
+            onSuccess()
             return
         }
         guard normalizedTitle != drawing.name else {
             titleDraft = savedTitle
+            onSuccess()
             return
         }
 
@@ -100,7 +102,10 @@ struct HanddrawnDetailView: View {
             id: drawing.id,
             to: normalizedTitle,
             onFailure: { titleDraft = savedTitle },
-            onSuccess: { updatedDrawing in titleDraft = updatedDrawing.name }
+            onSuccess: { updatedDrawing in
+                titleDraft = updatedDrawing.name
+                onSuccess()
+            }
         )
     }
 

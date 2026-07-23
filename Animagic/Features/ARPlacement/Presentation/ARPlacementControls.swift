@@ -599,7 +599,7 @@ private struct ARHeightControl: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
-                Label("Height", systemImage: "arrow.up.and.down")
+                Label("Elevation", systemImage: "arrow.up.and.down")
                     .font(.custom("Belanosima-SemiBold", size: 19))
 
                 Spacer()
@@ -944,8 +944,7 @@ struct VerticalARObjectShelf: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     @Binding var contentType: PlacementContentType
-    let cutoutAssets: [CutoutAsset]
-    let titleForCutout: (CutoutAsset) -> String
+    let cutoutItems: [BackpackCutoutItem]
     @Binding var selectedCutoutID: CutoutAsset.ID?
     @Binding var selectedModelID: PlaceableUSDZModel.ID?
     let shelfHeight: CGFloat
@@ -1014,7 +1013,7 @@ struct VerticalARObjectShelf: View {
 
     @ViewBuilder
     private var doodleShelf: some View {
-        if cutoutAssets.isEmpty {
+        if cutoutItems.isEmpty {
             VStack(spacing: 10) {
                 Image(systemName: "paintbrush.pointed.fill")
                     .foregroundStyle(.blue)
@@ -1029,25 +1028,24 @@ struct VerticalARObjectShelf: View {
             .padding(16)
         } else {
             LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(cutoutAssets) { asset in
-                    let title = titleForCutout(asset)
+                ForEach(cutoutItems) { item in
                     Button {
-                        selectedCutoutID = asset.id
+                        selectedCutoutID = item.id
                         onSelectionFeedback()
                     } label: {
                         ARSelectionCard(
-                            title: title,
-                            isSelected: selectedCutoutID == asset.id
+                            title: item.title,
+                            isSelected: selectedCutoutID == item.id
                         ) {
-                            Image(uiImage: asset.image)
+                            Image(uiImage: item.cutout.image)
                                 .resizable()
                                 .scaledToFit()
                                 .padding(6)
                         }
                     }
                     .buttonStyle(ARPressButtonStyle())
-                    .accessibilityLabel(title)
-                    .accessibilityAddTraits(selectedCutoutID == asset.id ? .isSelected : [])
+                    .accessibilityLabel(item.title)
+                    .accessibilityAddTraits(selectedCutoutID == item.id ? .isSelected : [])
                 }
             }
             .padding(.vertical, 8)

@@ -11,6 +11,7 @@ struct BackpackSidebar: View {
     let items: [String: [String]]
     let initialTab: String?
     let itemContent: ((String) -> AnyView)?
+    let emptyContent: ((String) -> AnyView)?
     var onTabChanged: ((String) -> Void)? = nil
     var onItemTapped: ((String) -> Void)? = nil
 
@@ -27,12 +28,14 @@ struct BackpackSidebar: View {
         initialTab: String? = nil,
         onTabChanged: ((String) -> Void)? = nil,
         onItemTapped: ((String) -> Void)? = nil,
+        emptyContent: ((String) -> AnyView)? = nil,
         itemContent: ((String) -> AnyView)? = nil
     ) {
         self.tabs = tabs
         self.items = items
         self.initialTab = initialTab
         self.itemContent = itemContent
+        self.emptyContent = emptyContent
         self.onTabChanged = onTabChanged
         self.onItemTapped = onItemTapped
         _selectedTab = State(initialValue: initialTab ?? tabs.first ?? "")
@@ -40,34 +43,7 @@ struct BackpackSidebar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 6) {
-                ForEach(tabs, id: \.self) { tab in
-                    let isSelected = selectedTab == tab
-
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = tab
-                        }
-                        onTabChanged?(tab)
-                    } label: {
-                        Text(tab)
-                            .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.75)
-                            .foregroundStyle(isSelected ? .white : AnimagicTheme.blue.opacity(0.7))
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                Capsule()
-                                    .fill(isSelected ? AnimagicTheme.blue : Color(Color.Palette.b50))
-                            )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(tab)
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
-            }
+            tabPicker
             .padding(4)
             .background(Capsule().fill(Color.white))
             .overlay {
@@ -79,23 +55,7 @@ struct BackpackSidebar: View {
             .padding(.bottom, 8)
 
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(items[selectedTab] ?? [], id: \.self) { item in
-                        Button {
-                            onItemTapped?(item)
-                        } label: {
-                            if let itemContent {
-                                itemContent(item)
-                            } else {
-                                defaultItemContent
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(item)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                shelfContent
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -107,10 +67,82 @@ struct BackpackSidebar: View {
         }
     }
 
+    private var tabPicker: some View {
+        HStack(spacing: 6) {
+            ForEach(tabs, id: \.self) { tab in
+                tabButton(tab)
+            }
+        }
+    }
+
+    private func tabButton(_ tab: String) -> some View {
+        let isSelected = selectedTab == tab
+
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                selectedTab = tab
+            }
+            onTabChanged?(tab)
+        } label: {
+            Text(tab)
+                .font(.custom("Belanosima-SemiBold", size: 20, relativeTo: .headline))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .foregroundStyle(isSelected ? Color.white : AnimagicTheme.blue.opacity(0.7))
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? AnimagicTheme.blue : Color(Color.Palette.b50))
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(tab)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var shelfContent: some View {
+        if let selectedItems = items[selectedTab], !selectedItems.isEmpty {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(selectedItems, id: \.self) { item in
+                    itemButton(item)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+        } else if let emptyContent {
+            emptyContent(selectedTab)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        } else {
+            defaultEmptyContent
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+        }
+    }
+
+    private func itemButton(_ item: String) -> some View {
+        Button {
+            onItemTapped?(item)
+        } label: {
+            if let itemContent {
+                itemContent(item)
+            } else {
+                defaultItemContent
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(item)
+    }
+
     private var shelfShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: 24,
-            bottomLeadingRadius: 24,
+            topLeadingRadius: 40,
+            bottomLeadingRadius: 40,
             bottomTrailingRadius: 0,
             topTrailingRadius: 0
         )
@@ -126,9 +158,19 @@ struct BackpackSidebar: View {
                     .foregroundStyle(Color.Palette.n70)
             }
     }
+
+    private var defaultEmptyContent: some View {
+        AnimagicEmptyState(
+            icon: "backpack.fill",
+            title: "Nothing Here Yet",
+            message: "Add something to your backpack to see it here.",
+            isCompact: true
+        )
+    }
 }
 
 struct BackpackTabButton: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var isOpen: Bool
 
     let backgroundColor: Color
@@ -137,64 +179,46 @@ struct BackpackTabButton: View {
 
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            withAnimation(reduceMotion ? AnimagicMotion.reduced : AnimagicMotion.sidebar) {
                 isOpen.toggle()
             }
         } label: {
-            Group {
-                if isOpen {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 30, weight: .bold))
-                        .foregroundStyle(iconColor)
-                        .frame(width: 72, height: 72)
-                        .background(Circle().fill(backgroundColor))
-                        .overlay {
-                            Circle()
-                                .strokeBorder(Color.white, lineWidth: 6)
-                            Circle()
-                                .strokeBorder(innerBorderColor, lineWidth: 3)
-                                .padding(7)
-                        }
-                } else {
-                    Image(systemName: "backpack.fill")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(iconColor)
-                        .padding(.vertical, 24)
-                        .padding(.horizontal, 20)
-                        .background(
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: 32,
-                                bottomLeadingRadius: 32,
-                                bottomTrailingRadius: 0,
-                                topTrailingRadius: 0
-                            )
-                            .fill(backgroundColor)
-                            .overlay {
-                                UnevenRoundedRectangle(
-                                    topLeadingRadius: 32,
-                                    bottomLeadingRadius: 32,
-                                    bottomTrailingRadius: 0,
-                                    topTrailingRadius: 0
-                                )
-                                .strokeBorder(innerBorderColor, lineWidth: 4)
-                            }
-                        )
+            Image(systemName: isOpen ? "chevron.right" : "backpack.fill")
+                .font(.system(size: isOpen ? 30 : 28, weight: .bold))
+                .foregroundStyle(iconColor)
+                .frame(width: 84, height: 76)
+                .background(backgroundColor, in: tabShape)
+                .overlay {
+                    tabShape
+                        .strokeBorder(Color.white, lineWidth: 6)
+                    tabShape
+                        .strokeBorder(innerBorderColor, lineWidth: 3)
+                        .padding(8)
                 }
-            }
         }
         .buttonStyle(.animagicPress)
         .accessibilityLabel(isOpen ? "Close backpack" : "Open backpack")
-        .padding(.trailing, isOpen ? -20 : -4)
+        .accessibilityHint(isOpen ? "Hides the backpack sidebar" : "Shows the backpack sidebar")
+        .padding(.trailing, -4)
+    }
+
+    private var tabShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: 38,
+            bottomLeadingRadius: 38,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: 0
+        )
     }
 }
 
 struct BackpackSidebarViewTest: View {
     @State private var isSidebarOpen: Bool = true
     
-    let myTabs = ["Doodle", "3D"]
+    let myTabs = ["Doodle", "3D Model"]
     let myInventory = [
         "Doodle": ["Doodle 1", "Doodle 2", "Doodle 3", "Doodle 4"],
-        "3D": ["Model 1", "Model 2"],
+        "3D Model": ["Model 1", "Model 2"],
     ]
     
     var body: some View {
@@ -217,16 +241,11 @@ struct BackpackSidebarViewTest: View {
                 .zIndex(1)
 
                 if isSidebarOpen {
-                    // 2. Lempar data (props) ke dalam komponen
                     BackpackSidebar(
                         tabs: myTabs,
-                        items: myInventory,
-                        onItemTapped: { selectedItem in
-                            // Lakukan sesuatu saat item di dalam sidebar diklik
-                            print("User menekan: \(selectedItem)")
-                        }
+                        items: myInventory
                     )
-                    .frame(width: 250)
+                    .frame(width: 360)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }

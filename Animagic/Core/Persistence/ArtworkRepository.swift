@@ -6,6 +6,7 @@ protocol ArtworkRepository {
     func loadSnapshot() throws -> ArtworkSnapshot
     func upsertDrawing(_ drawing: SavedDrawing) throws
     func upsertDrawings(_ drawings: [SavedDrawing]) throws
+    /// Deletes the drawing and every cutout derived from it in one transaction.
     func deleteDrawing(id: UUID) throws
     func persistClassifiedCutout(
         drawing: SavedDrawing,
@@ -70,6 +71,13 @@ final class SwiftDataArtworkRepository: ArtworkRepository {
 
     func deleteDrawing(id: UUID) throws {
         try perform(operation: "delete the drawing") {
+            let drawingID = id
+            let cutoutDescriptor = FetchDescriptor<CutoutAssetRecord>(
+                predicate: #Predicate { $0.sourceDrawingID == drawingID }
+            )
+            for cutoutRecord in try context.fetch(cutoutDescriptor) {
+                context.delete(cutoutRecord)
+            }
             if let record = try drawingRecord(id: id) {
                 context.delete(record)
             }

@@ -173,7 +173,7 @@ final class RoomCoordinator: NSObject {
         onSkyboxLoadStateChanged: ((SkyboxLoadState) -> Void)?,
         onPlacementMessageChanged: ((String?) -> Void)?
     ) {
-        cutoutEditor.cutoutAssets = cutoutAssets
+        cutoutEditor.updateCutoutAssets(cutoutAssets)
         cutoutEditor.selectedCutoutID = selectedCutoutID
         cutoutEditor.selectedAnimalLocomotion = selectedAnimalLocomotion
         cutoutEditor.selectedSpawnMode = selectedSpawnMode
