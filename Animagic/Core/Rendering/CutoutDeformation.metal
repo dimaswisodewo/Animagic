@@ -173,9 +173,9 @@ void swimGeometryModifier(
     float maxLateral = min(c.width * 0.040, 0.045);
     float maxDepth = min(c.width * 0.080, 0.045);
     float maxVertical = clamp(c.width * 0.018, 0.003, 0.009);
-    float travelingWave = sin(c.phase * cadence - rear * 6.4);
-    float secondaryWave = sin(c.phase * cadence * 1.7 - rear * 10.5 + c.centered.y);
-    float residualWave = sin(c.phase * 0.38 - rear * 4.2);
+    float travelingWave = sin(c.phase * cadence + rear * 6.4);
+    float secondaryWave = sin(c.phase * cadence * 1.7 + rear * 10.5 + c.centered.y);
+    float residualWave = sin(c.phase * 0.38 + rear * 4.2);
     float breathing = sin(c.phase * 0.22 + c.centered.y * 0.7);
 
     float3 offset = float3(0.0);
@@ -198,7 +198,7 @@ void swimGeometryModifier(
         float settling = sin(settleProgress * M_PI_F * 3.0) * (1.0 - settleProgress);
         offset.x -= c.centered.x * anticipation * c.width * 0.035 * c.reactionStrength;
         offset.x += c.centered.x * propulsion * c.width * 0.016 * c.reactionStrength;
-        offset.z += sin(c.phase * 1.9 - rear * 8.5)
+        offset.z += sin(c.phase * 1.9 + rear * 8.5)
             * rearWeight * maxDepth
             * (propulsion * 0.9 + settling * 0.35)
             * c.reactionStrength;
