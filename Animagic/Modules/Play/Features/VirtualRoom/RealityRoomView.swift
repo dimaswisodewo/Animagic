@@ -1,0 +1,91 @@
+//
+//  RealityRoomView.swift
+//  AniMagic
+//
+//  Created by Meynabel Dimas Wisodewo on 16/07/26.
+//
+
+import RealityKit
+import AniMagicCreation
+import AniMagicDesignSystem
+import SwiftUI
+
+struct RealityRoomView: UIViewRepresentable {
+    let calibrationRequest: Int
+    let interactionMode: VirtualRoomInteractionMode
+    let selectedSkybox: VirtualRoomSkybox
+    let cutoutAssets: [CreationPlayableAsset]
+    let selectedCutoutID: CreationPlayableAsset.ID?
+    let spawnAnimalLocomotion: AnimalLocomotion
+    let selectedObjectAnimalLocomotion: AnimalLocomotion?
+    let selectedSpawnMode: SpawnMode
+    let selectedContentType: PlacementContentType
+    let selectedModelID: PlaceableUSDZModel.ID?
+    @Binding var placedObjectSelection: PlacedObjectSelection?
+    @Binding var skyboxLoadState: SkyboxLoadState
+    @Binding var placementMessage: String?
+    let deleteRequestID: UUID?
+
+    func makeCoordinator() -> RoomCoordinator {
+        RoomCoordinator(
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
+            selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
+            onSelectionChanged: updateSelection,
+            onSkyboxLoadStateChanged: updateSkyboxLoadState,
+            onPlacementMessageChanged: updatePlacementMessage
+        )
+    }
+
+    func makeUIView(context: Context) -> ARView {
+        context.coordinator.makeView()
+    }
+
+    func updateUIView(_ uiView: ARView, context: Context) {
+        context.coordinator.handleCalibrationRequest(calibrationRequest)
+        context.coordinator.update(
+            interactionMode: interactionMode,
+            skybox: selectedSkybox,
+            cutoutAssets: cutoutAssets,
+            selectedCutoutID: selectedCutoutID,
+            selectedAnimalLocomotion: spawnAnimalLocomotion,
+            selectedObjectAnimalLocomotion: selectedObjectAnimalLocomotion,
+            selectedSpawnMode: selectedSpawnMode,
+            selectedContentType: selectedContentType,
+            selectedModelID: selectedModelID,
+            deleteRequestID: deleteRequestID,
+            onSelectionChanged: updateSelection,
+            onSkyboxLoadStateChanged: updateSkyboxLoadState,
+            onPlacementMessageChanged: updatePlacementMessage
+        )
+    }
+
+    static func dismantleUIView(_ uiView: ARView, coordinator: RoomCoordinator) {
+        coordinator.stop()
+    }
+
+    private func updateSelection(_ selection: PlacedObjectSelection?) {
+        Task { @MainActor in
+            if placedObjectSelection != selection {
+                placedObjectSelection = selection
+            }
+        }
+    }
+
+    private func updateSkyboxLoadState(_ state: SkyboxLoadState) {
+        Task { @MainActor in
+            if skyboxLoadState != state {
+                skyboxLoadState = state
+            }
+        }
+    }
+
+    private func updatePlacementMessage(_ message: String?) {
+        Task { @MainActor in
+            placementMessage = message
+        }
+    }
+}

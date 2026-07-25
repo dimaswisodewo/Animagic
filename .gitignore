@@ -26,3 +26,8 @@ docs/*
 !docs/HAND_DRAWING_TO_ANIMATED_AR.md
 !docs/asset-pipeline/
 !docs/asset-pipeline/*.md
+!docs/adr/
+!docs/adr/*.md
+!docs/architecture/
+!docs/architecture/*.md
+!docs/ONBOARDING.md

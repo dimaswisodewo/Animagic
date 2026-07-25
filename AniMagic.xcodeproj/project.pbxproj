@@ -7,424 +7,666 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */; };
-		0BEF7BBB30127A6000DC61B2 /* AniMagixAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */; };
-		0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */; };
-		11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */; };
-		13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */; };
-		13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */; };
-		14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */; };
-		14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */; };
-		15BCA40123CDEF0000000001 /* CutoutContourExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */; };
-		15BCA40123CDEF0000000002 /* CardboardRimMeshGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */; };
-		15BCA40123CDEF0000000003 /* CardboardSurfaceField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */; };
-		1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B760E43EEC00C31B3BC26C6E /* Cloud.usdz */; };
-		1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */; };
-		1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */; };
+		0160C0B662B358C359164187 /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98388B591655461CDD2C623B /* RenderingExtensions.swift */; };
+		01924B6E4496468A0CB66C6B /* AniMagicDesignSystem.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0216F835FB460A2CD4C2DD4F /* CutoutLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB653A3617FB527A4413D7FF /* CutoutLibraryView.swift */; };
+		02D0590168E1B91CCBF65D6B /* AniMagicPlay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */; };
+		02DFB42A0EFBA8733F44A524 /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20BEABBB138A9B2E8650413D /* RoomCoordinator.swift */; };
+		02EBE04EE66CE0FB2B49487B /* MotionSimulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E71A67FEA9212445FE2A7A /* MotionSimulation.swift */; };
+		0791191D33C3DE4CCCA9E3CB /* AniMagicCreation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		08A346490476E5822BB0AB69 /* MotionLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BD82976620AA0863188FF7 /* MotionLabView.swift */; };
+		0C407B578FCD930EDF03ADA9 /* CreationResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E39D0E46C23DC32C34213B9 /* CreationResources.swift */; };
+		0C6C052E93978629A80C78DD /* HanddrawnDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8405C38C3C4FF5DD2E44BB60 /* HanddrawnDetailComponents.swift */; };
+		0E444548C550EA529F616024 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED95FC298B3C394C75154EE3 /* CheckerboardBackground.swift */; };
+		123FC673DAD4E842B51CDB69 /* Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256B4C69D2A4883FED918253 /* Creation.swift */; };
+		14212A0086C3E057F6A0E51A /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D984505746D332821FEFFD /* PlacedCutout.swift */; };
+		1763BBD4DDBB7E5F00233BFC /* BackpackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308418BC15C1649500571548 /* BackpackPageView.swift */; };
+		1833CB2366C90553876D20B7 /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBEF3E00DFCAB7026653446 /* NewARPlacementView.swift */; };
+		1DE6DE7AB2E02E5EEDA9B074 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE3A7BF5D5B8B2E84D42CE0 /* UIImage+Vision.swift */; };
+		1E716B3F7E22BD17E7DA5BAC /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6906A6F3ACC696104403C54 /* SoftShadowTexture.swift */; };
+		1F9A5E03CEE17D528963DE1A /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE878AD86BA58446CCD2B630 /* CutoutProcessing.swift */; };
+		1FA393FECADCC4D2CFB4840D /* ClassifiedCutoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4456E73DD19EB11A611D0495 /* ClassifiedCutoutFactory.swift */; };
+		20B0F9FF633ED71160199303 /* CreationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36EBA3D73F5C8906AFA5B0C /* CreationRecord.swift */; };
 		22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1056000C4958CB23F9F1962F /* Assets.xcassets */; };
-		23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */; };
-		238238874722D44037214247 /* Birds.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 14A60964229B227465EE8AD4 /* Birds.usdz */; };
-		2450F58C34EAD53998B320DF /* bgm_home.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F7C74CD3B8EAD9B7B9BDA567 /* bgm_home.mp3 */; };
-		26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */; };
-		33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */; };
-		35DBB73FBA018A10878D0ECC /* ButtonSfx.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D6F9B88EF207E0F2806EB8A8 /* ButtonSfx.mp3 */; };
-		3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */; };
-		3B17930B7D49F78B8961394B /* NativeCameraPhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */; };
-		40CD2E69C46CBF46BBFBD627 /* NativeCameraComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */; };
-		4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */; };
-		4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */; };
-		52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */; };
-		52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */; };
-		52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */; };
-		53D0A252C7C4C216EAD2CA04 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CED9A2C7B028CCDA510DB13 /* ContentView.swift */; };
-		55F9E2EC56BFF343AC05F6EA /* ARReturnRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D64AFC77E63971E16652B5 /* ARReturnRecoveryView.swift */; };
-		5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */; };
-		58B38D15B4AC93EC46B47599 /* AudioAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3C60D05A8A680C5F5AC01A /* AudioAsset.swift */; };
-		5B65D23140A6A9FD8616DFD1 /* BackpackPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB73231B83858CE30A584E76 /* BackpackPageView.swift */; };
-		5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */; };
-		5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */; };
-		5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */; };
-		5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526F6226738360D3BFA9F745 /* HelpPageView.swift */; };
-		60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67231FD4CC90120FA5A8816 /* CustomButton.swift */; };
-		6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */; };
-		6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */; };
-		6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 15945EA983940214C874F789 /* TreeStump.usdz */; };
-		729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */; };
-		770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D044F34FEBE90F2C670DAF /* AudioManager.swift */; };
-		777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */; };
-		78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */; };
-		79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */; };
-		7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */; };
-		7B9A5F927CDACF2F8DB5BD14 /* Broccoli.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */; };
-		7C49A4BF2BB3F20E53D8C7E3 /* TreeTrunk.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */; };
-		7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */; };
-		7CEF23E11CC5EA193748F74E /* ColorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C865A342D8F33249F737C2E3 /* ColorToken.swift */; };
-		815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */; };
-		8235E49425717B0E8D593972 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F1CE7084EE88134E097B8C /* MenuView.swift */; };
-		860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */; };
-		861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */; };
-		87681B09FE24242A14664D7E /* CutoutLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */; };
-		8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */; };
-		8C3CB096710C0F7ACEFE478F /* CutoutLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */; };
-		8F7C3A695681B127019DC85A /* NativeCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */; };
-		8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */; };
-		92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */ = {isa = PBXBuildFile; fileRef = AE185F0D5C9434A5A272154D /* Croissant.usdz */; };
-		94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */; };
-		9D439EC03C5A72F3802DE170 /* CutoutRigAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */; };
-		9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */; };
-		A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */; };
-		A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0850761218A200FA8B9746 /* ArtworkRepository.swift */; };
+		235B5DA035D56E9ECA67F7A0 /* ObjectInteractionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C20043E9BEBDB3915BCD70 /* ObjectInteractionManager.swift */; };
+		24E2DC2C828A41CF02BABD68 /* CreationPlayableAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B017E0BABF1C0CE45B3AD3 /* CreationPlayableAsset.swift */; };
+		2585017F384D5C414A54F083 /* CutoutEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71CC8FEFDFAECD7E937062C5 /* CutoutEntityFactory.swift */; };
+		27353D6D01168A9B56080484 /* HomeFloatingDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3677EBEACD96E84458BA444 /* HomeFloatingDecorations.swift */; };
+		27E523643983158FB1205265 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 29C50197A865EFA7CB2BB0A5 /* AppIcon.icon */; };
+		29EB18EE2885ACE96DA0F76E /* RealityRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F340EBBFD509D39E13C6E985 /* RealityRoomView.swift */; };
+		2B656CE60E747D274359E629 /* ShadowEntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7E0D0231C32B2A679F9BCC /* ShadowEntityFactory.swift */; };
+		3010411F37194F990550583E /* AniMagicSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */; };
+		35D88B6E2D5267861B40D57A /* AniMagicDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */; };
+		37B731813BF682FAFB8A8CEA /* VirtualRoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2116ACF39AAB1B69339CD139 /* VirtualRoomModels.swift */; };
+		38F320B6D4B1EEE7833D014A /* CreationLibraryRepositoryAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F348398EA7665B68DB3C97 /* CreationLibraryRepositoryAdapter.swift */; };
+		3995489737DAD33306D04F16 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA908F29AB926854FDB9B350 /* DrawingView.swift */; };
+		3B42F3999C8832883D8E5683 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952ED698DC5C7366F0087D58 /* PhotoLibrarySaver.swift */; };
+		3C2E2CA352FB3FAD45BA8500 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F82266B45AD0C5CCC8D582A /* HapticFeedback.swift */; };
+		3C48B55904830644B18EC9A9 /* BackgroundMusicController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A32648A313E4D48373004B /* BackgroundMusicController.swift */; };
+		3E1B7DB81AE744E88509CE90 /* AniMagicCreation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */; };
+		41CD63D5BBCC290F4BE64577 /* BackpackComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5770A2AEC1D824B23806BB /* BackpackComponents.swift */; };
+		45C001264182888BB54DCA54 /* AniMagicDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */; };
+		48A94D9704D68AD57488FEB7 /* AniMagicCreation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		48B6617A6F30CC1783664DA2 /* CreationRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD14E002C0B2C9155CCB368C /* CreationRepository.swift */; };
+		49BE81647C50C56332194177 /* ApplePencilARInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16C9F660A186742B75DA4BD /* ApplePencilARInteractionAdapter.swift */; };
+		4A5CCF431E0B5EA9AF84D98B /* ARReturnRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0171E28D9A6E64F16527F464 /* ARReturnRecoveryView.swift */; };
+		4B60D34752E232DC997B2990 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291F6DA9DEB9684C14F346EE /* MotionOrientationStore.swift */; };
+		4DD09F418F5BFA57FD5594E5 /* CreationLibraryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB6A325B50EFB1B49AA0D94 /* CreationLibraryRepository.swift */; };
+		4FDC2336410A064D12CB8568 /* SupportResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28146229073B9C2FAE058E96 /* SupportResources.swift */; };
+		51D91DFB03630BA70A403955 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73D07432911B0C9A86D7459 /* AnimagicDesignSystem.swift */; };
+		5384D7EEAC3546E53853032A /* VirtualRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB7612192C284502F40C27C /* VirtualRoomView.swift */; };
+		5532E8916DB57AEF9E212980 /* AudioAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC7AC20A8E1C475CBE574E3 /* AudioAsset.swift */; };
+		5E41CDF0531F37C48F7EE1E6 /* CreationDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7EEF8FC8A00B4121F64F11 /* CreationDrawing.swift */; };
+		5F4DF44350D632835049E95C /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 436A64DAFFF238363DBFD222 /* CutoutDeformation.metal */; };
+		628CB41F14F93A1991012A3B /* CreationCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D101774928A2F178B13199 /* CreationCatalogTests.swift */; };
+		65BD37CFC50E1DC97892683B /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A94F0A4ED6762D1B4E01FEE /* InteractionModels.swift */; };
+		682A5ACD61274C4589BAE48F /* CreationCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95768D70C7398CFEF920D3DF /* CreationCategory.swift */; };
+		6A685E53DCFDE47C2B53D479 /* AniMagicCreation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BC0F53698A48C6AA6073B2 /* AniMagicCreation.swift */; };
+		6C3C9A8D265A709D6A4FF058 /* DoodleClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AA4BA263C81AB8881FBA1C /* DoodleClassification.swift */; };
+		6F71B742772ABF2666BCFBA5 /* CardboardRimMeshGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674ACBD4E6C827EE193EA3CB /* CardboardRimMeshGenerator.swift */; };
+		718D10AA5A2D320865B17E02 /* CreationRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = C350AFBCBA2D08884BE56AC0 /* CreationRuntime.swift */; };
+		7554AC408EF802A5A66BA1DF /* PlayNavigationActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBBD2792E43DF17FB1E294 /* PlayNavigationActions.swift */; };
+		75B7B8C0087781FDE36D644F /* LegacyArtworkRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27A9478A527E8CB21BB216B /* LegacyArtworkRecords.swift */; };
+		76FF3DED736934133A93BADE /* ARViewInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C88B9C79F41030015F776A67 /* ARViewInteractionAdapter.swift */; };
+		7A6A177ACE94A5A5A3A28C36 /* PlayResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9E1CF19E76A91D29C599D4 /* PlayResources.swift */; };
+		7C04FF3A55CB04A5F0ACEEB9 /* DoodleClassificationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445CE83E00998485A9C13246 /* DoodleClassificationCoordinator.swift */; };
+		7D5C3847C36D9E9D3E3D053C /* AniMagicSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */; };
+		7E470CCB2BE1CF7B89C5D0DC /* CreationLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94459B6855DA170E36DA6F35 /* CreationLibraryStore.swift */; };
+		80D415C7606A0360938762BC /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C77C14F7EDCFAEFB563D8BB /* AudioSessionManager.swift */; };
+		83DCF98A45F1DDE0CE980489 /* CutoutRigAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24933F034E0A645F2361638C /* CutoutRigAnalyzerTests.swift */; };
+		84FAE0FF0A8D482562070566 /* AniMagicSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */; };
+		87246CE0007122D617272018 /* MotionSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FD8FED44BAC55D3565D949 /* MotionSimulatorTests.swift */; };
+		8A48055D0BC8AD3914D7FB25 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CE30C19392A361B9704ABD9 /* ShareSheet.swift */; };
+		8AD5DB008B38F75EF5083DCE /* SidebarbarBackpack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5DF2447E5A3724D77E2207 /* SidebarbarBackpack.swift */; };
+		8C0EBA30FD529CF2A2B2D040 /* AniMagicSupport.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8D2DE6D9D86888D91EEBC451 /* VisionForegroundCutoutProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AD04AFF7B01DB5E84B978A /* VisionForegroundCutoutProcessor.swift */; };
+		908735FD56F3B20BF9FFC6E5 /* USDZModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B0B975EC2243A66AFC0C26 /* USDZModelPlacement.swift */; };
+		91A61136445D900589C00070 /* ColorToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7377761F70B953C4615BC8 /* ColorToken.swift */; };
+		975C8266D029299E7D7A1828 /* PhotoLibraryWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2613B69346363EF34F0C999 /* PhotoLibraryWriter.swift */; };
+		9B108569026B10876BE151B0 /* CutoutLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86500C290DC1A97E3DBC59B5 /* CutoutLibraryViewModel.swift */; };
+		9BC1A86C2D37ED8A7430E981 /* GuidePopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C6247E79D5033EB05B7C3F5 /* GuidePopupView.swift */; };
+		A016AD59A735B29DF2582C63 /* ArtworkMigrationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFEC9FF018531707043680B /* ArtworkMigrationPlan.swift */; };
+		A22CD8E348059A85A2DB567A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC241061AE981EF9ED56AEA4 /* ContentView.swift */; };
+		A323D62E502108A20815112B /* SurfaceProjectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631DDC67EB385DFD5F3CFB42 /* SurfaceProjectors.swift */; };
+		A5783D3158AB442126AEC4E8 /* CutoutLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C54081E72E201E8EFDC75D6 /* CutoutLibraryCell.swift */; };
+		AA5C6935DF76989AF979F18D /* CanvasPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85152B5178FAA39F1C20D56B /* CanvasPageView.swift */; };
 		AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED0B6AC60C494DD24513C40 /* AppRoute.swift */; };
-		AB4D82FA26FAF5126F3A512F /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */; };
-		B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */; };
-		B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */; };
-		B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */; };
-		B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 777390A8652DBF52D2DA8707 /* WaterMelon.usdz */; };
-		B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */; };
-		B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8331F114D19F860980D9EF08 /* tap.mp3 */; };
-		BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */; };
-		C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */; };
-		C5D9756043F6F67897DBB3F2 /* SidebarbarBackpack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F276AC999DC428A1F9AF535 /* SidebarbarBackpack.swift */; };
-		C6497AEB1DDBC615135BAD80 /* MotionLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */; };
+		AC470E44012606CC5BD08CD5 /* LocomotionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1182C9A2128941056EE4BAB /* LocomotionConfiguration.swift */; };
+		ACF852E4C433EED867DF3391 /* AniMagicPlay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AE0F663077DFE2C5FCEE23AA /* HanddrawnDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03747E99016C1A0CF25A148 /* HanddrawnDetailView.swift */; };
+		B043EA7355983124D0406170 /* ArtworkMigrationPlanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D762DF034A5921E270378A67 /* ArtworkMigrationPlanTests.swift */; };
+		B132F9444EC1769FB4273D36 /* AniMagicDesignSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */; };
+		B49D7790CC000B74D44CC5BB /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9822DEEE27521883C9E2A6 /* ARSelectedContentIndicator.swift */; };
+		BA22594B51EC735573E74C20 /* AniMagicPlay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BDB964A4510AF64739912218 /* CutoutRigAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725600D5593E612A7E26F1D5 /* CutoutRigAnalysis.swift */; };
+		C372448A1A39849AA1C3F699 /* CanvasTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BCAADDDC20CD783E9B1C17 /* CanvasTopBarView.swift */; };
+		C5D425E01EEC231D5BBDD6DE /* AniMagicSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABEC8374B1B99E80C8D4144D /* AniMagicSupport.swift */; };
 		C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */; };
-		CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26A0FAF4B1151615789C36C /* InteractionModels.swift */; };
-		CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */; };
-		D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */; };
-		D3417E7C6E2E0C2D361E8AFA /* StandalonePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */; };
-		D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */; };
-		D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */; };
+		C8B34B91F4F19D1A4BB027BE /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E43741064C1988B865FF51 /* CustomButton.swift */; };
+		C9DE54C354F531ED0F9A3368 /* PlaySessionModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68FE80F14F8B82ED83A5F5FA /* PlaySessionModelTests.swift */; };
+		CAC64598A1F5540E969DCA64 /* AniMagicPlay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */; };
+		CB426629AF9982320301FA87 /* AniMagicPlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9ECFDD5EC8F04E989CB0D81 /* AniMagicPlay.swift */; };
+		CD181DBD719C0958FAB837DF /* CardboardSurfaceField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE08EE2CEBE78D8C86B2721 /* CardboardSurfaceField.swift */; };
+		CDFE363386E014F07C7063EE /* HelpPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE737B5E74A2CCCD914C44F4 /* HelpPageView.swift */; };
+		CF2A67FDB3FD2C4ABAE262B4 /* AniMagicCreation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */; };
+		D222219F79CE941BDE34D4B1 /* CreationNavigationActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA426119ABF46A3D3EF19473 /* CreationNavigationActions.swift */; };
+		D36CCFD16588B64F3C6A6C26 /* ARPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB382ABFC5DC33784E7F86F4 /* ARPlacementControls.swift */; };
 		D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */; };
-		D6AB40DEEC6444D08179A8D4 /* USDZModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBA987867DEE41501405418 /* USDZModelPlacement.swift */; };
-		D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */; };
-		DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */; };
-		DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */; };
-		E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */; };
-		EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */; };
-		EC0BF8E0F69BBFFE35B038E7 /* NativeCameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */; };
-		EC67889AF56BDE8DACB33C4C /* VirtualRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */; };
-		ECC5FFB58F9A60F0BD783E13 /* ARSelectedContentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */; };
-		F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */; };
-		F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */; };
-		FC3FA727CD38D1E3AEE4EA4D /* VisionForegroundCutoutProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */; };
-		FD2F7FAEC722957CB90D7DD0 /* ExpandableActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06573462B1119264F3AD812E /* ExpandableActionMenu.swift */; };
-		FF835DCF8EF6498E779F0342 /* BackpackComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */; };
-		FF941C308B8B099A0C0349E2 /* DrawingRasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */; };
-		FFC7B65E3FBFAFCF239C1861 /* VirtualRoomModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF6055646F729702EE453A /* VirtualRoomModels.swift */; };
+		D8AEBE5C3DBEDE850C048E58 /* CutoutSceneEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A851A3F77FAB63EA4996D2E /* CutoutSceneEditor.swift */; };
+		DC4C949936D0F854D7E94CA1 /* DrawingSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD471DC38CE04937279A9A4 /* DrawingSessionManager.swift */; };
+		DDF8BE14822629A2F93373A4 /* CreationCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2D269149AD94F56914EC88 /* CreationCatalog.swift */; };
+		DE119A1A9F9DAC29A2A52433 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC91949EF1CC288D29ACAEBD /* AudioManager.swift */; };
+		E287B17D5CA96EC48AAFB0E1 /* CutoutRenderingResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239F0A9F0BABF736FB111988 /* CutoutRenderingResources.swift */; };
+		E2A490960B3AC29DBFE304F5 /* DrawingRasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA5C9D11817934592022F1E /* DrawingRasterizer.swift */; };
+		E8D688FBE7E81252DC6BE8B2 /* SceneObjectRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 755797BD29D8ABEC61E9ABC6 /* SceneObjectRegistry.swift */; };
+		E8F742BF559C812C8EAFEE61 /* AniMagicCreation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */; };
+		ECFEB8B058929E4612BB515D /* CreationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA62BC16FEC50DC741E0052B /* CreationTests.swift */; };
+		F46E988FC8633DAB1C3B0DEB /* AniMagicSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */; };
+		F7B14F71BCC0693C2A408E06 /* AniMagicDesignSystemModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602EFEAA257566BB8E3AD829 /* AniMagicDesignSystemModule.swift */; };
+		F915C016422CBA6CB554B033 /* CutoutContourExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02718384849F6A1C587B2E /* CutoutContourExtraction.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2E60C0CB0FFC67BCC8DF89CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 602C903EE6969F7210360538;
+			remoteInfo = AniMagic;
+		};
+		3349A9F380497ED30C6343B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 18CA5000B9409E30B9A274F1;
+			remoteInfo = AniMagicPlay;
+		};
+		37810D56255CB1EFEBF6BA04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6DE319B9148BE30B40D0F98B;
+			remoteInfo = AniMagicDesignSystem;
+		};
+		3882EA67E51A22E9AD8E1A6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6DE319B9148BE30B40D0F98B;
+			remoteInfo = AniMagicDesignSystem;
+		};
+		580FEC3082955CC19FF2745C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA5EAAC8482E337B04D5487A;
+			remoteInfo = AniMagicCreation;
+		};
+		6944D1E4DBA902C176AA130F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6CD2EE9654338B761C10CDC;
+			remoteInfo = AniMagicSupport;
+		};
+		B0120B543F36F162967F67F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA5EAAC8482E337B04D5487A;
+			remoteInfo = AniMagicCreation;
+		};
+		B021BAB2A08B631F74872A4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6DE319B9148BE30B40D0F98B;
+			remoteInfo = AniMagicDesignSystem;
+		};
+		B811B41C882E69BFF6039AA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6CD2EE9654338B761C10CDC;
+			remoteInfo = AniMagicSupport;
+		};
+		CB5A3F2E3BDFD965E3553C82 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 18CA5000B9409E30B9A274F1;
+			remoteInfo = AniMagicPlay;
+		};
+		ED8EB226C9BE871C9A75E487 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6CD2EE9654338B761C10CDC;
+			remoteInfo = AniMagicSupport;
+		};
+		FA1B04473C28CB001E78F16F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA5EAAC8482E337B04D5487A;
+			remoteInfo = AniMagicCreation;
+		};
+		FFECF4D75420CC3513180A1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6530D52A17AF24FE0A1C6728 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6CD2EE9654338B761C10CDC;
+			remoteInfo = AniMagicSupport;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		121DA29BEF106EC1A58632F9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				48A94D9704D68AD57488FEB7 /* AniMagicCreation.framework in Embed Frameworks */,
+				01924B6E4496468A0CB66C6B /* AniMagicDesignSystem.framework in Embed Frameworks */,
+				ACF852E4C433EED867DF3391 /* AniMagicPlay.framework in Embed Frameworks */,
+				8C0EBA30FD529CF2A2B2D040 /* AniMagicSupport.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17E46E5DF81AEF3713242434 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BA22594B51EC735573E74C20 /* AniMagicPlay.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70E24158151E1BF06DFB6AFF /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0791191D33C3DE4CCCA9E3CB /* AniMagicCreation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
-		06573462B1119264F3AD812E /* ExpandableActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableActionMenu.swift; sourceTree = "<group>"; };
-		07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
-		0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
-		0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AniMagixAppIcon.icon; sourceTree = "<group>"; };
+		0171E28D9A6E64F16527F464 /* ARReturnRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARReturnRecoveryView.swift; sourceTree = "<group>"; };
+		098EB463E3D638287AE6D8A3 /* AniMagicCreationTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AniMagicCreationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AniMagicCreation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1056000C4958CB23F9F1962F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePlaceholderView.swift; sourceTree = "<group>"; };
-		14A60964229B227465EE8AD4 /* Birds.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Birds.usdz; sourceTree = "<group>"; };
-		15945EA983940214C874F789 /* TreeStump.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = TreeStump.usdz; sourceTree = "<group>"; };
-		15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutContourExtraction.swift; sourceTree = "<group>"; };
-		15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardRimMeshGenerator.swift; sourceTree = "<group>"; };
-		15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardSurfaceField.swift; sourceTree = "<group>"; };
-		1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
-		19D044F34FEBE90F2C670DAF /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
-		1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
-		1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedDrawing.swift; sourceTree = "<group>"; };
-		1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowEntityFactory.swift; sourceTree = "<group>"; };
-		1F0850761218A200FA8B9746 /* ArtworkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkRepository.swift; sourceTree = "<group>"; };
-		1F3C60D05A8A680C5F5AC01A /* AudioAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAsset.swift; sourceTree = "<group>"; };
-		2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
-		2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalysis.swift; sourceTree = "<group>"; };
-		25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
-		279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
-		28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
-		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BBA987867DEE41501405418 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
-		2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = AnimalSpeciesClassifierV4.mlpackage; sourceTree = "<group>"; };
-		3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
-		30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
-		3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
-		312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-SemiBold.ttf"; sourceTree = "<group>"; };
-		374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCategory.swift; sourceTree = "<group>"; };
-		3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TokyoSpringAmbience.mp3; sourceTree = "<group>"; };
-		3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPageView.swift; sourceTree = "<group>"; };
-		3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePencilARInteractionAdapter.swift; sourceTree = "<group>"; };
-		45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
-		497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacedCutout.swift; sourceTree = "<group>"; };
-		4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
-		4CED9A2C7B028CCDA510DB13 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCoordinator.swift; sourceTree = "<group>"; };
-		4F276AC999DC428A1F9AF535 /* SidebarbarBackpack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarbarBackpack.swift; sourceTree = "<group>"; };
-		50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraView.swift; sourceTree = "<group>"; };
-		526F6226738360D3BFA9F745 /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
-		572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
-		57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraPreview.swift; sourceTree = "<group>"; };
-		5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraViewModel.swift; sourceTree = "<group>"; };
-		5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
-		5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
-		68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
-		6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityRoomView.swift; sourceTree = "<group>"; };
-		6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotionConfiguration.swift; sourceTree = "<group>"; };
-		6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementRealityView.swift; sourceTree = "<group>"; };
-		6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutAsset.swift; sourceTree = "<group>"; };
-		739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewInteractionAdapter.swift; sourceTree = "<group>"; };
-		750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionManager.swift; sourceTree = "<group>"; };
-		777390A8652DBF52D2DA8707 /* WaterMelon.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = WaterMelon.usdz; sourceTree = "<group>"; };
-		7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutEntityFactory.swift; sourceTree = "<group>"; };
-		7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = TreeTrunk.usdz; sourceTree = "<group>"; };
-		7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Broccoli.usdz; sourceTree = "<group>"; };
-		82D64AFC77E63971E16652B5 /* ARReturnRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARReturnRecoveryView.swift; sourceTree = "<group>"; };
-		8331F114D19F860980D9EF08 /* tap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = tap.mp3; sourceTree = "<group>"; };
-		84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkPersistence.swift; sourceTree = "<group>"; };
-		8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomView.swift; sourceTree = "<group>"; };
-		9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObjectRegistry.swift; sourceTree = "<group>"; };
-		9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARObjectPlacementView.swift; sourceTree = "<group>"; };
-		9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
-		9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicController.swift; sourceTree = "<group>"; };
-		A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionLabView.swift; sourceTree = "<group>"; };
-		A26A0FAF4B1151615789C36C /* InteractionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionModels.swift; sourceTree = "<group>"; };
-		A2F1CE7084EE88134E097B8C /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
-		AAEF6055646F729702EE453A /* VirtualRoomModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomModels.swift; sourceTree = "<group>"; };
-		AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLibraryStore.swift; sourceTree = "<group>"; };
-		AE185F0D5C9434A5A272154D /* Croissant.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Croissant.usdz; sourceTree = "<group>"; };
+		15AA4BA263C81AB8881FBA1C /* DoodleClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassification.swift; sourceTree = "<group>"; };
+		15D101774928A2F178B13199 /* CreationCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationCatalogTests.swift; sourceTree = "<group>"; };
+		16C20043E9BEBDB3915BCD70 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
+		1A851A3F77FAB63EA4996D2E /* CutoutSceneEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutSceneEditor.swift; sourceTree = "<group>"; };
+		1CE30C19392A361B9704ABD9 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		1CEAD13E32D80A636FE31E38 /* AniMagicPlayTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AniMagicPlayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DCBBD2792E43DF17FB1E294 /* PlayNavigationActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayNavigationActions.swift; sourceTree = "<group>"; };
+		1F82266B45AD0C5CCC8D582A /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
+		20BEABBB138A9B2E8650413D /* RoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomCoordinator.swift; sourceTree = "<group>"; };
+		2116ACF39AAB1B69339CD139 /* VirtualRoomModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomModels.swift; sourceTree = "<group>"; };
+		239F0A9F0BABF736FB111988 /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
+		24933F034E0A645F2361638C /* CutoutRigAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalyzerTests.swift; sourceTree = "<group>"; };
+		24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AniMagicSupport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		256B4C69D2A4883FED918253 /* Creation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Creation.swift; sourceTree = "<group>"; };
+		28146229073B9C2FAE058E96 /* SupportResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportResources.swift; sourceTree = "<group>"; };
+		291F6DA9DEB9684C14F346EE /* MotionOrientationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionOrientationStore.swift; sourceTree = "<group>"; };
+		29C50197A865EFA7CB2BB0A5 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AniMagicDesignSystem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AniMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C54081E72E201E8EFDC75D6 /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
+		2D02718384849F6A1C587B2E /* CutoutContourExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutContourExtraction.swift; sourceTree = "<group>"; };
+		308418BC15C1649500571548 /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
+		35D984505746D332821FEFFD /* PlacedCutout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacedCutout.swift; sourceTree = "<group>"; };
+		3C6247E79D5033EB05B7C3F5 /* GuidePopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePopupView.swift; sourceTree = "<group>"; };
+		3FE3A7BF5D5B8B2E84D42CE0 /* UIImage+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Vision.swift"; sourceTree = "<group>"; };
+		436A64DAFFF238363DBFD222 /* CutoutDeformation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CutoutDeformation.metal; sourceTree = "<group>"; };
+		4456E73DD19EB11A611D0495 /* ClassifiedCutoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifiedCutoutFactory.swift; sourceTree = "<group>"; };
+		445CE83E00998485A9C13246 /* DoodleClassificationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoodleClassificationCoordinator.swift; sourceTree = "<group>"; };
+		48BD82976620AA0863188FF7 /* MotionLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionLabView.swift; sourceTree = "<group>"; };
+		4AFEC9FF018531707043680B /* ArtworkMigrationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkMigrationPlan.swift; sourceTree = "<group>"; };
+		5A9822DEEE27521883C9E2A6 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
+		5F5DF2447E5A3724D77E2207 /* SidebarbarBackpack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarbarBackpack.swift; sourceTree = "<group>"; };
+		602EFEAA257566BB8E3AD829 /* AniMagicDesignSystemModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniMagicDesignSystemModule.swift; sourceTree = "<group>"; };
+		60A32648A313E4D48373004B /* BackgroundMusicController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicController.swift; sourceTree = "<group>"; };
+		631DDC67EB385DFD5F3CFB42 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
+		674ACBD4E6C827EE193EA3CB /* CardboardRimMeshGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardRimMeshGenerator.swift; sourceTree = "<group>"; };
+		68B017E0BABF1C0CE45B3AD3 /* CreationPlayableAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationPlayableAsset.swift; sourceTree = "<group>"; };
+		68FE80F14F8B82ED83A5F5FA /* PlaySessionModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaySessionModelTests.swift; sourceTree = "<group>"; };
+		71BCAADDDC20CD783E9B1C17 /* CanvasTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTopBarView.swift; sourceTree = "<group>"; };
+		71CC8FEFDFAECD7E937062C5 /* CutoutEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutEntityFactory.swift; sourceTree = "<group>"; };
+		725600D5593E612A7E26F1D5 /* CutoutRigAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRigAnalysis.swift; sourceTree = "<group>"; };
+		74B0B975EC2243A66AFC0C26 /* USDZModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDZModelPlacement.swift; sourceTree = "<group>"; };
+		755797BD29D8ABEC61E9ABC6 /* SceneObjectRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObjectRegistry.swift; sourceTree = "<group>"; };
+		7A94F0A4ED6762D1B4E01FEE /* InteractionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionModels.swift; sourceTree = "<group>"; };
+		7C5770A2AEC1D824B23806BB /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
+		7C77C14F7EDCFAEFB563D8BB /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionManager.swift; sourceTree = "<group>"; };
+		7D2D269149AD94F56914EC88 /* CreationCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationCatalog.swift; sourceTree = "<group>"; };
+		81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AniMagicPlay.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8405C38C3C4FF5DD2E44BB60 /* HanddrawnDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailComponents.swift; sourceTree = "<group>"; };
+		85152B5178FAA39F1C20D56B /* CanvasPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPageView.swift; sourceTree = "<group>"; };
+		86500C290DC1A97E3DBC59B5 /* CutoutLibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryViewModel.swift; sourceTree = "<group>"; };
+		88AD04AFF7B01DB5E84B978A /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
+		8CB6A325B50EFB1B49AA0D94 /* CreationLibraryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationLibraryRepository.swift; sourceTree = "<group>"; };
+		8CD471DC38CE04937279A9A4 /* DrawingSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingSessionManager.swift; sourceTree = "<group>"; };
+		8FB7612192C284502F40C27C /* VirtualRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualRoomView.swift; sourceTree = "<group>"; };
+		94459B6855DA170E36DA6F35 /* CreationLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationLibraryStore.swift; sourceTree = "<group>"; };
+		952ED698DC5C7366F0087D58 /* PhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		95768D70C7398CFEF920D3DF /* CreationCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationCategory.swift; sourceTree = "<group>"; };
+		98388B591655461CDD2C623B /* RenderingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderingExtensions.swift; sourceTree = "<group>"; };
+		9E39D0E46C23DC32C34213B9 /* CreationResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationResources.swift; sourceTree = "<group>"; };
+		A27A9478A527E8CB21BB216B /* LegacyArtworkRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyArtworkRecords.swift; sourceTree = "<group>"; };
+		AA908F29AB926854FDB9B350 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
+		AAE08EE2CEBE78D8C86B2721 /* CardboardSurfaceField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardboardSurfaceField.swift; sourceTree = "<group>"; };
+		ABEC8374B1B99E80C8D4144D /* AniMagicSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniMagicSupport.swift; sourceTree = "<group>"; };
+		AEC7AC20A8E1C475CBE574E3 /* AudioAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAsset.swift; sourceTree = "<group>"; };
 		AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicApp.swift; sourceTree = "<group>"; };
-		AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = FallingLeaf.usdz; sourceTree = "<group>"; };
-		B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Bold.ttf"; sourceTree = "<group>"; };
-		B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Belanosima-Regular.ttf"; sourceTree = "<group>"; };
-		B760E43EEC00C31B3BC26C6E /* Cloud.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Cloud.usdz; sourceTree = "<group>"; };
-		BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionForegroundCutoutProcessor.swift; sourceTree = "<group>"; };
-		BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackComponents.swift; sourceTree = "<group>"; };
-		C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
-		C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectInteractionManager.swift; sourceTree = "<group>"; };
-		C865A342D8F33249F737C2E3 /* ColorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToken.swift; sourceTree = "<group>"; };
-		CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
-		D6F9B88EF207E0F2806EB8A8 /* ButtonSfx.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ButtonSfx.mp3; sourceTree = "<group>"; };
-		D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSelectedContentIndicator.swift; sourceTree = "<group>"; };
-		DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneController.swift; sourceTree = "<group>"; };
-		DB73231B83858CE30A584E76 /* BackpackPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackpackPageView.swift; sourceTree = "<group>"; };
-		DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
+		B16C9F660A186742B75DA4BD /* ApplePencilARInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePencilARInteractionAdapter.swift; sourceTree = "<group>"; };
+		B3677EBEACD96E84458BA444 /* HomeFloatingDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFloatingDecorations.swift; sourceTree = "<group>"; };
+		B73D07432911B0C9A86D7459 /* AnimagicDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimagicDesignSystem.swift; sourceTree = "<group>"; };
+		B7F348398EA7665B68DB3C97 /* CreationLibraryRepositoryAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationLibraryRepositoryAdapter.swift; sourceTree = "<group>"; };
+		BA7EEF8FC8A00B4121F64F11 /* CreationDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationDrawing.swift; sourceTree = "<group>"; };
+		C350AFBCBA2D08884BE56AC0 /* CreationRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationRuntime.swift; sourceTree = "<group>"; };
+		C36EBA3D73F5C8906AFA5B0C /* CreationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationRecord.swift; sourceTree = "<group>"; };
+		C88B9C79F41030015F776A67 /* ARViewInteractionAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewInteractionAdapter.swift; sourceTree = "<group>"; };
+		CA62BC16FEC50DC741E0052B /* CreationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationTests.swift; sourceTree = "<group>"; };
+		CB382ABFC5DC33784E7F86F4 /* ARPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPlacementControls.swift; sourceTree = "<group>"; };
+		CB7377761F70B953C4615BC8 /* ColorToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorToken.swift; sourceTree = "<group>"; };
+		CB7E0D0231C32B2A679F9BCC /* ShadowEntityFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowEntityFactory.swift; sourceTree = "<group>"; };
+		CD14E002C0B2C9155CCB368C /* CreationRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationRepository.swift; sourceTree = "<group>"; };
+		CE878AD86BA58446CCD2B630 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
+		CE9E1CF19E76A91D29C599D4 /* PlayResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayResources.swift; sourceTree = "<group>"; };
+		D03747E99016C1A0CF25A148 /* HanddrawnDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HanddrawnDetailView.swift; sourceTree = "<group>"; };
+		D1FD8FED44BAC55D3565D949 /* MotionSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulatorTests.swift; sourceTree = "<group>"; };
+		D762DF034A5921E270378A67 /* ArtworkMigrationPlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkMigrationPlanTests.swift; sourceTree = "<group>"; };
+		DB653A3617FB527A4413D7FF /* CutoutLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryView.swift; sourceTree = "<group>"; };
 		DDA245B2804A11B81BE7F3DF /* AppRoute+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppRoute+Modifier.swift"; sourceTree = "<group>"; };
+		DDBEF3E00DFCAB7026653446 /* NewARPlacementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewARPlacementView.swift; sourceTree = "<group>"; };
 		DED0B6AC60C494DD24513C40 /* AppRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoute.swift; sourceTree = "<group>"; };
-		DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutLibraryCell.swift; sourceTree = "<group>"; };
-		E67231FD4CC90120FA5A8816 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
-		EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceProjectors.swift; sourceTree = "<group>"; };
-		EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutProcessing.swift; sourceTree = "<group>"; };
-		F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraComponent.swift; sourceTree = "<group>"; };
-		F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionOrientationStore.swift; sourceTree = "<group>"; };
-		F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFloatingDecorations.swift; sourceTree = "<group>"; };
-		F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutSceneEditor.swift; sourceTree = "<group>"; };
-		F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
-		F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CutoutRenderingResources.swift; sourceTree = "<group>"; };
-		F7C74CD3B8EAD9B7B9BDA567 /* bgm_home.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm_home.mp3; sourceTree = "<group>"; };
-		FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderingExtensions.swift; sourceTree = "<group>"; };
-		FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeCameraPhotoLibrarySaver.swift; sourceTree = "<group>"; };
+		E1182C9A2128941056EE4BAB /* LocomotionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotionConfiguration.swift; sourceTree = "<group>"; };
+		E2613B69346363EF34F0C999 /* PhotoLibraryWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryWriter.swift; sourceTree = "<group>"; };
+		E2E43741064C1988B865FF51 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		E3BC0F53698A48C6AA6073B2 /* AniMagicCreation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniMagicCreation.swift; sourceTree = "<group>"; };
+		E6906A6F3ACC696104403C54 /* SoftShadowTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftShadowTexture.swift; sourceTree = "<group>"; };
+		E6E71A67FEA9212445FE2A7A /* MotionSimulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSimulation.swift; sourceTree = "<group>"; };
+		E8F0C49284B7E85ABF09A02B /* AniMagicTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AniMagicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9ECFDD5EC8F04E989CB0D81 /* AniMagicPlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniMagicPlay.swift; sourceTree = "<group>"; };
+		EA426119ABF46A3D3EF19473 /* CreationNavigationActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreationNavigationActions.swift; sourceTree = "<group>"; };
+		EC91949EF1CC288D29ACAEBD /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		ED95FC298B3C394C75154EE3 /* CheckerboardBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckerboardBackground.swift; sourceTree = "<group>"; };
+		EE737B5E74A2CCCD914C44F4 /* HelpPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpPageView.swift; sourceTree = "<group>"; };
+		F340EBBFD509D39E13C6E985 /* RealityRoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityRoomView.swift; sourceTree = "<group>"; };
+		FC241061AE981EF9ED56AEA4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FCA5C9D11817934592022F1E /* DrawingRasterizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingRasterizer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		1E2E16BC0426007E7E5B7714 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E1B7DB81AE744E88509CE90 /* AniMagicCreation.framework in Frameworks */,
+				35D88B6E2D5267861B40D57A /* AniMagicDesignSystem.framework in Frameworks */,
+				3010411F37194F990550583E /* AniMagicSupport.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		37CDD9B4B06B02E7464B8D53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF2A67FDB3FD2C4ABAE262B4 /* AniMagicCreation.framework in Frameworks */,
+				B132F9444EC1769FB4273D36 /* AniMagicDesignSystem.framework in Frameworks */,
+				02D0590168E1B91CCBF65D6B /* AniMagicPlay.framework in Frameworks */,
+				84FAE0FF0A8D482562070566 /* AniMagicSupport.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D50E2EB2281F98D2E1C39CB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45C001264182888BB54DCA54 /* AniMagicDesignSystem.framework in Frameworks */,
+				7D5C3847C36D9E9D3E3D053C /* AniMagicSupport.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		57049E52C555D93A1159B67C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8F742BF559C812C8EAFEE61 /* AniMagicCreation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B8FE4C987938D890C72FC5C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F46E988FC8633DAB1C3B0DEB /* AniMagicSupport.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE9338D849D1DBEDA0325181 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAC64598A1F5540E969DCA64 /* AniMagicPlay.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
-		07C190AA7BC73B0516B6DC89 /* Fonts */ = {
+		04336F84FD70A62A020CE611 /* AnimagicTests */ = {
 			isa = PBXGroup;
 			children = (
-				B0E532B8632E07F098AFB3E6 /* Belanosima-Bold.ttf */,
-				B4E58B3CC3AFC038C740AE7F /* Belanosima-Regular.ttf */,
-				312B749BA41546EFAD11957D /* Belanosima-SemiBold.ttf */,
 			);
-			path = Fonts;
+			path = AnimagicTests;
+			sourceTree = "<group>";
+		};
+		12D6E58AC41DB1237B4C1BB7 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				7C5770A2AEC1D824B23806BB /* BackpackComponents.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		144AE8A48FDC59CD65F95DA7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */,
+				0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */,
+				098EB463E3D638287AE6D8A3 /* AniMagicCreationTests.xctest */,
+				2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */,
+				81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */,
+				1CEAD13E32D80A636FE31E38 /* AniMagicPlayTests.xctest */,
+				24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */,
+				E8F0C49284B7E85ABF09A02B /* AniMagicTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		14F490A5186D6FF0F5DD4D60 /* Canvas */ = {
+		19151A1206C215F54636B46A /* Processing */ = {
 			isa = PBXGroup;
 			children = (
-				3D845F0194D1C9C9AAC61B74 /* CanvasPageView.swift */,
-				3109A1C2F38EA9D1B09AC761 /* DrawingView.swift */,
-				572B13DCC5615E1E3C5D41CB /* GuidePopupView.swift */,
-				83297F9812EA435100FDFDAA /* Components */,
+				4456E73DD19EB11A611D0495 /* ClassifiedCutoutFactory.swift */,
+				CE878AD86BA58446CCD2B630 /* CutoutProcessing.swift */,
+				15AA4BA263C81AB8881FBA1C /* DoodleClassification.swift */,
+				445CE83E00998485A9C13246 /* DoodleClassificationCoordinator.swift */,
+				FCA5C9D11817934592022F1E /* DrawingRasterizer.swift */,
+				952ED698DC5C7366F0087D58 /* PhotoLibrarySaver.swift */,
+				3FE3A7BF5D5B8B2E84D42CE0 /* UIImage+Vision.swift */,
+				88AD04AFF7B01DB5E84B978A /* VisionForegroundCutoutProcessor.swift */,
 			);
-			path = Canvas;
+			path = Processing;
 			sourceTree = "<group>";
 		};
-		1B830F6172C8A48BE893FB52 /* State */ = {
+		1A3B24D7B9A126F4180D4319 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				68EB8098C2BC51B88A259A2B /* DrawingSessionManager.swift */,
+				71BCAADDDC20CD783E9B1C17 /* CanvasTopBarView.swift */,
 			);
-			path = State;
+			path = Components;
+			sourceTree = "<group>";
+		};
+		1E00C3F80826DC87A945E865 /* Tokens */ = {
+			isa = PBXGroup;
+			children = (
+				CB7377761F70B953C4615BC8 /* ColorToken.swift */,
+			);
+			path = Tokens;
+			sourceTree = "<group>";
+		};
+		242655E1912A20A75B3AB007 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				4AFEC9FF018531707043680B /* ArtworkMigrationPlan.swift */,
+				8CB6A325B50EFB1B49AA0D94 /* CreationLibraryRepository.swift */,
+				B7F348398EA7665B68DB3C97 /* CreationLibraryRepositoryAdapter.swift */,
+				C36EBA3D73F5C8906AFA5B0C /* CreationRecord.swift */,
+				CD14E002C0B2C9155CCB368C /* CreationRepository.swift */,
+				A27A9478A527E8CB21BB216B /* LegacyArtworkRecords.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		2CD5A2E635CC2778E0CD2370 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				1F82266B45AD0C5CCC8D582A /* HapticFeedback.swift */,
+			);
+			path = Haptics;
+			sourceTree = "<group>";
+		};
+		32D34CA535C6C4926CDAF705 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				AEC7AC20A8E1C475CBE574E3 /* AudioAsset.swift */,
+				EC91949EF1CC288D29ACAEBD /* AudioManager.swift */,
+				7C77C14F7EDCFAEFB563D8BB /* AudioSessionManager.swift */,
+				60A32648A313E4D48373004B /* BackgroundMusicController.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		3980B26B3A7866F695F6F565 /* AniMagicPlayTests */ = {
+			isa = PBXGroup;
+			children = (
+				24933F034E0A645F2361638C /* CutoutRigAnalyzerTests.swift */,
+				D1FD8FED44BAC55D3565D949 /* MotionSimulatorTests.swift */,
+				68FE80F14F8B82ED83A5F5FA /* PlaySessionModelTests.swift */,
+			);
+			path = AniMagicPlayTests;
+			sourceTree = "<group>";
+		};
+		3B7A8C0B1162FFADD5DF87F7 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				E08CF7B2F189F6164BED3FD0 /* AR */,
+				FBB517322BCC5E13E75A8368 /* VirtualRoom */,
+			);
+			path = Features;
 			sourceTree = "<group>";
 		};
 		3F370872313E0F6F949422A0 /* Animagic */ = {
 			isa = PBXGroup;
 			children = (
+				29C50197A865EFA7CB2BB0A5 /* AppIcon.icon */,
 				87C5282AB968AF3DFECD4B6C /* App */,
-				629085F7751D3B25386DEC5D /* Core */,
-				D2752AB8B1077104BCBC53F2 /* Features */,
+				79E1C8E30C2CEC941B5A265A /* Modules */,
 				A20C5CE1636AC7463ECFC4FD /* Resources */,
-				653C6E6605EFE50843DF98FC /* Shared */,
 			);
 			path = Animagic;
 			sourceTree = "<group>";
 		};
-		425BC06F4BE4BE184FF07CE2 /* ARPlacement */ = {
+		51C7AAC444654424E7B346C1 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				ACA070756A8D94BEEE3A974D /* Interaction */,
-				9997B0E24658BAFA15BD0769 /* Motion */,
-				F3DB86C071944C8515CAAA04 /* Presentation */,
-				D618EF236CAA44F24F1D4ABB /* Scene */,
+				CB382ABFC5DC33784E7F86F4 /* ARPlacementControls.swift */,
+				0171E28D9A6E64F16527F464 /* ARReturnRecoveryView.swift */,
+				5A9822DEEE27521883C9E2A6 /* ARSelectedContentIndicator.swift */,
+				E2613B69346363EF34F0C999 /* PhotoLibraryWriter.swift */,
+				5F5DF2447E5A3724D77E2207 /* SidebarbarBackpack.swift */,
 			);
-			path = ARPlacement;
+			path = Presentation;
 			sourceTree = "<group>";
 		};
-		45816CFC2C8390DDCE7EC5B9 /* Music */ = {
+		5375AA36CCF6685F5BB9FC60 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				F7C74CD3B8EAD9B7B9BDA567 /* bgm_home.mp3 */,
-			);
-			path = Music;
-			sourceTree = "<group>";
-		};
-		589C2C3F421A8314AD2DDED4 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				9D2873D8CA1B4C80B771AC88 /* HanddrawnDetailComponents.swift */,
+				B73D07432911B0C9A86D7459 /* AnimagicDesignSystem.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		5D6782BAF85E6912C50BC905 /* Standalone */ = {
+		5404AB3F195154970BC5239F /* CreationDetail */ = {
 			isa = PBXGroup;
 			children = (
-				FC0C395CEF5A822CFE8E9D80 /* NativeCameraPhotoLibrarySaver.swift */,
-				57C1199A190239AB9F6B73E6 /* NativeCameraPreview.swift */,
-				50A7D02F1E536442E29D49D9 /* NativeCameraView.swift */,
-				5C6FAB161403EB91BD9E76BD /* NativeCameraViewModel.swift */,
-				11763A92E0DA7FC72D433444 /* StandalonePlaceholderView.swift */,
-				B4BC7B5A4D96D48FF2391EC7 /* Components */,
+				D03747E99016C1A0CF25A148 /* HanddrawnDetailView.swift */,
+				6FAC8A3701B183DE857EC916 /* Components */,
 			);
-			path = Standalone;
+			path = CreationDetail;
 			sourceTree = "<group>";
 		};
-		6051DEF4E13484984B7629BF /* Home */ = {
+		54FEDA6CF2AA3207059F31A9 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				4CED9A2C7B028CCDA510DB13 /* ContentView.swift */,
-				A2F1CE7084EE88134E097B8C /* MenuView.swift */,
-				681A4477E91473DA253F23D9 /* Components */,
+				7D2D269149AD94F56914EC88 /* CreationCatalog.swift */,
+				94459B6855DA170E36DA6F35 /* CreationLibraryStore.swift */,
+				EA426119ABF46A3D3EF19473 /* CreationNavigationActions.swift */,
+				C350AFBCBA2D08884BE56AC0 /* CreationRuntime.swift */,
+				8CD471DC38CE04937279A9A4 /* DrawingSessionManager.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		5BCED0484F35B86CF95B8BFF /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				FC241061AE981EF9ED56AEA4 /* ContentView.swift */,
+				EF95953F1D5DB8EF9FEE8092 /* Components */,
 			);
 			path = Home;
 			sourceTree = "<group>";
 		};
-		61001F5A481727DB171398DE /* SFX */ = {
+		5BD8CACB76493F871C2B51C3 /* Interaction */ = {
 			isa = PBXGroup;
 			children = (
-				D6F9B88EF207E0F2806EB8A8 /* ButtonSfx.mp3 */,
-				8331F114D19F860980D9EF08 /* tap.mp3 */,
+				B16C9F660A186742B75DA4BD /* ApplePencilARInteractionAdapter.swift */,
+				C88B9C79F41030015F776A67 /* ARViewInteractionAdapter.swift */,
+				7A94F0A4ED6762D1B4E01FEE /* InteractionModels.swift */,
+				16C20043E9BEBDB3915BCD70 /* ObjectInteractionManager.swift */,
+				755797BD29D8ABEC61E9ABC6 /* SceneObjectRegistry.swift */,
+				631DDC67EB385DFD5F3CFB42 /* SurfaceProjectors.swift */,
 			);
-			path = SFX;
+			path = Interaction;
 			sourceTree = "<group>";
 		};
-		629085F7751D3B25386DEC5D /* Core */ = {
+		5D12288C65CDAFFEA1F64656 /* Motion */ = {
 			isa = PBXGroup;
 			children = (
-				6CC91E044008BEAE67D45102 /* Audio */,
-				B67730A80F71BA26317A20F5 /* Haptics */,
-				C9257253F98C3E88C58B19EF /* ImageProcessing */,
-				C6262D8B1DCDACFD0B4E779A /* Models */,
-				AAEB6CEF83FF72CC7DF52A5A /* Persistence */,
-				E730617ACBD4EAE602F3215D /* Rendering */,
-				D2CAA9303FA6EF6CA28F14B3 /* Stores */,
+				E1182C9A2128941056EE4BAB /* LocomotionConfiguration.swift */,
+				48BD82976620AA0863188FF7 /* MotionLabView.swift */,
+				E6E71A67FEA9212445FE2A7A /* MotionSimulation.swift */,
+				35D984505746D332821FEFFD /* PlacedCutout.swift */,
 			);
-			path = Core;
+			path = Motion;
 			sourceTree = "<group>";
 		};
-		653C6E6605EFE50843DF98FC /* Shared */ = {
+		64679C7FE3A83A2ADA3CB44A /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
-				6B5DDB79A34D595499A29477 /* DesignSystem */,
-				E1595704C0263C367F958CE5 /* UI */,
+				674ACBD4E6C827EE193EA3CB /* CardboardRimMeshGenerator.swift */,
+				AAE08EE2CEBE78D8C86B2721 /* CardboardSurfaceField.swift */,
+				2D02718384849F6A1C587B2E /* CutoutContourExtraction.swift */,
+				436A64DAFFF238363DBFD222 /* CutoutDeformation.metal */,
+				239F0A9F0BABF736FB111988 /* CutoutRenderingResources.swift */,
+				725600D5593E612A7E26F1D5 /* CutoutRigAnalysis.swift */,
+				1A851A3F77FAB63EA4996D2E /* CutoutSceneEditor.swift */,
+				291F6DA9DEB9684C14F346EE /* MotionOrientationStore.swift */,
+				98388B591655461CDD2C623B /* RenderingExtensions.swift */,
+				E6906A6F3ACC696104403C54 /* SoftShadowTexture.swift */,
 			);
-			path = Shared;
+			path = Rendering;
 			sourceTree = "<group>";
 		};
-		681A4477E91473DA253F23D9 /* Components */ = {
+		69B421660CB70151E3C52360 /* Backpack */ = {
 			isa = PBXGroup;
 			children = (
-				E67231FD4CC90120FA5A8816 /* CustomButton.swift */,
-				F5AA0C57B0D509FD416F7127 /* HomeFloatingDecorations.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		6B5DDB79A34D595499A29477 /* DesignSystem */ = {
-			isa = PBXGroup;
-			children = (
-				1988D6EAD5F91961541F92FF /* AnimagicDesignSystem.swift */,
-				C865A342D8F33249F737C2E3 /* ColorToken.swift */,
-				4F276AC999DC428A1F9AF535 /* SidebarbarBackpack.swift */,
-			);
-			path = DesignSystem;
-			sourceTree = "<group>";
-		};
-		6CC91E044008BEAE67D45102 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				1F3C60D05A8A680C5F5AC01A /* AudioAsset.swift */,
-				19D044F34FEBE90F2C670DAF /* AudioManager.swift */,
-				750DC07EB6914BEDCF2A09CD /* AudioSessionManager.swift */,
-				9EE90F6412F5F369372EE9B1 /* BackgroundMusicController.swift */,
-			);
-			path = Audio;
-			sourceTree = "<group>";
-		};
-		7B20F4F77875A39FF4DB85AF /* Backpack */ = {
-			isa = PBXGroup;
-			children = (
-				DB73231B83858CE30A584E76 /* BackpackPageView.swift */,
-				EBD843A6A7B10E9029AB2CD8 /* Components */,
+				308418BC15C1649500571548 /* BackpackPageView.swift */,
+				12D6E58AC41DB1237B4C1BB7 /* Components */,
 			);
 			path = Backpack;
 			sourceTree = "<group>";
 		};
-		83297F9812EA435100FDFDAA /* Components */ = {
+		6FAC8A3701B183DE857EC916 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				5CBCB32D841B71E6C923F0A7 /* CanvasTopBarView.swift */,
+				8405C38C3C4FF5DD2E44BB60 /* HanddrawnDetailComponents.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		84B89C5C3EA3F1C662E022E3 /* HanddrawnDetail */ = {
+		79E1C8E30C2CEC941B5A265A /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				25D3CE7871EC04C6486457B0 /* HanddrawnDetailView.swift */,
-				589C2C3F421A8314AD2DDED4 /* Components */,
+				C8D9D1A81E39EF0BE9844FB2 /* Creation */,
+				B635DD4D153CF924F6778FD3 /* DesignSystem */,
+				D0B97B999779867A606F2296 /* Play */,
+				B502089F07C5CF119FD9F8DA /* Support */,
 			);
-			path = HanddrawnDetail;
-			sourceTree = "<group>";
-		};
-		84EA2F52992B787344A9052B /* VirtualRoom */ = {
-			isa = PBXGroup;
-			children = (
-				6B6D46834DBB24A132289CD5 /* RealityRoomView.swift */,
-				4D95C0DEC311CC7C5F91F8FA /* RoomCoordinator.swift */,
-				AAEF6055646F729702EE453A /* VirtualRoomModels.swift */,
-				8F279D10FEC954C0951476F9 /* VirtualRoomView.swift */,
-			);
-			path = VirtualRoom;
-			sourceTree = "<group>";
-		};
-		85E9A3908509B440159D825D /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				45816CFC2C8390DDCE7EC5B9 /* Music */,
-				61001F5A481727DB171398DE /* SFX */,
-			);
-			path = Audio;
+			path = Modules;
 			sourceTree = "<group>";
 		};
 		87C5282AB968AF3DFECD4B6C /* App */ = {
@@ -432,7 +674,7 @@
 			children = (
 				AFF8732AED8B2D31AECF309E /* AnimagicApp.swift */,
 				AC1F31D5B32B70DB84DEFB70 /* Navigation */,
-				1B830F6172C8A48BE893FB52 /* State */,
+				FF246C11C6487CC93280A697 /* Presentation */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -441,67 +683,30 @@
 			isa = PBXGroup;
 			children = (
 				3F370872313E0F6F949422A0 /* Animagic */,
+				C7E73B97C44A12BB1D58E502 /* AnimagicCreationTests */,
+				3980B26B3A7866F695F6F565 /* AniMagicPlayTests */,
+				04336F84FD70A62A020CE611 /* AnimagicTests */,
 				144AE8A48FDC59CD65F95DA7 /* Products */,
-				0BEF7BBA30127A6000DC61B2 /* AniMagixAppIcon.icon */,
 			);
-			sourceTree = "<group>";
-		};
-		93FEA22E85B5715D3C5868D8 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				2F29BCF89178C64B4739A2AB /* AnimalSpeciesClassifierV4.mlpackage */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		996FBEB960A9A6946B240901 /* Help */ = {
-			isa = PBXGroup;
-			children = (
-				526F6226738360D3BFA9F745 /* HelpPageView.swift */,
-			);
-			path = Help;
-			sourceTree = "<group>";
-		};
-		9997B0E24658BAFA15BD0769 /* Motion */ = {
-			isa = PBXGroup;
-			children = (
-				6CB2E9D62A1F93685BEBEDC7 /* LocomotionConfiguration.swift */,
-				A099A1BD59FA4827168D1CE1 /* MotionLabView.swift */,
-				F79C4D0B0C89E59A55C61C77 /* MotionSimulation.swift */,
-				497E64ECEAF6E2DD0D33FF60 /* PlacedCutout.swift */,
-			);
-			path = Motion;
-			sourceTree = "<group>";
-		};
-		A0699E86CB5BE10927B5BA4F /* CutoutLibrary */ = {
-			isa = PBXGroup;
-			children = (
-				1D7AB03B73A29D857926064C /* CutoutLibraryView.swift */,
-				30AF0946854BC84F07AC8FE7 /* CutoutLibraryViewModel.swift */,
-				CF767B0FDCA90F087029E5EF /* Components */,
-			);
-			path = CutoutLibrary;
 			sourceTree = "<group>";
 		};
 		A20C5CE1636AC7463ECFC4FD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				1056000C4958CB23F9F1962F /* Assets.xcassets */,
-				85E9A3908509B440159D825D /* Audio */,
-				07C190AA7BC73B0516B6DC89 /* Fonts */,
-				93FEA22E85B5715D3C5868D8 /* Models */,
-				E41C1D5B0E5FFFA1E7520CB2 /* VirtualRoom */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		AAEB6CEF83FF72CC7DF52A5A /* Persistence */ = {
+		A33AB44545369187D75EEB6C /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				84F673B5D57078AAD0167A19 /* ArtworkPersistence.swift */,
-				1F0850761218A200FA8B9746 /* ArtworkRepository.swift */,
+				85152B5178FAA39F1C20D56B /* CanvasPageView.swift */,
+				AA908F29AB926854FDB9B350 /* DrawingView.swift */,
+				3C6247E79D5033EB05B7C3F5 /* GuidePopupView.swift */,
+				1A3B24D7B9A126F4180D4319 /* Components */,
 			);
-			path = Persistence;
+			path = Canvas;
 			sourceTree = "<group>";
 		};
 		AC1F31D5B32B70DB84DEFB70 /* Navigation */ = {
@@ -513,163 +718,160 @@
 			path = Navigation;
 			sourceTree = "<group>";
 		};
-		ACA070756A8D94BEEE3A974D /* Interaction */ = {
+		B502089F07C5CF119FD9F8DA /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				3FADFE5DFDF659D454E3BA77 /* ApplePencilARInteractionAdapter.swift */,
-				739E2CAAAF1E1DD518F9A6A3 /* ARViewInteractionAdapter.swift */,
-				A26A0FAF4B1151615789C36C /* InteractionModels.swift */,
-				C7C1BD8206822C9C1F1BE681 /* ObjectInteractionManager.swift */,
-				9778910D692B95FCDDDCC7BE /* SceneObjectRegistry.swift */,
-				EDC59EFBE2CE6A234487AF61 /* SurfaceProjectors.swift */,
+				ABEC8374B1B99E80C8D4144D /* AniMagicSupport.swift */,
+				28146229073B9C2FAE058E96 /* SupportResources.swift */,
+				32D34CA535C6C4926CDAF705 /* Audio */,
+				2CD5A2E635CC2778E0CD2370 /* Haptics */,
 			);
-			path = Interaction;
+			path = Support;
 			sourceTree = "<group>";
 		};
-		B4BC7B5A4D96D48FF2391EC7 /* Components */ = {
+		B635DD4D153CF924F6778FD3 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
-				06573462B1119264F3AD812E /* ExpandableActionMenu.swift */,
-				F24449E97DD175CB453743E9 /* NativeCameraComponent.swift */,
+				602EFEAA257566BB8E3AD829 /* AniMagicDesignSystemModule.swift */,
+				5375AA36CCF6685F5BB9FC60 /* Components */,
+				1E00C3F80826DC87A945E865 /* Tokens */,
 			);
-			path = Components;
+			path = DesignSystem;
 			sourceTree = "<group>";
 		};
-		B67730A80F71BA26317A20F5 /* Haptics */ = {
+		B995BBCB77E19AEA8406F634 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				45EEFB3CA9E6E41E8EF5F863 /* HapticFeedback.swift */,
+				256B4C69D2A4883FED918253 /* Creation.swift */,
+				95768D70C7398CFEF920D3DF /* CreationCategory.swift */,
+				BA7EEF8FC8A00B4121F64F11 /* CreationDrawing.swift */,
+				68B017E0BABF1C0CE45B3AD3 /* CreationPlayableAsset.swift */,
 			);
-			path = Haptics;
+			path = Model;
 			sourceTree = "<group>";
 		};
-		C6262D8B1DCDACFD0B4E779A /* Models */ = {
+		C32248CC63C7259BBD71B141 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				374F07DE0B3BD252E95351AC /* ArtworkCategory.swift */,
-				6FCCE1078DBBA4BB18192325 /* CutoutAsset.swift */,
-				1DAA311C033600B1DDDD3076 /* SavedDrawing.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		C9257253F98C3E88C58B19EF /* ImageProcessing */ = {
-			isa = PBXGroup;
-			children = (
-				279B4A313348267A9459540B /* ClassifiedCutoutFactory.swift */,
-				EF72DAD7EAE83E011DE1C6B0 /* CutoutProcessing.swift */,
-				003938F0BA9A6E339E0A3DF7 /* DoodleClassification.swift */,
-				5F6458A3C1D6EDF4E10B748B /* DoodleClassificationCoordinator.swift */,
-				C4B97E7F025CFC89380B03CD /* DrawingRasterizer.swift */,
-				0926F18D139B17F4D179B401 /* PhotoLibrarySaver.swift */,
-				2451402279F2F05AC71AA2C2 /* UIImage+Vision.swift */,
-				BC4816B44B98083E8C5A2F20 /* VisionForegroundCutoutProcessor.swift */,
-			);
-			path = ImageProcessing;
-			sourceTree = "<group>";
-		};
-		CF767B0FDCA90F087029E5EF /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				4C42A5F7827BC9BF52320A58 /* CheckerboardBackground.swift */,
-				DF3AE5F1149E5EE94DA83DCB /* CutoutLibraryCell.swift */,
+				ED95FC298B3C394C75154EE3 /* CheckerboardBackground.swift */,
+				2C54081E72E201E8EFDC75D6 /* CutoutLibraryCell.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		D2752AB8B1077104BCBC53F2 /* Features */ = {
+		C7E6E984D87105575E98DC2A /* PhotoImport */ = {
 			isa = PBXGroup;
 			children = (
-				425BC06F4BE4BE184FF07CE2 /* ARPlacement */,
-				7B20F4F77875A39FF4DB85AF /* Backpack */,
-				14F490A5186D6FF0F5DD4D60 /* Canvas */,
-				A0699E86CB5BE10927B5BA4F /* CutoutLibrary */,
-				84B89C5C3EA3F1C662E022E3 /* HanddrawnDetail */,
-				996FBEB960A9A6946B240901 /* Help */,
-				6051DEF4E13484984B7629BF /* Home */,
-				5D6782BAF85E6912C50BC905 /* Standalone */,
-				84EA2F52992B787344A9052B /* VirtualRoom */,
+				DB653A3617FB527A4413D7FF /* CutoutLibraryView.swift */,
+				86500C290DC1A97E3DBC59B5 /* CutoutLibraryViewModel.swift */,
+				C32248CC63C7259BBD71B141 /* Components */,
 			);
-			path = Features;
+			path = PhotoImport;
 			sourceTree = "<group>";
 		};
-		D2CAA9303FA6EF6CA28F14B3 /* Stores */ = {
+		C7E73B97C44A12BB1D58E502 /* AnimagicCreationTests */ = {
 			isa = PBXGroup;
 			children = (
-				AB493650D46766B4E150263A /* ArtworkLibraryStore.swift */,
+				D762DF034A5921E270378A67 /* ArtworkMigrationPlanTests.swift */,
+				15D101774928A2F178B13199 /* CreationCatalogTests.swift */,
+				CA62BC16FEC50DC741E0052B /* CreationTests.swift */,
 			);
-			path = Stores;
+			path = AnimagicCreationTests;
 			sourceTree = "<group>";
 		};
-		D618EF236CAA44F24F1D4ABB /* Scene */ = {
+		C8D9D1A81E39EF0BE9844FB2 /* Creation */ = {
 			isa = PBXGroup;
 			children = (
-				6DCB7CDB2CFDF948B9B48FD9 /* ARObjectPlacementRealityView.swift */,
-				DA28D97F5DBD8D73C5BAEA6B /* ARSceneController.swift */,
-				7B45D397A15FAD98502288ED /* CutoutEntityFactory.swift */,
-				07954F7435CB09E69BD4E42C /* NewARPlacementView.swift */,
-				1DF2E3B9D1A0A13A038B20B8 /* ShadowEntityFactory.swift */,
-				2BBA987867DEE41501405418 /* USDZModelPlacement.swift */,
+				E3BC0F53698A48C6AA6073B2 /* AniMagicCreation.swift */,
+				9E39D0E46C23DC32C34213B9 /* CreationResources.swift */,
+				54FEDA6CF2AA3207059F31A9 /* Application */,
+				F8E2ADFD5EEF7EE65536111E /* Features */,
+				B995BBCB77E19AEA8406F634 /* Model */,
+				242655E1912A20A75B3AB007 /* Persistence */,
+				19151A1206C215F54636B46A /* Processing */,
+			);
+			path = Creation;
+			sourceTree = "<group>";
+		};
+		D0B97B999779867A606F2296 /* Play */ = {
+			isa = PBXGroup;
+			children = (
+				E9ECFDD5EC8F04E989CB0D81 /* AniMagicPlay.swift */,
+				1DCBBD2792E43DF17FB1E294 /* PlayNavigationActions.swift */,
+				CE9E1CF19E76A91D29C599D4 /* PlayResources.swift */,
+				3B7A8C0B1162FFADD5DF87F7 /* Features */,
+				64679C7FE3A83A2ADA3CB44A /* Rendering */,
+			);
+			path = Play;
+			sourceTree = "<group>";
+		};
+		E08CF7B2F189F6164BED3FD0 /* AR */ = {
+			isa = PBXGroup;
+			children = (
+				5BD8CACB76493F871C2B51C3 /* Interaction */,
+				5D12288C65CDAFFEA1F64656 /* Motion */,
+				51C7AAC444654424E7B346C1 /* Presentation */,
+				ECD40B6C8F5B7C7EE17DA134 /* Scene */,
+			);
+			path = AR;
+			sourceTree = "<group>";
+		};
+		ECD40B6C8F5B7C7EE17DA134 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				71CC8FEFDFAECD7E937062C5 /* CutoutEntityFactory.swift */,
+				DDBEF3E00DFCAB7026653446 /* NewARPlacementView.swift */,
+				CB7E0D0231C32B2A679F9BCC /* ShadowEntityFactory.swift */,
+				74B0B975EC2243A66AFC0C26 /* USDZModelPlacement.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
 		};
-		E1595704C0263C367F958CE5 /* UI */ = {
+		EDBD521A8794B6A798EB917F /* Help */ = {
 			isa = PBXGroup;
 			children = (
-				CE572D0F1E44166EB3C8BFE1 /* ShareSheet.swift */,
+				EE737B5E74A2CCCD914C44F4 /* HelpPageView.swift */,
 			);
-			path = UI;
+			path = Help;
 			sourceTree = "<group>";
 		};
-		E41C1D5B0E5FFFA1E7520CB2 /* VirtualRoom */ = {
+		EF95953F1D5DB8EF9FEE8092 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				14A60964229B227465EE8AD4 /* Birds.usdz */,
-				7E95D21FD93F529ED803C3C9 /* Broccoli.usdz */,
-				B760E43EEC00C31B3BC26C6E /* Cloud.usdz */,
-				AE185F0D5C9434A5A272154D /* Croissant.usdz */,
-				AFFC32D15A82213222A8F663 /* FallingLeaf.usdz */,
-				3D53C994E9C15ADE91725C33 /* TokyoSpringAmbience.mp3 */,
-				15945EA983940214C874F789 /* TreeStump.usdz */,
-				7C12CB12E1E93367433721F1 /* TreeTrunk.usdz */,
-				777390A8652DBF52D2DA8707 /* WaterMelon.usdz */,
-			);
-			path = VirtualRoom;
-			sourceTree = "<group>";
-		};
-		E730617ACBD4EAE602F3215D /* Rendering */ = {
-			isa = PBXGroup;
-			children = (
-				28C93ED0E5BF6740E0D2AF3C /* CutoutDeformation.metal */,
-				F7C14C40FA17AFA980F7B8EB /* CutoutRenderingResources.swift */,
-				2510A11311659E0CA86DE7DC /* CutoutRigAnalysis.swift */,
-				15BCA40123CDEF0000000011 /* CutoutContourExtraction.swift */,
-				15BCA40123CDEF0000000012 /* CardboardRimMeshGenerator.swift */,
-				15BCA40123CDEF0000000013 /* CardboardSurfaceField.swift */,
-				F65C15C726D6F18A4E95A1A9 /* CutoutSceneEditor.swift */,
-				F562669B7E4A96F0C63DF7EB /* MotionOrientationStore.swift */,
-				FB04EC14855FAFB18E2FF3CA /* RenderingExtensions.swift */,
-				DCC1965FB652E22D336B0E28 /* SoftShadowTexture.swift */,
-			);
-			path = Rendering;
-			sourceTree = "<group>";
-		};
-		EBD843A6A7B10E9029AB2CD8 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				BDE0DA91DBB5B0E50525DB0F /* BackpackComponents.swift */,
+				E2E43741064C1988B865FF51 /* CustomButton.swift */,
+				B3677EBEACD96E84458BA444 /* HomeFloatingDecorations.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		F3DB86C071944C8515CAAA04 /* Presentation */ = {
+		F8E2ADFD5EEF7EE65536111E /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				9CDE37149DAAF6E01CF8529B /* ARObjectPlacementView.swift */,
-				3008F9139DC3DE1CEAB9110A /* ARPlacementControls.swift */,
-				82D64AFC77E63971E16652B5 /* ARReturnRecoveryView.swift */,
-				D87265ACFA7B133E7581E5A5 /* ARSelectedContentIndicator.swift */,
+				1CE30C19392A361B9704ABD9 /* ShareSheet.swift */,
+				69B421660CB70151E3C52360 /* Backpack */,
+				A33AB44545369187D75EEB6C /* Canvas */,
+				5404AB3F195154970BC5239F /* CreationDetail */,
+				C7E6E984D87105575E98DC2A /* PhotoImport */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		FBB517322BCC5E13E75A8368 /* VirtualRoom */ = {
+			isa = PBXGroup;
+			children = (
+				F340EBBFD509D39E13C6E985 /* RealityRoomView.swift */,
+				20BEABBB138A9B2E8650413D /* RoomCoordinator.swift */,
+				2116ACF39AAB1B69339CD139 /* VirtualRoomModels.swift */,
+				8FB7612192C284502F40C27C /* VirtualRoomView.swift */,
+			);
+			path = VirtualRoom;
+			sourceTree = "<group>";
+		};
+		FF246C11C6487CC93280A697 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				EDBD521A8794B6A798EB917F /* Help */,
+				5BCED0484F35B86CF95B8BFF /* Home */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -677,16 +879,63 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		18CA5000B9409E30B9A274F1 /* AniMagicPlay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 754073E04BC92FCF537E969C /* Build configuration list for PBXNativeTarget "AniMagicPlay" */;
+			buildPhases = (
+				705BB52461B053E9646CAFDC /* Sources */,
+				1E2E16BC0426007E7E5B7714 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E849DE2B54D5AA05E956E290 /* PBXTargetDependency */,
+				9865689CF6C11D76BAA28269 /* PBXTargetDependency */,
+				A98222EF8837896462E41ADC /* PBXTargetDependency */,
+			);
+			name = AniMagicPlay;
+			packageProductDependencies = (
+			);
+			productName = AniMagicPlay;
+			productReference = 81FBA8D5278BEE866C3B83BD /* AniMagicPlay.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		5360E86E106F73F67E7E1E5E /* AniMagicPlayTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC5694D06C843E8EBDC527D4 /* Build configuration list for PBXNativeTarget "AniMagicPlayTests" */;
+			buildPhases = (
+				14F812D987E1702B1BAFB6D0 /* Sources */,
+				CE9338D849D1DBEDA0325181 /* Frameworks */,
+				17E46E5DF81AEF3713242434 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F6D8FB60893A55C53A8220C2 /* PBXTargetDependency */,
+			);
+			name = AniMagicPlayTests;
+			packageProductDependencies = (
+			);
+			productName = AniMagicPlayTests;
+			productReference = 1CEAD13E32D80A636FE31E38 /* AniMagicPlayTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		602C903EE6969F7210360538 /* AniMagic */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B18CB6BD29797FB56B4A6E31 /* Build configuration list for PBXNativeTarget "AniMagic" */;
 			buildPhases = (
 				0D022ED0551782D1764681EA /* Sources */,
 				9D002397F4273668E4CFDCE6 /* Resources */,
+				37CDD9B4B06B02E7464B8D53 /* Frameworks */,
+				121DA29BEF106EC1A58632F9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				97DF221B90A1E0BDA71A402A /* PBXTargetDependency */,
+				9AFB969B02E592BF58E1F64E /* PBXTargetDependency */,
+				9E3FA750FC14B6E80B7EF74F /* PBXTargetDependency */,
+				42654AF2E93B5F55D7241731 /* PBXTargetDependency */,
 			);
 			name = AniMagic;
 			packageProductDependencies = (
@@ -694,6 +943,100 @@
 			productName = AniMagic;
 			productReference = 2B6CE2B44118FFDA8D6BD234 /* AniMagic.app */;
 			productType = "com.apple.product-type.application";
+		};
+		6DE319B9148BE30B40D0F98B /* AniMagicDesignSystem */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35656CF84B67D985160A4FF2 /* Build configuration list for PBXNativeTarget "AniMagicDesignSystem" */;
+			buildPhases = (
+				9188FB4F13C026FFEBF5850F /* Sources */,
+				B8FE4C987938D890C72FC5C7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2F94F9B200DA784F57C03A8E /* PBXTargetDependency */,
+			);
+			name = AniMagicDesignSystem;
+			packageProductDependencies = (
+			);
+			productName = AniMagicDesignSystem;
+			productReference = 2AEC8CB221431B49B86DF9E5 /* AniMagicDesignSystem.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		7CC98F008470EE519DEABE90 /* AniMagicTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C2B12C17B5E9AB55747A0C75 /* Build configuration list for PBXNativeTarget "AniMagicTests" */;
+			buildPhases = (
+				EAE48BB3807732EDCE93F204 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D46CFCE1B047E8CF511DA52 /* PBXTargetDependency */,
+			);
+			name = AniMagicTests;
+			packageProductDependencies = (
+			);
+			productName = AniMagicTests;
+			productReference = E8F0C49284B7E85ABF09A02B /* AniMagicTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		AA5EAAC8482E337B04D5487A /* AniMagicCreation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D01782A654BA5221E82B00C /* Build configuration list for PBXNativeTarget "AniMagicCreation" */;
+			buildPhases = (
+				4ABE3A09052482AEDC918007 /* Sources */,
+				3D50E2EB2281F98D2E1C39CB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66FF880358333FEBE82089D7 /* PBXTargetDependency */,
+				1F8E8ACA0FCFB677BC6C939D /* PBXTargetDependency */,
+			);
+			name = AniMagicCreation;
+			packageProductDependencies = (
+			);
+			productName = AniMagicCreation;
+			productReference = 0F883DAB066D0B68AE15AEC3 /* AniMagicCreation.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		E1A51CC9861412D1A512486D /* AniMagicCreationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3735C47217A1CDD1C4569BED /* Build configuration list for PBXNativeTarget "AniMagicCreationTests" */;
+			buildPhases = (
+				5D82B4607F536B79D105ACC4 /* Sources */,
+				57049E52C555D93A1159B67C /* Frameworks */,
+				70E24158151E1BF06DFB6AFF /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FF128DE20A799EC48E822768 /* PBXTargetDependency */,
+			);
+			name = AniMagicCreationTests;
+			packageProductDependencies = (
+			);
+			productName = AniMagicCreationTests;
+			productReference = 098EB463E3D638287AE6D8A3 /* AniMagicCreationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F6CD2EE9654338B761C10CDC /* AniMagicSupport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFF9337C42AD803F1DDA9FC9 /* Build configuration list for PBXNativeTarget "AniMagicSupport" */;
+			buildPhases = (
+				F708F91BF54576032333E99E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AniMagicSupport;
+			packageProductDependencies = (
+			);
+			productName = AniMagicSupport;
+			productReference = 24B198217BF4F04F5AF584F8 /* AniMagicSupport.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -724,6 +1067,13 @@
 			projectRoot = "";
 			targets = (
 				602C903EE6969F7210360538 /* AniMagic */,
+				AA5EAAC8482E337B04D5487A /* AniMagicCreation */,
+				E1A51CC9861412D1A512486D /* AniMagicCreationTests */,
+				6DE319B9148BE30B40D0F98B /* AniMagicDesignSystem */,
+				18CA5000B9409E30B9A274F1 /* AniMagicPlay */,
+				5360E86E106F73F67E7E1E5E /* AniMagicPlayTests */,
+				F6CD2EE9654338B761C10CDC /* AniMagicSupport */,
+				7CC98F008470EE519DEABE90 /* AniMagicTests */,
 			);
 		};
 /* End PBXProject section */
@@ -733,23 +1083,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27E523643983158FB1205265 /* AppIcon.icon in Resources */,
 				22647653FD6285E5B2C2ED7F /* Assets.xcassets in Resources */,
-				11D70B5B2D9EDB69935949BA /* Belanosima-Bold.ttf in Resources */,
-				1C57FA6C7B83384C09BE445E /* Belanosima-Regular.ttf in Resources */,
-				D174C1ADB23E22980A38F6F0 /* Belanosima-SemiBold.ttf in Resources */,
-				238238874722D44037214247 /* Birds.usdz in Resources */,
-				7B9A5F927CDACF2F8DB5BD14 /* Broccoli.usdz in Resources */,
-				35DBB73FBA018A10878D0ECC /* ButtonSfx.mp3 in Resources */,
-				1618064BC9BDFFB521DF9E75 /* Cloud.usdz in Resources */,
-				92AEEB6F65B29F698511F4E7 /* Croissant.usdz in Resources */,
-				14A8997CC7320C06837A1E6D /* FallingLeaf.usdz in Resources */,
-				23536E21FFD49AE328B19683 /* TokyoSpringAmbience.mp3 in Resources */,
-				6D5CDA8CFFB5656A02CB12F6 /* TreeStump.usdz in Resources */,
-				7C49A4BF2BB3F20E53D8C7E3 /* TreeTrunk.usdz in Resources */,
-				0BEF7BBB30127A6000DC61B2 /* AniMagixAppIcon.icon in Resources */,
-				B6D2B25EE793BC67808DF3EF /* WaterMelon.usdz in Resources */,
-				2450F58C34EAD53998B320DF /* bgm_home.mp3 in Resources */,
-				B831F7BADE370181A7AA4C6A /* tap.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,113 +1095,237 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				78B68279909933EA3C6FA541 /* ARObjectPlacementRealityView.swift in Sources */,
-				3A12C5CC4943AED59E538F00 /* ARObjectPlacementView.swift in Sources */,
-				777E5C8E290C9B74ACD98DA4 /* ARPlacementControls.swift in Sources */,
-				55F9E2EC56BFF343AC05F6EA /* ARReturnRecoveryView.swift in Sources */,
-				D81889DC54FAE6A3174B8E84 /* ARSceneController.swift in Sources */,
-				ECC5FFB58F9A60F0BD783E13 /* ARSelectedContentIndicator.swift in Sources */,
-				F763E61BFE2A0E6DEFA1AA10 /* ARViewInteractionAdapter.swift in Sources */,
 				C7254D1AA89D96211679FACE /* AnimagicApp.swift in Sources */,
-				D3A4B65177902205E6DC1D57 /* AnimagicDesignSystem.swift in Sources */,
-				0FD34B809229902CBC8B93E4 /* AnimalSpeciesClassifierV4.mlpackage in Sources */,
 				D52111E5D1DD25FE1499B7AD /* AppRoute+Modifier.swift in Sources */,
 				AAF9A1180AE8B759F265B5C0 /* AppRoute.swift in Sources */,
-				13BCCC3DD2022C8E128E547F /* ApplePencilARInteractionAdapter.swift in Sources */,
-				4C0833C4B1468F1303B4D042 /* ArtworkCategory.swift in Sources */,
-				9F88C33710832994271AE469 /* ArtworkLibraryStore.swift in Sources */,
-				EA98195D4C8D7961DE1681B7 /* ArtworkPersistence.swift in Sources */,
-				A23419E6C14868EADE6A710E /* ArtworkRepository.swift in Sources */,
-				58B38D15B4AC93EC46B47599 /* AudioAsset.swift in Sources */,
-				770D5195FCE4F19DF4BA122A /* AudioManager.swift in Sources */,
-				AB4D82FA26FAF5126F3A512F /* AudioSessionManager.swift in Sources */,
-				13C2B40F3AFF373384C6C980 /* BackgroundMusicController.swift in Sources */,
-				FF835DCF8EF6498E779F0342 /* BackpackComponents.swift in Sources */,
-				5B65D23140A6A9FD8616DFD1 /* BackpackPageView.swift in Sources */,
-				52951D7CBBCED01D1286B30A /* CanvasPageView.swift in Sources */,
-				8F977B647FCFB7DB2650BD66 /* CanvasTopBarView.swift in Sources */,
-				729EDAB09EC71129954688C1 /* CheckerboardBackground.swift in Sources */,
-				DECBBFB607F1055C91694EC1 /* ClassifiedCutoutFactory.swift in Sources */,
-				7CEF23E11CC5EA193748F74E /* ColorToken.swift in Sources */,
-				53D0A252C7C4C216EAD2CA04 /* ContentView.swift in Sources */,
-				60E9D44AB586AA0761609532 /* CustomButton.swift in Sources */,
-				8B9B9FECFAC163B376AA1EA9 /* CutoutAsset.swift in Sources */,
-				B23CB37854263F4F6F449842 /* CutoutDeformation.metal in Sources */,
-				A16FBDA90F84D5CFD65AE756 /* CutoutEntityFactory.swift in Sources */,
-				5ECC2E7EA7F00AEE2202411A /* CutoutLibraryCell.swift in Sources */,
-				8C3CB096710C0F7ACEFE478F /* CutoutLibraryView.swift in Sources */,
-				87681B09FE24242A14664D7E /* CutoutLibraryViewModel.swift in Sources */,
-				33C7B3934EE46C001FFCB4F4 /* CutoutProcessing.swift in Sources */,
-				DB58553C7B62677B1F484FC1 /* CutoutRenderingResources.swift in Sources */,
-				9D439EC03C5A72F3802DE170 /* CutoutRigAnalysis.swift in Sources */,
-				15BCA40123CDEF0000000001 /* CutoutContourExtraction.swift in Sources */,
-				15BCA40123CDEF0000000002 /* CardboardRimMeshGenerator.swift in Sources */,
-				15BCA40123CDEF0000000003 /* CardboardSurfaceField.swift in Sources */,
-				94364846B4A9176583B7DCCD /* CutoutSceneEditor.swift in Sources */,
-				B7CC4CE9B0856E5000E30720 /* DoodleClassification.swift in Sources */,
-				79BA8D0499B8FA9652D7FA07 /* DoodleClassificationCoordinator.swift in Sources */,
-				FF941C308B8B099A0C0349E2 /* DrawingRasterizer.swift in Sources */,
-				F5F96B3C3217F11A9A3C21D7 /* DrawingSessionManager.swift in Sources */,
-				14E0F3A22664BD8E21247DCB /* DrawingView.swift in Sources */,
-				FD2F7FAEC722957CB90D7DD0 /* ExpandableActionMenu.swift in Sources */,
-				26693A08C4414095B014E834 /* GuidePopupView.swift in Sources */,
-				1EFBB4E950682F2E1B83B960 /* HanddrawnDetailComponents.swift in Sources */,
-				B0E8EBFAE7337A52B64093D5 /* HanddrawnDetailView.swift in Sources */,
-				6995E07D55F8C2B65FBC8520 /* HapticFeedback.swift in Sources */,
-				5F408F8BEDDE48489A3354E0 /* HelpPageView.swift in Sources */,
-				CC15A56C951BE36EFF11D4C6 /* HomeFloatingDecorations.swift in Sources */,
-				CB4F7EBFD0CB351569DFFEF4 /* InteractionModels.swift in Sources */,
-				B11353851029BABE500F4A33 /* LocomotionConfiguration.swift in Sources */,
-				8235E49425717B0E8D593972 /* MenuView.swift in Sources */,
-				C6497AEB1DDBC615135BAD80 /* MotionLabView.swift in Sources */,
-				D4A34EFEB486D6AC736DA3C2 /* MotionOrientationStore.swift in Sources */,
-				5DC5C0675EF4255ED7A443AC /* MotionSimulation.swift in Sources */,
-				40CD2E69C46CBF46BBFBD627 /* NativeCameraComponent.swift in Sources */,
-				3B17930B7D49F78B8961394B /* NativeCameraPhotoLibrarySaver.swift in Sources */,
-				EC0BF8E0F69BBFFE35B038E7 /* NativeCameraPreview.swift in Sources */,
-				027D3EF78BC8C0C78C93C0A1 /* NativeCameraView.swift in Sources */,
-				8F7C3A695681B127019DC85A /* NativeCameraViewModel.swift in Sources */,
-				815A5F2730DBF9F00DB94FDB /* NewARPlacementView.swift in Sources */,
-				5F3C8803632E53333AEE0A77 /* ObjectInteractionManager.swift in Sources */,
-				BB53D54C605D2C5E98A784A2 /* PhotoLibrarySaver.swift in Sources */,
-				5666F9C075BEE2EF7C39DC68 /* PlacedCutout.swift in Sources */,
-				7CB7A117E3B1647F5D11674C /* RealityRoomView.swift in Sources */,
-				4D1137274174644913C62FEB /* RenderingExtensions.swift in Sources */,
-				52C8D2E955759C78310B26BE /* RoomCoordinator.swift in Sources */,
-				6A0E3D60283807F212117D49 /* SavedDrawing.swift in Sources */,
-				52A0FC23716282EDBFC2BBEC /* SceneObjectRegistry.swift in Sources */,
-				860690FF4BD8959564D6ABBA /* ShadowEntityFactory.swift in Sources */,
-				E409CAC5BEAA5A7364C61C24 /* ShareSheet.swift in Sources */,
-				C5D9756043F6F67897DBB3F2 /* SidebarbarBackpack.swift in Sources */,
-				861E7790D29BCAF6C06A0BD3 /* SoftShadowTexture.swift in Sources */,
-				D3417E7C6E2E0C2D361E8AFA /* StandalonePlaceholderView.swift in Sources */,
-				7ABEDE3824DF60C4DEF144D7 /* SurfaceProjectors.swift in Sources */,
-				C32D72C63BCC2238F0B3AEB8 /* UIImage+Vision.swift in Sources */,
-				D6AB40DEEC6444D08179A8D4 /* USDZModelPlacement.swift in Sources */,
-				FFC7B65E3FBFAFCF239C1861 /* VirtualRoomModels.swift in Sources */,
-				EC67889AF56BDE8DACB33C4C /* VirtualRoomView.swift in Sources */,
-				FC3FA727CD38D1E3AEE4EA4D /* VisionForegroundCutoutProcessor.swift in Sources */,
+				A22CD8E348059A85A2DB567A /* ContentView.swift in Sources */,
+				C8B34B91F4F19D1A4BB027BE /* CustomButton.swift in Sources */,
+				CDFE363386E014F07C7063EE /* HelpPageView.swift in Sources */,
+				27353D6D01168A9B56080484 /* HomeFloatingDecorations.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		14F812D987E1702B1BAFB6D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83DCF98A45F1DDE0CE980489 /* CutoutRigAnalyzerTests.swift in Sources */,
+				87246CE0007122D617272018 /* MotionSimulatorTests.swift in Sources */,
+				C9DE54C354F531ED0F9A3368 /* PlaySessionModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4ABE3A09052482AEDC918007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A685E53DCFDE47C2B53D479 /* AniMagicCreation.swift in Sources */,
+				A016AD59A735B29DF2582C63 /* ArtworkMigrationPlan.swift in Sources */,
+				41CD63D5BBCC290F4BE64577 /* BackpackComponents.swift in Sources */,
+				1763BBD4DDBB7E5F00233BFC /* BackpackPageView.swift in Sources */,
+				AA5C6935DF76989AF979F18D /* CanvasPageView.swift in Sources */,
+				C372448A1A39849AA1C3F699 /* CanvasTopBarView.swift in Sources */,
+				0E444548C550EA529F616024 /* CheckerboardBackground.swift in Sources */,
+				1FA393FECADCC4D2CFB4840D /* ClassifiedCutoutFactory.swift in Sources */,
+				123FC673DAD4E842B51CDB69 /* Creation.swift in Sources */,
+				DDF8BE14822629A2F93373A4 /* CreationCatalog.swift in Sources */,
+				682A5ACD61274C4589BAE48F /* CreationCategory.swift in Sources */,
+				5E41CDF0531F37C48F7EE1E6 /* CreationDrawing.swift in Sources */,
+				4DD09F418F5BFA57FD5594E5 /* CreationLibraryRepository.swift in Sources */,
+				38F320B6D4B1EEE7833D014A /* CreationLibraryRepositoryAdapter.swift in Sources */,
+				7E470CCB2BE1CF7B89C5D0DC /* CreationLibraryStore.swift in Sources */,
+				D222219F79CE941BDE34D4B1 /* CreationNavigationActions.swift in Sources */,
+				24E2DC2C828A41CF02BABD68 /* CreationPlayableAsset.swift in Sources */,
+				20B0F9FF633ED71160199303 /* CreationRecord.swift in Sources */,
+				48B6617A6F30CC1783664DA2 /* CreationRepository.swift in Sources */,
+				0C407B578FCD930EDF03ADA9 /* CreationResources.swift in Sources */,
+				718D10AA5A2D320865B17E02 /* CreationRuntime.swift in Sources */,
+				A5783D3158AB442126AEC4E8 /* CutoutLibraryCell.swift in Sources */,
+				0216F835FB460A2CD4C2DD4F /* CutoutLibraryView.swift in Sources */,
+				9B108569026B10876BE151B0 /* CutoutLibraryViewModel.swift in Sources */,
+				1F9A5E03CEE17D528963DE1A /* CutoutProcessing.swift in Sources */,
+				6C3C9A8D265A709D6A4FF058 /* DoodleClassification.swift in Sources */,
+				7C04FF3A55CB04A5F0ACEEB9 /* DoodleClassificationCoordinator.swift in Sources */,
+				E2A490960B3AC29DBFE304F5 /* DrawingRasterizer.swift in Sources */,
+				DC4C949936D0F854D7E94CA1 /* DrawingSessionManager.swift in Sources */,
+				3995489737DAD33306D04F16 /* DrawingView.swift in Sources */,
+				9BC1A86C2D37ED8A7430E981 /* GuidePopupView.swift in Sources */,
+				0C6C052E93978629A80C78DD /* HanddrawnDetailComponents.swift in Sources */,
+				AE0F663077DFE2C5FCEE23AA /* HanddrawnDetailView.swift in Sources */,
+				75B7B8C0087781FDE36D644F /* LegacyArtworkRecords.swift in Sources */,
+				3B42F3999C8832883D8E5683 /* PhotoLibrarySaver.swift in Sources */,
+				8A48055D0BC8AD3914D7FB25 /* ShareSheet.swift in Sources */,
+				1DE6DE7AB2E02E5EEDA9B074 /* UIImage+Vision.swift in Sources */,
+				8D2DE6D9D86888D91EEBC451 /* VisionForegroundCutoutProcessor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D82B4607F536B79D105ACC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B043EA7355983124D0406170 /* ArtworkMigrationPlanTests.swift in Sources */,
+				628CB41F14F93A1991012A3B /* CreationCatalogTests.swift in Sources */,
+				ECFEB8B058929E4612BB515D /* CreationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		705BB52461B053E9646CAFDC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D36CCFD16588B64F3C6A6C26 /* ARPlacementControls.swift in Sources */,
+				4A5CCF431E0B5EA9AF84D98B /* ARReturnRecoveryView.swift in Sources */,
+				B49D7790CC000B74D44CC5BB /* ARSelectedContentIndicator.swift in Sources */,
+				76FF3DED736934133A93BADE /* ARViewInteractionAdapter.swift in Sources */,
+				CB426629AF9982320301FA87 /* AniMagicPlay.swift in Sources */,
+				49BE81647C50C56332194177 /* ApplePencilARInteractionAdapter.swift in Sources */,
+				6F71B742772ABF2666BCFBA5 /* CardboardRimMeshGenerator.swift in Sources */,
+				CD181DBD719C0958FAB837DF /* CardboardSurfaceField.swift in Sources */,
+				F915C016422CBA6CB554B033 /* CutoutContourExtraction.swift in Sources */,
+				5F4DF44350D632835049E95C /* CutoutDeformation.metal in Sources */,
+				2585017F384D5C414A54F083 /* CutoutEntityFactory.swift in Sources */,
+				E287B17D5CA96EC48AAFB0E1 /* CutoutRenderingResources.swift in Sources */,
+				BDB964A4510AF64739912218 /* CutoutRigAnalysis.swift in Sources */,
+				D8AEBE5C3DBEDE850C048E58 /* CutoutSceneEditor.swift in Sources */,
+				65BD37CFC50E1DC97892683B /* InteractionModels.swift in Sources */,
+				AC470E44012606CC5BD08CD5 /* LocomotionConfiguration.swift in Sources */,
+				08A346490476E5822BB0AB69 /* MotionLabView.swift in Sources */,
+				4B60D34752E232DC997B2990 /* MotionOrientationStore.swift in Sources */,
+				02EBE04EE66CE0FB2B49487B /* MotionSimulation.swift in Sources */,
+				1833CB2366C90553876D20B7 /* NewARPlacementView.swift in Sources */,
+				235B5DA035D56E9ECA67F7A0 /* ObjectInteractionManager.swift in Sources */,
+				975C8266D029299E7D7A1828 /* PhotoLibraryWriter.swift in Sources */,
+				14212A0086C3E057F6A0E51A /* PlacedCutout.swift in Sources */,
+				7554AC408EF802A5A66BA1DF /* PlayNavigationActions.swift in Sources */,
+				7A6A177ACE94A5A5A3A28C36 /* PlayResources.swift in Sources */,
+				29EB18EE2885ACE96DA0F76E /* RealityRoomView.swift in Sources */,
+				0160C0B662B358C359164187 /* RenderingExtensions.swift in Sources */,
+				02DFB42A0EFBA8733F44A524 /* RoomCoordinator.swift in Sources */,
+				E8D688FBE7E81252DC6BE8B2 /* SceneObjectRegistry.swift in Sources */,
+				2B656CE60E747D274359E629 /* ShadowEntityFactory.swift in Sources */,
+				8AD5DB008B38F75EF5083DCE /* SidebarbarBackpack.swift in Sources */,
+				1E716B3F7E22BD17E7DA5BAC /* SoftShadowTexture.swift in Sources */,
+				A323D62E502108A20815112B /* SurfaceProjectors.swift in Sources */,
+				908735FD56F3B20BF9FFC6E5 /* USDZModelPlacement.swift in Sources */,
+				37B731813BF682FAFB8A8CEA /* VirtualRoomModels.swift in Sources */,
+				5384D7EEAC3546E53853032A /* VirtualRoomView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9188FB4F13C026FFEBF5850F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7B14F71BCC0693C2A408E06 /* AniMagicDesignSystemModule.swift in Sources */,
+				51D91DFB03630BA70A403955 /* AnimagicDesignSystem.swift in Sources */,
+				91A61136445D900589C00070 /* ColorToken.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAE48BB3807732EDCE93F204 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F708F91BF54576032333E99E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C5D425E01EEC231D5BBDD6DE /* AniMagicSupport.swift in Sources */,
+				5532E8916DB57AEF9E212980 /* AudioAsset.swift in Sources */,
+				DE119A1A9F9DAC29A2A52433 /* AudioManager.swift in Sources */,
+				80D415C7606A0360938762BC /* AudioSessionManager.swift in Sources */,
+				3C48B55904830644B18EC9A9 /* BackgroundMusicController.swift in Sources */,
+				3C2E2CA352FB3FAD45BA8500 /* HapticFeedback.swift in Sources */,
+				4FDC2336410A064D12CB8568 /* SupportResources.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		1F8E8ACA0FCFB677BC6C939D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6CD2EE9654338B761C10CDC /* AniMagicSupport */;
+			targetProxy = ED8EB226C9BE871C9A75E487 /* PBXContainerItemProxy */;
+		};
+		2D46CFCE1B047E8CF511DA52 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 602C903EE6969F7210360538 /* AniMagic */;
+			targetProxy = 2E60C0CB0FFC67BCC8DF89CA /* PBXContainerItemProxy */;
+		};
+		2F94F9B200DA784F57C03A8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6CD2EE9654338B761C10CDC /* AniMagicSupport */;
+			targetProxy = FFECF4D75420CC3513180A1E /* PBXContainerItemProxy */;
+		};
+		42654AF2E93B5F55D7241731 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6CD2EE9654338B761C10CDC /* AniMagicSupport */;
+			targetProxy = B811B41C882E69BFF6039AA8 /* PBXContainerItemProxy */;
+		};
+		66FF880358333FEBE82089D7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6DE319B9148BE30B40D0F98B /* AniMagicDesignSystem */;
+			targetProxy = 3882EA67E51A22E9AD8E1A6E /* PBXContainerItemProxy */;
+		};
+		97DF221B90A1E0BDA71A402A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA5EAAC8482E337B04D5487A /* AniMagicCreation */;
+			targetProxy = FA1B04473C28CB001E78F16F /* PBXContainerItemProxy */;
+		};
+		9865689CF6C11D76BAA28269 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6DE319B9148BE30B40D0F98B /* AniMagicDesignSystem */;
+			targetProxy = 37810D56255CB1EFEBF6BA04 /* PBXContainerItemProxy */;
+		};
+		9AFB969B02E592BF58E1F64E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6DE319B9148BE30B40D0F98B /* AniMagicDesignSystem */;
+			targetProxy = B021BAB2A08B631F74872A4A /* PBXContainerItemProxy */;
+		};
+		9E3FA750FC14B6E80B7EF74F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 18CA5000B9409E30B9A274F1 /* AniMagicPlay */;
+			targetProxy = 3349A9F380497ED30C6343B2 /* PBXContainerItemProxy */;
+		};
+		A98222EF8837896462E41ADC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6CD2EE9654338B761C10CDC /* AniMagicSupport */;
+			targetProxy = 6944D1E4DBA902C176AA130F /* PBXContainerItemProxy */;
+		};
+		E849DE2B54D5AA05E956E290 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA5EAAC8482E337B04D5487A /* AniMagicCreation */;
+			targetProxy = B0120B543F36F162967F67F2 /* PBXContainerItemProxy */;
+		};
+		F6D8FB60893A55C53A8220C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 18CA5000B9409E30B9A274F1 /* AniMagicPlay */;
+			targetProxy = CB5A3F2E3BDFD965E3553C82 /* PBXContainerItemProxy */;
+		};
+		FF128DE20A799EC48E822768 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA5EAAC8482E337B04D5487A /* AniMagicCreation */;
+			targetProxy = 580FEC3082955CC19FF2745C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		0B75A26D3DCEA23B81CE5728 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AniMagixAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires camera access for AR functionality to place magic drawn animals into the real world.";
@@ -874,10 +1333,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -893,6 +1349,147 @@
 				UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 			};
 			name = Debug;
+		};
+		1484D4B2638D09B72C98E3DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Play;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		16719B14D9D26E7CF32BFC9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Creation;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		2B3A25BF6F391826DA9B1D94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicCreationTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2BADB5D179D62A189287D460 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Support;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		2CB43DE6867F0C0D7FD74F3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicPlayTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		49B7A2F9DC9D397049646F6F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AniMagic.app/AniMagic";
+			};
+			name = Debug;
+		};
+		5999FEC1B9A82600AE655250 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicCreationTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
 		};
 		5FD4AB81F197E396C2F4BADB /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -960,13 +1557,12 @@
 		7CE87580F8F3B58AB1F03EF9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AniMagixAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A2WQZ32XVK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animagic/Configuration/Info.plist;
@@ -975,10 +1571,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "This app requires access to save your magic drawings to your photo library.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic;
@@ -991,6 +1584,113 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8A88414638A553C4ECDB2398 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.DesignSystem;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		911BA39004E449F331DAF763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Creation;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		A6A472C2DE9E1A645F9F67A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicPlayTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A959FD066872486FC8AD7C73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagicTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AniMagic.app/AniMagic";
+			};
+			name = Release;
+		};
+		B0E5130EA397AA71A300BAFF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Play;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -1050,9 +1750,75 @@
 			};
 			name = Release;
 		};
+		EF4EB262CDD356FE6395154A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.DesignSystem;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		FF3BFFB9C8525D6BE430C1D8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DirouDough.AniMagic.Support;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		35656CF84B67D985160A4FF2 /* Build configuration list for PBXNativeTarget "AniMagicDesignSystem" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF4EB262CDD356FE6395154A /* Debug */,
+				8A88414638A553C4ECDB2398 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3735C47217A1CDD1C4569BED /* Build configuration list for PBXNativeTarget "AniMagicCreationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B3A25BF6F391826DA9B1D94 /* Debug */,
+				5999FEC1B9A82600AE655250 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		74F1245031E0906762807C29 /* Build configuration list for PBXProject "AniMagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1062,11 +1828,56 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		754073E04BC92FCF537E969C /* Build configuration list for PBXNativeTarget "AniMagicPlay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1484D4B2638D09B72C98E3DB /* Debug */,
+				B0E5130EA397AA71A300BAFF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7D01782A654BA5221E82B00C /* Build configuration list for PBXNativeTarget "AniMagicCreation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16719B14D9D26E7CF32BFC9D /* Debug */,
+				911BA39004E449F331DAF763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		B18CB6BD29797FB56B4A6E31 /* Build configuration list for PBXNativeTarget "AniMagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0B75A26D3DCEA23B81CE5728 /* Debug */,
 				7CE87580F8F3B58AB1F03EF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BFF9337C42AD803F1DDA9FC9 /* Build configuration list for PBXNativeTarget "AniMagicSupport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF3BFFB9C8525D6BE430C1D8 /* Debug */,
+				2BADB5D179D62A189287D460 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C2B12C17B5E9AB55747A0C75 /* Build configuration list for PBXNativeTarget "AniMagicTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49B7A2F9DC9D397049646F6F /* Debug */,
+				A959FD066872486FC8AD7C73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC5694D06C843E8EBDC527D4 /* Build configuration list for PBXNativeTarget "AniMagicPlayTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CB43DE6867F0C0D7FD74F3B /* Debug */,
+				A6A472C2DE9E1A645F9F67A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -18,6 +18,77 @@ settings:
     SDKROOT: iphoneos
 
 targets:
+  AniMagicSupport:
+    type: framework
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Animagic/Modules/Support
+        excludes:
+          - Resources/**
+    resources:
+      - path: Animagic/Modules/Support/Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic.Support
+        GENERATE_INFOPLIST_FILE: YES
+
+  AniMagicDesignSystem:
+    type: framework
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Animagic/Modules/DesignSystem
+        excludes:
+          - Resources/**
+    resources:
+      - path: Animagic/Modules/DesignSystem/Resources
+    dependencies:
+      - target: AniMagicSupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic.DesignSystem
+        GENERATE_INFOPLIST_FILE: YES
+
+  AniMagicCreation:
+    type: framework
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Animagic/Modules/Creation
+        excludes:
+          - CONTEXT.md
+          - Resources/**
+    resources:
+      - path: Animagic/Modules/Creation/Resources
+    dependencies:
+      - target: AniMagicDesignSystem
+      - target: AniMagicSupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic.Creation
+        GENERATE_INFOPLIST_FILE: YES
+
+  AniMagicPlay:
+    type: framework
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Animagic/Modules/Play
+        excludes:
+          - CONTEXT.md
+          - Resources/**
+    resources:
+      - path: Animagic/Modules/Play/Resources
+    dependencies:
+      - target: AniMagicCreation
+      - target: AniMagicDesignSystem
+      - target: AniMagicSupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic.Play
+        GENERATE_INFOPLIST_FILE: YES
+
   AniMagic:
     type: application
     platform: iOS
@@ -26,8 +97,14 @@ targets:
       - path: Animagic
         excludes:
           - Configuration/Info.plist
+          - Modules/**
           - Resources/**
       - path: Animagic/Resources
+    dependencies:
+      - target: AniMagicCreation
+      - target: AniMagicDesignSystem
+      - target: AniMagicPlay
+      - target: AniMagicSupport
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagic
@@ -64,11 +141,59 @@ targets:
           DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
           MTL_ENABLE_DEBUG_INFO: NO
 
+  AniMagicTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: AnimagicTests
+    dependencies:
+      - target: AniMagic
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagicTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  AniMagicCreationTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: AnimagicCreationTests
+    dependencies:
+      - target: AniMagicCreation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagicCreationTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  AniMagicPlayTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: AniMagicPlayTests
+    dependencies:
+      - target: AniMagicPlay
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.DirouDough.AniMagicPlayTests
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   AniMagic:
     build:
       targets:
         AniMagic: all
+        AniMagicCreationTests: [test]
+        AniMagicPlayTests: [test]
+        AniMagicTests: [test]
+    test:
+      config: Debug
+      targets:
+        - AniMagicCreationTests
+        - AniMagicPlayTests
+        - AniMagicTests
     run:
       config: Debug
     profile:

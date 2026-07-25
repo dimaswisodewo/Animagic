@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AniMagicCreation
+import AniMagicPlay
 
 struct RouterViewModifier: ViewModifier {
     @Environment(NavigationRouter.self) private var router
@@ -31,6 +33,7 @@ struct SheetStackModifier: ViewModifier {
             set: { if $0 == nil, router.presentedSheets.indices.contains(index) { router.presentedSheets.removeSubrange(index...) } }
         )) { route in
             AppRouterView.handlePresentation(route)
+                .modifier(ModuleNavigationActionsModifier())
                 .modifier(SheetStackModifier(index: index + 1))
         }
     }
@@ -50,6 +53,7 @@ struct FullScreenCoverStackModifier: ViewModifier {
             }
         )) { route in
             AppRouterView.handleFullScreenCover(route)
+                .modifier(ModuleNavigationActionsModifier())
                 .modifier(FullScreenCoverStackModifier(index: index + 1))
         }
     }
@@ -57,18 +61,20 @@ struct FullScreenCoverStackModifier: ViewModifier {
 
 struct AppRouterView {
     @ViewBuilder static func handleNavigation(_ route: AppRoute) -> some View {
-        switch route {
-        case .canvas: CanvasPageView(completionBehavior: .openNewAR)
-        case .arView(let initialCutoutID): ARRouteView(initialCutoutID: initialCutoutID)
-        case .backpack: BackpackPageView()
-        case .handdrawnDetail(let id): HanddrawnDetailView(drawingID: id)
-        case .cutoutLibrary: CutoutLibraryView()
-        case .virtualRoom: VirtualRoomView()
-        case .help: HelpPageView()
+        Group {
+            switch route {
+            case .canvas: CanvasPageView(completionBehavior: .openNewAR)
+            case .play(let intent): PlayRouteView(intent: intent)
+            case .backpack: BackpackPageView()
+            case .handdrawnDetail(let id): HanddrawnDetailView(drawingID: id)
+            case .cutoutLibrary: CutoutLibraryView()
+            case .help: HelpPageView()
 #if DEBUG
-        case .motionLab: MotionLabView()
+            case .motionLab: MotionLabView()
 #endif
+            }
         }
+        .modifier(ModuleNavigationActionsModifier())
     }
 
     @ViewBuilder static func handlePresentation(_ route: AppRoute) -> some View {
@@ -85,12 +91,43 @@ struct AppRouterView {
     }
 }
 
-private struct ARRouteView: View {
-    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
-    let initialCutoutID: UUID?
+private struct ModuleNavigationActionsModifier: ViewModifier {
+    @Environment(NavigationRouter.self) private var router
 
+    func body(content: Content) -> some View {
+        content
+            .environment(\.creationNavigationActions, CreationNavigationActions(
+                goBack: router.pop,
+                openCanvas: { router.push(.canvas) },
+                openDetail: { router.push(.handdrawnDetail($0)) },
+                openPlay: {
+                    router.push(.play(PlayIntent(
+                        environment: .augmentedReality,
+                        initialCreationID: $0
+                    )))
+                },
+                completePresentedCanvas: { _ in router.dismissFullScreenCover() }
+            ))
+            .environment(\.playNavigationActions, PlayNavigationActions(
+                exitToRoot: router.popToRoot,
+                openHelp: { router.push(.help) },
+                requestCreation: { router.presentFullScreenCover(.canvas) }
+            ))
+    }
+}
+
+private struct PlayRouteView: View {
+    @EnvironmentObject private var artworkStore: CreationLibraryStore
+    let intent: PlayIntent
+
+    @ViewBuilder
     var body: some View {
-        NewARPlacementView(initialCutoutID: initialCutoutID)
+        switch intent.environment {
+        case .augmentedReality:
+            NewARPlacementView(initialCutoutID: intent.initialCreationID)
+        case .virtualRoom:
+            VirtualRoomView()
+        }
     }
 }
 

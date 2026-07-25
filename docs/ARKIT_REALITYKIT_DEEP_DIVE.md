@@ -14,9 +14,13 @@ It is written specifically for engineers who want to understand the exact lifecy
 For the complete production path from PencilKit input through Core ML,
 procedural cardboard geometry, placement, and animation, see
 [Hand Drawing to Animated AR](HAND_DRAWING_TO_ANIMATED_AR.md). The active
-application route uses `NewARPlacementView` and its RealityKit
-`ARPlacementSystem`; some controller examples below describe the older
-`ARObjectPlacementRealityView` path.
+application route uses `NewARPlacementView`, `NewARSceneController`, and the
+RealityKit `ARPlacementSystem`. The former `ARSceneController` and
+`ARObjectPlacementRealityView` stack has been removed.
+
+> **Agent context:** AR is an app-owned adapter for the Play bounded context.
+> Shared session behavior belongs in `AniMagicPlay`; ARKit, raycasting, and
+> RealityKit entities remain in this implementation.
 
 ---
 
@@ -45,7 +49,7 @@ The 3D subsystem abstracts lower-level ARKit and RealityKit calls behind high-le
                                                │ Wraps via UIViewRepresentable
                                                ▼
                                   ┌─────────────────────────┐
-                                  │   ARSceneController     │
+                                  │ NewARSceneController    │
                                   │   (ARSessionDelegate)   │
                                   └────────────┬────────────┘
                                                │ Delegates Scene Operations
@@ -66,7 +70,9 @@ The 3D subsystem abstracts lower-level ARKit and RealityKit calls behind high-le
 
 ## 2. ARSession Lifecycle & Configuration Flow
 
-The entry point for AR is `ARSceneController` (`Animagic/Features/ARPlacement/Scene/ARSceneController.swift`).
+The entry point for AR is `NewARPlacementView`. Its representable creates
+`NewARSceneController`, currently defined in
+`Animagic/Modules/Play/Features/AR/Scene/NewARPlacementView.swift`.
 
 ### Session Configuration Logic
 
@@ -130,7 +136,7 @@ private func configureSceneOcclusion(
 
 ## 3. AR Tracking States & Error Propagation
 
-`ARSceneController` implements `ARSessionDelegate` to monitor device tracking quality in real-time.
+`NewARSceneController` implements `ARSessionDelegate` to monitor device tracking quality in real-time.
 
 ```mermaid
 stateDiagram-v2
@@ -143,7 +149,7 @@ stateDiagram-v2
     Searching --> Failed: Surface Not Found
 ```
 
-### Tracking State Mapping Code (`ARSceneController.swift`):
+### Tracking State Mapping Code (`NewARPlacementView.swift`):
 ```swift
 func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
     switch camera.trackingState {
@@ -169,13 +175,13 @@ func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera
 
 When a user taps on the screen, AniMagic determines the exact 3D coordinate on a physical horizontal surface using raycasting.
 
-### Surface Raycasting Algorithm (`ARSceneController.swift` & `SurfaceProjectors.swift`)
+### Surface Raycasting Algorithm (`NewARSceneController` & `SurfaceProjectors.swift`)
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant User as Touch Input (CGPoint)
-    participant Controller as ARSceneController
+    participant Controller as NewARSceneController
     participant Projector as ARSurfaceProjector
     participant ARKit as ARView / ARSession
 
@@ -408,16 +414,14 @@ func gestureRecognizer(
 
 Objects in AniMagic don't just stay static—they wander autonomously across physical surfaces.
 
-### Frame Update Loop (`ARSceneController.swift` & `CutoutSceneEditor.swift`)
+### Frame Update Loop (`ARPlacementSystem` & `CutoutSceneEditor`)
 
-A `CADisplayLink` targets 60 FPS updates to drive `MotionSimulation`:
+The active route registers a RealityKit `System`. RealityKit supplies frame
+delta time, which the system forwards to the controller and scene editor:
 
 ```swift
-@objc private func handleAnimationFrame(_ displayLink: CADisplayLink) {
-    let previousTimestamp = lastFrameTimestamp ?? displayLink.timestamp
-    let deltaTime = min(Float(displayLink.timestamp - previousTimestamp), 1 / 20)
-    lastFrameTimestamp = displayLink.timestamp
-    sceneEditor.update(deltaTime: deltaTime)
+func update(context: SceneUpdateContext) {
+    controller?.updateSimulation(deltaTime: Float(context.deltaTime))
 }
 ```
 
@@ -431,7 +435,7 @@ Each `PlacedCutout` runs a locomotion state machine:
 
 ## 10. Virtual Room Environment, Motion Sensors & Spatial Audio
 
-For non-AR mode, `RoomCoordinator` (`Animagic/Features/VirtualRoom/RoomCoordinator.swift`) provides a 3D sandbox using `ARView` in `.nonAR` camera mode.
+For non-AR mode, `RoomCoordinator` (`Animagic/Modules/Play/Features/VirtualRoom/RoomCoordinator.swift`) provides a 3D sandbox using `ARView` in `.nonAR` camera mode.
 
 ### Key Architectural Highlights:
 1. **CoreMotion Camera Rigging**:

@@ -5,35 +5,29 @@
 //  Created by Meynabel Dimas Wisodewo on 07/07/26.
 //
 
-import SwiftData
+import AniMagicCreation
+import AniMagicDesignSystem
+import AniMagicSupport
 import SwiftUI
 
 @main
 @MainActor
 struct AnimagicApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    private let modelContainer: ModelContainer
+    private let creationRuntime: CreationRuntime
     @State private var router = NavigationRouter()
     @State private var drawingSession = DrawingSessionManager()
     @State private var haptics = HapticFeedbackManager()
     @State private var backgroundMusic = BackgroundMusicController()
-    @StateObject private var artworkStore: ArtworkLibraryStore
+    @State private var startupErrorMessage: String?
+    @StateObject private var artworkStore: CreationLibraryStore
 
     init() {
-        do {
-            let container = try ModelContainer(
-                for: SavedDrawingRecord.self,
-                CutoutAssetRecord.self
-            )
-            modelContainer = container
-            _artworkStore = StateObject(
-                wrappedValue: ArtworkLibraryStore(
-                    repository: SwiftDataArtworkRepository(context: container.mainContext)
-                )
-            )
-        } catch {
-            fatalError("Unable to create the artwork store: \(error.localizedDescription)")
-        }
+        AniMagicDesignSystemModule.registerFonts()
+        let runtime = CreationRuntime.openDefault()
+        creationRuntime = runtime
+        _startupErrorMessage = State(initialValue: runtime.startupIssue?.localizedDescription)
+        _artworkStore = StateObject(wrappedValue: runtime.libraryStore)
     }
 
     var body: some Scene {
@@ -45,6 +39,17 @@ struct AnimagicApp: App {
                 .environment(backgroundMusic)
                 .environmentObject(artworkStore)
                 .onAppear(perform: activateAppServices)
+                .alert(
+                    "Creation Library Unavailable",
+                    isPresented: Binding(
+                        get: { startupErrorMessage != nil },
+                        set: { if !$0 { startupErrorMessage = nil } }
+                    )
+                ) {
+                    Button("Continue") { startupErrorMessage = nil }
+                } message: {
+                    Text(startupErrorMessage ?? "")
+                }
                 .onChange(of: scenePhase) { _, phase in
                     switch phase {
                     case .active:
@@ -58,7 +63,6 @@ struct AnimagicApp: App {
                     }
                 }
         }
-        .modelContainer(modelContainer)
     }
 
     private func activateAppServices() {

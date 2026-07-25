@@ -6,15 +6,16 @@
 //
 
 import Observation
+import AniMagicCreation
 import SwiftUI
+import AniMagicPlay
 
 enum AppRoute: Hashable, Identifiable {
     case canvas
-    case arView(initialCutoutID: UUID?)
+    case play(PlayIntent)
     case backpack
     case handdrawnDetail(UUID)
     case cutoutLibrary
-    case virtualRoom
     case help
 #if DEBUG
     case motionLab

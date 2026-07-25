@@ -71,6 +71,11 @@ The iOS Simulator can build and exercise non-camera screens, but it cannot fully
 
 ## Getting started
 
+New contributors should begin with the
+[Developer Onboarding Handbook](docs/ONBOARDING.md). It covers local setup,
+architecture, development workflows, testing, and the hardware-specific
+validation required for AR and Apple Pencil work.
+
 1. Clone the repository:
 
    ```bash
@@ -134,6 +139,11 @@ Animagic/
 │   ├── HanddrawnDetail/
 │   ├── Home/
 │   └── VirtualRoom/
+├── Modules/
+│   ├── Creation/            # Canonical creation domain and persistence boundary
+│   ├── Play/                # Shared Play intent and session state
+│   ├── Support/             # Audio and haptic infrastructure
+│   └── DesignSystem/        # Shared visual-primitives framework boundary
 ├── Resources/               # Assets, fonts, Core ML, USDZ, and skyboxes
 └── Shared/                  # Design system and reusable UI
 ```
@@ -142,10 +152,14 @@ Navigation is centralized in `AppRoute` and `NavigationRouter`. Feature views co
 
 ## Persistence
 
-Artwork is stored locally using SwiftData:
+Creations are stored locally using SwiftData. `CreationRecord` retains the
+drawing, photo, or migrated source together with title, classification metadata,
+and its optional playable image. A versioned migration plan upgrades the former
+drawing and cutout records without deleting their data.
 
-- `SavedDrawingRecord` stores the PencilKit drawing, name, category, classification metadata, manual-name status, and creation date.
-- `CutoutAssetRecord` stores the rendered PNG, source drawing ID, original dimensions, classification result or error, and optional corrected label.
+`CreationRepository` is the canonical persistence boundary. A temporary
+`CreationBackedArtworkRepository` keeps older presentation code working while
+it is migrated to Creation terminology and APIs.
 
 Empty drawings are rejected. Draft autosave updates the active drawing ID rather than creating duplicate records, and autosave never starts classification or AR navigation.
 
@@ -196,7 +210,26 @@ xcodebuild \
   build
 ```
 
-There is currently no XCTest target. Changes should at minimum pass a simulator build and be manually checked on appropriate hardware for PencilKit and AR behavior.
+The **AniMagic** scheme runs three XCTest bundles:
+
+- `AniMagicCreationTests` for Creation domain and repository orchestration.
+- `AniMagicPlayTests` for shared Play-session behavior.
+- `AniMagicTests` for app adapters, migration, rendering analysis, and motion.
+
+Use `xcrun simctl list devices available` to find a Simulator identifier, then
+run:
+
+```bash
+xcodebuild test \
+  -project AniMagic.xcodeproj \
+  -scheme AniMagic \
+  -destination 'platform=iOS Simulator,id=<SIMULATOR-UDID>' \
+  -derivedDataPath /tmp/AnimagicTestDerivedData \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+PencilKit, AR, camera, audio, and haptic changes still require appropriate
+physical-device validation.
 
 ## Troubleshooting
 

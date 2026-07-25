@@ -21,15 +21,19 @@ profile.
 For AR session and interaction details outside this transformation pipeline, see
 [ARKit & RealityKit Architecture Deep Dive](ARKIT_REALITYKIT_DEEP_DIVE.md).
 
+> **Agent context:** `CreationRecord` is the canonical persisted representation.
+> Canvas uses the Creation-owned `CreationLibraryStore`; new domain behavior
+> belongs behind `CreationRepository` and Creation value types.
+
 ## 1. End-to-end architecture
 
 ```mermaid
 flowchart LR
-    A["PKDrawing<br/>PencilKit strokes"] --> B["SavedDrawing<br/>SwiftData"]
+    A["PKDrawing<br/>PencilKit strokes"] --> B["Creation Source<br/>SwiftData"]
     A --> C["DrawingRasterizer<br/>transparent padded raster"]
     C --> D["64×64 normalization<br/>white, grayscale, inverted"]
     D --> E["Vision + Core ML<br/>animal label and confidence"]
-    C --> F["CutoutAsset<br/>PNG and source dimensions"]
+    C --> F["Playable Asset<br/>PNG and source dimensions"]
     E --> F
     F --> G["Rig and alpha analysis"]
     G --> H["Dense front/back meshes"]
@@ -50,7 +54,7 @@ The main ownership boundaries are:
 | --- | --- |
 | Drawing and commit | `CanvasPageView`, `DrawingView`, `DrawingSessionManager` |
 | Raster and classification | `DrawingRasterizer`, `DoodleClassificationCoordinator`, `AnimalSpeciesDoodleClassifier` |
-| Persistence | `ArtworkLibraryStore`, `SwiftDataArtworkRepository`, `SavedDrawingRecord`, `CutoutAssetRecord` |
+| Persistence | `CreationRecord`, `CreationRepository`, `CreationLibraryStore` |
 | Geometry and materials | `CutoutEntityFactory`, `DenseCutoutMesh`, `CutoutContourExtractor`, `CardboardRimMeshGenerator` |
 | AR runtime | `NewARPlacementView`, `NewARSceneController`, `CutoutSceneEditor`, `PlacedCutout` |
 | Behavior | `AnimalMotionProfileResolver`, `MotionInstanceConfiguration`, `MotionSimulator` |
@@ -61,26 +65,26 @@ The main ownership boundaries are:
 ```mermaid
 sequenceDiagram
     participant UI as CanvasPageView
-    participant Store as ArtworkLibraryStore
-    participant Repo as SwiftDataArtworkRepository
+    participant Store as CreationLibraryStore
+    participant Repo as Creation repository
     participant Coordinator as DoodleClassificationCoordinator
     participant Raster as DrawingRasterizer
     participant ML as Vision/Core ML
     participant Router as NavigationRouter
 
     UI->>Store: saveActiveDrawing(PKDrawing)
-    Store->>Repo: upsertDrawing(SavedDrawing)
+    Store->>Repo: upsertDrawing(CreationDrawing)
     Repo-->>Store: transaction saved
     UI->>Coordinator: start(drawing, drawingID, scale)
     Coordinator->>Raster: rasterize(drawing)
     Raster-->>Coordinator: DrawingRaster
     Coordinator->>ML: classify(raster.image) off MainActor
     ML-->>Coordinator: label/confidence or error
-    Coordinator-->>UI: CutoutAsset
+    Coordinator-->>UI: CreationPlayableAsset
     UI->>Store: persistClassifiedCutout(...)
     Store->>Repo: replace prior cutout and save metadata
     Repo-->>UI: persisted drawing/cutout
-    UI->>Router: push(.arView(initialCutoutID))
+    UI->>Router: push(.play(PlayIntent(environment: .augmentedReality, initialCreationID: id)))
 ```
 
 ## 2. Drawing capture and rasterization
@@ -93,7 +97,7 @@ navigate to AR.
 On an explicit save:
 
 1. The canvas rejects an empty `PKDrawing` or empty drawing bounds.
-2. `ArtworkLibraryStore.saveActiveDrawing` persists the editable PencilKit data.
+2. `CreationLibraryStore.saveActiveDrawing` persists the editable PencilKit data.
 3. `DoodleClassificationCoordinator` rasterizes the same drawing.
 4. Classification and cutout persistence complete before navigation to AR.
 
@@ -149,38 +153,37 @@ and its generation still matches. State transitions are exposed as `idle`,
 `running`, `succeeded`, `failed`, or `cancelled`.
 
 Classification failure does not invalidate the image. The factory returns a
-`CutoutAsset` containing the raster and the error, which can still enter AR with
+`CreationPlayableAsset` containing the raster and the error, which can still enter AR with
 the generic motion profile. A successful result stores `label` and `confidence`.
 A user correction is stored separately as `doodleOverrideLabel`; it takes
 precedence over the predicted label without destroying the model output.
 
 ## 4. Persistence and runtime data contracts
 
-The pipeline persists both the editable source and its renderable derivative:
+The canonical model persists the retained input and its renderable derivative
+as one Creation:
 
 ```text
-SavedDrawing
-├── PKDrawing data
-├── name and category
-├── classification metadata
-├── optional override label
-└── manual-name state
-
-CutoutAsset
-├── id
-├── sourceDrawingID
-├── transparent PNG
-├── originalSize
-├── optional classification
-├── optional classification error
-├── optional override label
-└── defaultPhysicalWidth = 0.35 m
+Creation
+├── CreationID
+├── title and manual-title state
+├── Creation Source
+│   ├── drawing, photo, or migrated legacy processed image
+│   └── retained source bytes and media type
+├── Species Assessment
+│   ├── optional prediction and confidence
+│   ├── optional user override
+│   └── optional failure
+└── optional Playable Asset
+    ├── transparent image bytes
+    └── pixel dimensions
 ```
 
-`SwiftDataArtworkRepository.persistClassifiedCutout` performs the drawing update,
-optional removal of older cutouts for the same drawing, and new cutout insertion
-in one explicit transaction. On failure, the context rolls back. Image and
-PencilKit blobs use SwiftData external storage.
+The Canvas workflow calls `CreationLibraryStore`, which delegates to a
+Creation-owned repository adapter. Drawing and playable-asset operations are
+joined into `CreationRecord` updates. Domain workflows use `CreationRepository`
+and `CreationCatalog`; large source and playable blobs use SwiftData external
+storage.
 
 The classification influences behavior, not mesh topology. Two drawings with
 the same label can have completely different silhouettes because geometry comes
@@ -399,8 +402,8 @@ quality.
 
 ## 9. AR placement and frame updates
 
-The active `.arView` route presents `NewARPlacementView` and
-`NewARSceneController`.
+The active `AppRoute.play(PlayIntent(environment: .augmentedReality, ...))`
+destination presents `NewARPlacementView` and `NewARSceneController`.
 
 The controller configures:
 
@@ -425,9 +428,8 @@ variation. The registry then owns the `PlacedCutout` for selection and updates.
 The current route uses `ARPlacementSystem`, a RealityKit `System`. Its scene
 update callback passes `SceneUpdateContext.deltaTime` to
 `NewARSceneController.updateSimulation`, which delegates to
-`CutoutSceneEditor.update` and then each `PlacedCutout`. The older
-`ARSceneController`/`ARObjectPlacementRealityView` path uses `CADisplayLink`; do
-not treat that legacy loop as the active route.
+`CutoutSceneEditor.update` and then each `PlacedCutout`. There is no secondary
+legacy AR controller path.
 
 During updates, the editor also measures viewer distance. A selected object
 always uses hero geometry; otherwise LOD changes at approximately 1.1 and 2.2
@@ -477,7 +479,7 @@ Instruments when diagnosing a slow first placement.
 
 When changing the pipeline:
 
-1. Preserve transparency between PencilKit rasterization and `CutoutAsset`.
+1. Preserve transparency between PencilKit rasterization and `CreationPlayableAsset`.
 2. Keep Swift and Metal uniform layouts byte-compatible and in the same field
    order.
 3. Test front, rear, and rim deformation after changing geometry coordinates.
