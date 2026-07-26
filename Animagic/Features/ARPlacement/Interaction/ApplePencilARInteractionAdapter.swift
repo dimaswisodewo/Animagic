@@ -11,12 +11,12 @@ import UIKit
 @MainActor
 final class ApplePencilARInteractionAdapter: NSObject, UIPencilInteractionDelegate {
     private weak var arView: ARView?
-    private weak var controller: NewARSceneController?
+    private weak var controller: ARPlacementSceneController?
     private var hoverRecognizer: UIHoverGestureRecognizer?
     private var pencilInteraction: UIPencilInteraction?
     private var didAttemptCurrentSqueeze = false
 
-    init(controller: NewARSceneController) {
+    init(controller: ARPlacementSceneController) {
         self.controller = controller
     }
 
@@ -100,7 +100,7 @@ final class ApplePencilARInteractionAdapter: NSObject, UIPencilInteractionDelega
 
     private func beginRotation(
         using squeeze: UIPencilInteraction.Squeeze,
-        controller: NewARSceneController
+        controller: ARPlacementSceneController
     ) {
         let point = squeeze.hoverPose?.location
         let rollAngle = Float(squeeze.hoverPose?.rollAngle ?? 0)

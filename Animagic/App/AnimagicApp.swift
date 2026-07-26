@@ -38,7 +38,7 @@ struct AnimagicApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
                 .environment(router)
                 .environment(drawingSession)
                 .environment(haptics)

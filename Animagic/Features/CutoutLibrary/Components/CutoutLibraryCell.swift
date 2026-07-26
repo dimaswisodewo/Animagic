@@ -56,7 +56,7 @@ struct CutoutLibraryCell: View {
 
             HStack {
                 Button {
-                    router.push(.arView(initialCutoutID: cutoutAsset.id))
+                    router.push(.arPlacement(initialCutoutID: cutoutAsset.id))
                 } label: {
                     Image(systemName: "arkit")
                         .frame(width: 36, height: 32)

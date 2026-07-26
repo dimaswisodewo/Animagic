@@ -48,11 +48,11 @@ The main ownership boundaries are:
 
 | Stage | Primary types |
 | --- | --- |
-| Drawing and commit | `CanvasPageView`, `DrawingView`, `DrawingSessionManager` |
+| Drawing and commit | `DrawingCanvasView`, `DrawingCanvas`, `DrawingSessionManager` |
 | Raster and classification | `DrawingRasterizer`, `DoodleClassificationCoordinator`, `AnimalSpeciesDoodleClassifier` |
 | Persistence | `ArtworkLibraryStore`, `SwiftDataArtworkRepository`, `SavedDrawingRecord`, `CutoutAssetRecord` |
 | Geometry and materials | `CutoutEntityFactory`, `DenseCutoutMesh`, `CutoutContourExtractor`, `CardboardRimMeshGenerator` |
-| AR runtime | `NewARPlacementView`, `NewARSceneController`, `CutoutSceneEditor`, `PlacedCutout` |
+| AR runtime | `ARPlacementView`, `ARPlacementSceneController`, `CutoutSceneEditor`, `PlacedCutout` |
 | Behavior | `AnimalMotionProfileResolver`, `MotionInstanceConfiguration`, `MotionSimulator` |
 | GPU deformation | `CutoutDeformationMaterialController`, `CutoutDeformation.metal` |
 
@@ -60,7 +60,7 @@ The main ownership boundaries are:
 
 ```mermaid
 sequenceDiagram
-    participant UI as CanvasPageView
+    participant UI as DrawingCanvasView
     participant Store as ArtworkLibraryStore
     participant Repo as SwiftDataArtworkRepository
     participant Coordinator as DoodleClassificationCoordinator
@@ -80,13 +80,13 @@ sequenceDiagram
     UI->>Store: persistClassifiedCutout(...)
     Store->>Repo: replace prior cutout and save metadata
     Repo-->>UI: persisted drawing/cutout
-    UI->>Router: push(.arView(initialCutoutID))
+    UI->>Router: push(.arPlacement(initialCutoutID))
 ```
 
 ## 2. Drawing capture and rasterization
 
-`DrawingView` wraps `PKCanvasView`. PencilKit owns vector strokes, tool behavior,
-undo history, and Apple Pencil input. `CanvasPageView` owns the save workflow.
+`DrawingCanvas` wraps `PKCanvasView`. PencilKit owns vector strokes, tool behavior,
+undo history, and Apple Pencil input. `DrawingCanvasView` owns the save workflow.
 Draft autosaves update the active drawing but deliberately do not classify or
 navigate to AR.
 
@@ -216,7 +216,7 @@ Facing falls back to `+1` when the side-mass confidence is below `0.08`.
 ### 5.2 Front and back surfaces
 
 `DenseCutoutMesh.generate`, defined in
-`Core/Rendering/CutoutRenderingResources.swift`, creates a rectangular grid:
+`Platform/Rendering/CutoutRenderingResources.swift`, creates a rectangular grid:
 
 ```text
 columns and rows = subdivisions + 1
@@ -399,8 +399,8 @@ quality.
 
 ## 9. AR placement and frame updates
 
-The active `.arView` route presents `NewARPlacementView` and
-`NewARSceneController`.
+The active `.arPlacement` route presents `ARPlacementView` and
+`ARPlacementSceneController`.
 
 The controller configures:
 
@@ -424,7 +424,7 @@ variation. The registry then owns the `PlacedCutout` for selection and updates.
 
 The current route uses `ARPlacementSystem`, a RealityKit `System`. Its scene
 update callback passes `SceneUpdateContext.deltaTime` to
-`NewARSceneController.updateSimulation`, which delegates to
+`ARPlacementSceneController.updateSimulation`, which delegates to
 `CutoutSceneEditor.update` and then each `PlacedCutout`. The older
 `ARSceneController`/`ARObjectPlacementRealityView` path uses `CADisplayLink`; do
 not treat that legacy loop as the active route.
@@ -463,7 +463,7 @@ size, visible bounds, subdivision level, surface fingerprint, crown height, and
 whether surface sampling is mirrored. `CutoutShaderLibrary` caches material
 templates.
 
-`NewARSceneController.scheduleSelectedDoodlePreparation` debounces selection for
+`ARPlacementSceneController.scheduleSelectedDoodlePreparation` debounces selection for
 100 milliseconds and uses a generation counter before calling
 `prepareSelectedCutout`. This moves texture, mesh, rim, and shader preparation
 ahead of the placement action and prevents an old selection from marking itself

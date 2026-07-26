@@ -221,7 +221,7 @@ struct SelectedObjectToolbar: View {
 
 // MARK: - Magic Lens controls
 
-struct NewARStatusPill: View {
+struct ARPlacementStatusPill: View {
     let status: ARPlacementStatus
 
     private var content: (
@@ -307,7 +307,7 @@ private extension View {
     }
 }
 
-struct NewARObjectShelf: View {
+struct ARPlacementObjectShelf: View {
     @Binding var contentType: PlacementContentType
     let cutoutAssets: [CutoutAsset]
     @Binding var selectedCutoutID: CutoutAsset.ID?
@@ -423,7 +423,7 @@ struct NewARObjectShelf: View {
     }
 }
 
-struct NewAREditCard: View {
+struct ARPlacementEditCard: View {
     let selection: PlacedObjectSelection
     @Binding var animalLocomotion: AnimalLocomotion
     @Binding var elevationMeters: Float
@@ -1076,12 +1076,12 @@ struct VerticalARObjectShelf: View {
 #Preview("AR Transient Feedback") {
     ScrollView {
         VStack(spacing: 18) {
-            NewARStatusPill(status: .searching)
-            NewARStatusPill(status: .ready)
-            NewARStatusPill(status: .loading("Preparing your model"))
-            NewARStatusPill(status: .placed)
-            NewARStatusPill(status: .limited("Move to a brighter area"))
-            NewARStatusPill(status: .failed("Try restarting the AR session"))
+            ARPlacementStatusPill(status: .searching)
+            ARPlacementStatusPill(status: .ready)
+            ARPlacementStatusPill(status: .loading("Preparing your model"))
+            ARPlacementStatusPill(status: .placed)
+            ARPlacementStatusPill(status: .limited("Move to a brighter area"))
+            ARPlacementStatusPill(status: .failed("Try restarting the AR session"))
 
             ARDeleteUndoToast {}
 

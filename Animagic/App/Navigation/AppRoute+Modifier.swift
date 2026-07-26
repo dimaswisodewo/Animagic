@@ -55,45 +55,6 @@ struct FullScreenCoverStackModifier: ViewModifier {
     }
 }
 
-struct AppRouterView {
-    @ViewBuilder static func handleNavigation(_ route: AppRoute) -> some View {
-        switch route {
-        case .canvas: CanvasPageView(completionBehavior: .openNewAR)
-        case .arView(let initialCutoutID): ARRouteView(initialCutoutID: initialCutoutID)
-        case .backpack: BackpackPageView()
-        case .handdrawnDetail(let id): HanddrawnDetailView(drawingID: id)
-        case .cutoutLibrary: CutoutLibraryView()
-        case .virtualRoom: VirtualRoomView()
-        case .help: HelpPageView()
-#if DEBUG
-        case .motionLab: MotionLabView()
-#endif
-        }
-    }
-
-    @ViewBuilder static func handlePresentation(_ route: AppRoute) -> some View {
-        EmptyView()
-    }
-
-    @ViewBuilder static func handleFullScreenCover(_ route: AppRoute) -> some View {
-        switch route {
-        case .canvas:
-            CanvasPageView(completionBehavior: .returnToPresentingAR)
-        default:
-            EmptyView()
-        }
-    }
-}
-
-private struct ARRouteView: View {
-    @EnvironmentObject private var artworkStore: ArtworkLibraryStore
-    let initialCutoutID: UUID?
-
-    var body: some View {
-        NewARPlacementView(initialCutoutID: initialCutoutID)
-    }
-}
-
 extension View {
     func withAppRouter() -> some View { modifier(RouterViewModifier()) }
 }

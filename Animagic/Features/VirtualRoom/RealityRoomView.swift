@@ -24,8 +24,8 @@ struct RealityRoomView: UIViewRepresentable {
     @Binding var placementMessage: String?
     let deleteRequestID: UUID?
 
-    func makeCoordinator() -> RoomCoordinator {
-        RoomCoordinator(
+    func makeCoordinator() -> VirtualRoomCoordinator {
+        VirtualRoomCoordinator(
             cutoutAssets: cutoutAssets,
             selectedCutoutID: selectedCutoutID,
             selectedAnimalLocomotion: spawnAnimalLocomotion,
@@ -61,7 +61,7 @@ struct RealityRoomView: UIViewRepresentable {
         )
     }
 
-    static func dismantleUIView(_ uiView: ARView, coordinator: RoomCoordinator) {
+    static func dismantleUIView(_ uiView: ARView, coordinator: VirtualRoomCoordinator) {
         coordinator.stop()
     }
 

@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  Animagic
 //
 //  Created by Meynabel Dimas Wisodewo on 07/07/26.
@@ -116,7 +116,7 @@ struct CutoutLibraryView: View {
         } else {
             VStack(alignment: .leading, spacing: 16) {
                 Button {
-                    router.push(.arView(initialCutoutID: artworkStore.cutoutLibrary.first?.id))
+                    router.push(.arPlacement(initialCutoutID: artworkStore.cutoutLibrary.first?.id))
                 } label: {
                     Label("Open AR Library", systemImage: "arkit")
                         .frame(maxWidth: .infinity)

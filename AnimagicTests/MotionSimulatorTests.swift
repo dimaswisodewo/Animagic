@@ -57,7 +57,7 @@ final class MotionSimulatorTests: XCTestCase {
         )
 
         // Act
-        simulator.receive(.tapped)
+        simulator.receive(.tapped, locomotion: .walk)
         let after = simulator.update(
             deltaTime: 1 / 60,
             locomotion: .walk,

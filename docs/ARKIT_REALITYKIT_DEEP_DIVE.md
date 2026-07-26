@@ -14,7 +14,7 @@ It is written specifically for engineers who want to understand the exact lifecy
 For the complete production path from PencilKit input through Core ML,
 procedural cardboard geometry, placement, and animation, see
 [Hand Drawing to Animated AR](HAND_DRAWING_TO_ANIMATED_AR.md). The active
-application route uses `NewARPlacementView` and its RealityKit
+application route uses `ARPlacementView` and its RealityKit
 `ARPlacementSystem`; some controller examples below describe the older
 `ARObjectPlacementRealityView` path.
 
@@ -40,7 +40,7 @@ The 3D subsystem abstracts lower-level ARKit and RealityKit calls behind high-le
 
 ```
                                   ┌─────────────────────────┐
-                                  │   NewARPlacementView    │
+                                  │   ARPlacementView    │
                                   └────────────┬────────────┘
                                                │ Wraps via UIViewRepresentable
                                                ▼
@@ -431,7 +431,7 @@ Each `PlacedCutout` runs a locomotion state machine:
 
 ## 10. Virtual Room Environment, Motion Sensors & Spatial Audio
 
-For non-AR mode, `RoomCoordinator` (`Animagic/Features/VirtualRoom/RoomCoordinator.swift`) provides a 3D sandbox using `ARView` in `.nonAR` camera mode.
+For non-AR mode, `VirtualRoomCoordinator` (`Animagic/Features/VirtualRoom/VirtualRoomCoordinator.swift`) provides a 3D sandbox using `ARView` in `.nonAR` camera mode.
 
 ### Key Architectural Highlights:
 1. **CoreMotion Camera Rigging**:

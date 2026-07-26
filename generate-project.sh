@@ -108,6 +108,7 @@ if [[ "$MODE" == "check" ]]; then
     SHADOW_SPEC="$TEMP_DIR/$(basename "$SPEC_FILE")"
     cp "$SPEC_FILE" "$SHADOW_SPEC"
     ln -s "$ROOT_DIR/Animagic" "$TEMP_DIR/Animagic"
+    ln -s "$ROOT_DIR/AnimagicTests" "$TEMP_DIR/AnimagicTests"
     xcodegen generate \
         --spec "$SHADOW_SPEC" \
         --project-root "$TEMP_DIR" \

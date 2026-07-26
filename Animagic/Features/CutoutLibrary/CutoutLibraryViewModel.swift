@@ -1,3 +1,10 @@
+//
+//  CutoutLibraryViewModel.swift
+//  AniMagic
+//
+//  Created by dimaswisodewo on 26/07/26.
+//
+
 import Combine
 import Foundation
 import PhotosUI

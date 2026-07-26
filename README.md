@@ -99,7 +99,7 @@ The doodle classifier is stored at:
 Animagic/Resources/Models/AnimalSpeciesClassifierV4.mlpackage
 ```
 
-At build time, Xcode compiles the package into `AnimalSpeciesClassifierV4.mlmodelc`. Runtime loading is implemented in `Animagic/Core/ImageProcessing/DoodleClassification.swift`.
+At build time, Xcode compiles the package into `AnimalSpeciesClassifierV4.mlmodelc`. Runtime loading is implemented in `Animagic/Platform/ImageProcessing/AnimalSpeciesDoodleClassifier.swift`.
 
 The bundled V4 model is trained specifically for AniMagic from Google's [Quick, Draw! dataset](https://github.com/googlecreativelab/quickdraw-dataset), without third-party pretrained model weights. The companion [`animal-sketch-coreml`](https://github.com/MorpKnight/animal-sketch-coreml) repository contains the training, evaluation, and Core ML export pipelines, along with the model-generation history and published artifacts.
 
@@ -119,26 +119,34 @@ The current model recognizes multiple animal-sketch classes, including birds, aq
 Animagic/
 ├── App/
 │   ├── Navigation/          # AppRoute and NavigationRouter
-│   └── State/               # Cross-feature session state
-├── Core/
-│   ├── ImageProcessing/     # Rasterization, Vision, and Core ML
-│   ├── Models/              # Domain value types
-│   ├── Persistence/         # SwiftData records and repository
+│   └── State/               # App-wide observable state
+├── Domain/
+│   ├── Artwork/             # Entities, policies, and repository contracts
+│   ├── Classification/      # Classification results and contracts
+│   └── Motion/              # Pure motion profiles and simulation
+├── Platform/
+│   ├── ImageProcessing/     # Rasterization, Vision, Core ML, and Photos
+│   ├── Persistence/         # SwiftData records and repository implementation
 │   ├── Rendering/           # RealityKit and Metal rendering
-│   └── Stores/              # Artwork library orchestration
+│   ├── Audio/
+│   └── Haptics/
 ├── Features/
 │   ├── ARPlacement/
 │   ├── Backpack/
-│   ├── Canvas/
+│   ├── DrawingCanvas/
 │   ├── CutoutLibrary/
-│   ├── HanddrawnDetail/
+│   ├── DrawingDetail/
 │   ├── Home/
+│   ├── Help/
 │   └── VirtualRoom/
-├── Resources/               # Assets, fonts, Core ML, USDZ, and skyboxes
-└── Shared/                  # Design system and reusable UI
+├── DesignSystem/            # Reusable UI primitives and tokens
+└── Resources/               # Assets, fonts, Core ML, USDZ, and skyboxes
 ```
 
-Navigation is centralized in `AppRoute` and `NavigationRouter`. Feature views coordinate presentation, while image processing, persistence, and rendering are kept under `Core`.
+Navigation is centralized in `AppRoute` and `NavigationRouter`. Dependency direction and
+directory ownership are documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Reference-only retired implementations live in top-level `Prototypes/` and are excluded from
+all build targets.
 
 ## Persistence
 
@@ -196,7 +204,22 @@ xcodebuild \
   build
 ```
 
-There is currently no XCTest target. Changes should at minimum pass a simulator build and be manually checked on appropriate hardware for PencilKit and AR behavior.
+Run the unit tests on an available simulator:
+
+```bash
+xcodebuild test \
+  -project AniMagic.xcodeproj \
+  -scheme AniMagic \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+Run structure, generated-project, and diff validation together with:
+
+```bash
+./scripts/validate-repository.sh
+```
+
+AR tracking and Apple Pencil behavior still require manual verification on appropriate hardware.
 
 ## Troubleshooting
 
@@ -230,7 +253,9 @@ Run `./generate-project.sh`, then review and commit both `project.yml` and `AniM
 
 - Keep application navigation in `AppRoute` and `NavigationRouter`.
 - Put feature-specific code under `Animagic/Features/<FeatureName>`.
-- Put reusable image processing, persistence, models, and rendering infrastructure under `Animagic/Core`.
+- Keep product entities and pure policy in `Animagic/Domain`.
+- Put Apple-framework implementations under `Animagic/Platform`.
+- Keep genuinely reusable UI primitives under `Animagic/DesignSystem`.
 - Preserve manual drawing names when applying AI-generated names.
 - Test AR and Apple Pencil changes on physical hardware before release.
 
