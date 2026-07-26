@@ -1,0 +1,13 @@
+# Reviewed files permitted to exceed 400 lines.
+# Keep entries repository-relative and explain each exception in ARCHITECTURE.md.
+Animagic/DesignSystem/AnimagicDesignSystem.swift
+Animagic/Domain/Motion/MotionConfiguration.swift
+Animagic/Domain/Motion/MotionSimulation.swift
+Animagic/Features/ARPlacement/Presentation/ARPlacementControls.swift
+Animagic/Features/ARPlacement/Scene/ARPlacementView.swift
+Animagic/Features/Help/HelpView.swift
+Animagic/Features/VirtualRoom/VirtualRoomCoordinator.swift
+Animagic/Platform/Rendering/CardboardRimMeshGenerator.swift
+Animagic/Platform/Rendering/CutoutContourExtraction.swift
+Animagic/Platform/Rendering/CutoutRenderingResources.swift
+Animagic/Platform/Rendering/CutoutSceneEditor.swift

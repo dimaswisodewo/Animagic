@@ -22,6 +22,8 @@ Pods/
 *.dSYM
 *.log
 docs/*
+!docs/ARCHITECTURE.md
+!docs/architecture-large-file-exceptions.txt
 !docs/ARKIT_REALITYKIT_DEEP_DIVE.md
 !docs/HAND_DRAWING_TO_ANIMATED_AR.md
 !docs/asset-pipeline/
