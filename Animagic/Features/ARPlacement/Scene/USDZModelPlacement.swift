@@ -159,7 +159,11 @@ final class USDZModelRepository {
         }
     }
 
-    func preload(_ models: [PlaceableUSDZModel] = PlaceableUSDZModel.all) {
+    func preload() {
+        preload(PlaceableUSDZModel.all)
+    }
+
+    func preload(_ models: [PlaceableUSDZModel]) {
         models.forEach { model in
             loadClone(of: model) { _ in }
         }

@@ -1671,7 +1671,10 @@ final class ARPlacementSceneController: NSObject, SceneEditing, @preconcurrency 
     }
 
     private func addPlaneModel(for planeAnchor: ARPlaneAnchor, to anchorEntity: AnchorEntity) {
-        let mesh = MeshResource.generatePlane(width: planeAnchor.extent.x, depth: planeAnchor.extent.z)
+        let mesh = MeshResource.generatePlane(
+            width: planeAnchor.planeExtent.width,
+            depth: planeAnchor.planeExtent.height
+        )
         var material = UnlitMaterial()
         material.color = .init(tint: UIColor.systemYellow.withAlphaComponent(0.09))
         material.blending = .transparent(opacity: .init(floatLiteral: 0.09))
