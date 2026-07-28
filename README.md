@@ -1,73 +1,83 @@
-# AniMagic
+<div align="center">
+  <img src="Animagic/AppIcon.icon/Assets/animagic-logo-new.png" alt="AniMagic app icon" width="128">
 
-AniMagic is an iOS and iPadOS application that turns hand-drawn animal doodles into animated augmented-reality objects. Users draw with PencilKit, classify the drawing locally with Vision and Core ML, keep their work in a SwiftData-backed library, and place the resulting cutout in a RealityKit scene.
+  <h1>AniMagic</h1>
 
-> The project currently targets iOS 18.0 and is designed for iPhone and iPad.
+  <p>Turn hand-drawn animal doodles into animated augmented-reality companions.</p>
 
-## Highlights
+  <p>
+    <img src="https://img.shields.io/badge/iOS-18.0%2B-0A84FF?style=flat-square" alt="iOS 18.0 or newer">
+    <img src="https://img.shields.io/badge/Swift-5-F05138?style=flat-square&logo=swift&logoColor=white" alt="Swift 5">
+    <img src="https://img.shields.io/badge/SwiftUI-Observation-007AFF?style=flat-square" alt="SwiftUI and Observation">
+    <img src="https://img.shields.io/badge/ARKit-RealityKit-5856D6?style=flat-square" alt="ARKit and RealityKit">
+  </p>
 
-- **PencilKit canvas** with Apple Pencil support, the system tool picker, undo/redo, drawing guides, editable names, and debounced draft autosave.
-- **On-device doodle classification** using Vision and the bundled `AnimalSpeciesClassifierV4.mlpackage` Core ML model, trained from scratch with Google Quick, Draw! data.
-- **Reliable classification workflow** with cancellable jobs, stale-result protection, persisted error states, Retry, and an option to continue into AR.
-- **AR placement** powered by ARKit and RealityKit, including surface detection, placement feedback, object selection, deletion, and animated animal motion presets.
-- **My Backpack** for persistent drawings, search, category filters, automatic AI-based naming, sharing, and classification recovery.
-- **Virtual Room** with explore/edit modes and Citrus Orchard, Land, and Underwater environments.
-- **Cutout library module** using Vision foreground instance masks to prepare imported photos for AR.
+  <p>
+    <a href="#getting-started">Get started</a> ·
+    <a href="#features">Features</a> ·
+    <a href="#architecture">Architecture</a> ·
+    <a href="#development">Development</a> ·
+    <a href="#documentation">Documentation</a>
+  </p>
+</div>
 
-## App flow
+AniMagic is an iOS and iPadOS SwiftUI application that turns a PencilKit drawing into a locally classified, animated AR object. Draw an animal, let Vision and Core ML recognize it on-device, then place the resulting transparent cutout on a real surface or explore it inside a virtual room.
+
+> [!NOTE]
+> Doodle classification runs locally on the device. AniMagic does not need a network connection to recognize drawings.
+
+## Features
+
+- **Draw with PencilKit** — Apple Pencil and touch input, the system tool picker, undo/redo, drawing guides, editable names, and draft autosave.
+- **Classify on-device** — Vision and the bundled `AnimalSpeciesClassifierV4.mlpackage` produce an animal label and confidence without uploading the drawing.
+- **Create animated cutouts** — Transparent raster artwork becomes a deformable 2.5D cardboard-style object with front/back surfaces, a procedural rim, soft shadows, and Metal-driven motion.
+- **Place objects in AR** — Detect horizontal surfaces, place doodles or bundled USDZ props, select and delete objects, choose plane or camera-roam spawning, and respond to taps and proximity.
+- **Organize a My Backpack library** — Persist drawings and cutouts with SwiftData, search and filter artwork, share drawings, edit names, correct classifications, and retry failed classification jobs.
+- **Explore a Virtual Room** — Switch between Explore and Edit modes, choose Citrus Orchard, Land, or Underwater environments, and populate the scene with doodles and static 3D props.
+- **Build a Cutout Library** — Select photos with `PhotosPicker`, extract foreground objects with Vision, and reuse the resulting cutouts in AR.
+
+## How it works
 
 ```mermaid
 flowchart LR
-    A["Draw with PencilKit"] --> B["Autosave draft"]
-    A --> C["Normalize raster"]
-    C --> D["Vision + Core ML classification"]
-    D --> E["Persist drawing and cutout with SwiftData"]
-    E --> F["Place and animate with RealityKit"]
-    E --> G["Browse in My Backpack"]
+    A["PencilKit drawing"] --> B["SwiftData draft"]
+    A --> C["Transparent padded raster"]
+    C --> D["Vision + Core ML"]
+    C --> E["Cutout asset"]
+    D --> F["Animal motion profile"]
+    E --> G["RealityKit scene"]
+    F --> G
+    G --> H["Animated 2.5D AR object"]
+    B --> I["My Backpack"]
+    J["PhotoPicker image"] --> K["Vision foreground mask"]
+    K --> E
 ```
 
-Classification runs locally on the device. The drawing raster keeps transparent padding for AR, while the classifier receives a normalized square image with a white background.
+The AR render keeps the original transparent, padded image so its alpha channel can drive visible bounds, contours, holes, and cardboard geometry. Classification uses a separate normalized 64×64 grayscale, inverted image so the model receives a consistent input.
 
 ## Technology
 
-| Area | Frameworks and tools |
+| Area | Implementation |
 | --- | --- |
-| UI and state | SwiftUI, Observation |
+| UI and state | SwiftUI, Observation, `@MainActor` isolation |
 | Drawing | PencilKit |
-| Classification | Core ML, Vision, Core Image |
+| Classification | Vision, Core ML, Core Image |
 | AR and rendering | ARKit, RealityKit, Metal |
 | Persistence | SwiftData |
-| Motion | GameplayKit, Core Motion |
+| Motion and sensors | GameplayKit, Core Motion |
+| Audio and feedback | AVFoundation, Core Haptics, UIKit feedback generators |
 | Project generation | XcodeGen |
-
-## 3D asset pipeline
-
-Blender-derived RealityKit assets follow the documented [AR asset pipeline](docs/asset-pipeline/README.md). The pipeline defines compact mobile budgets, non-destructive Blender optimization, reliable USDC-to-USDZ packaging, and mandatory texture and Apple Metal render validation.
-
-See the [Blender-to-USDZ runbook](docs/asset-pipeline/BLENDER_TO_USDZ.md) for conversion steps and [USDZ validation and troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md) for delivery gates and known failure modes.
-
-Hand-drawn doodles use a separate runtime pipeline. See
-[Hand Drawing to Animated AR](docs/HAND_DRAWING_TO_ANIMATED_AR.md) for the
-technical path from PencilKit rasterization and Core ML classification through
-procedural cardboard mesh generation, RealityKit placement, and Metal-driven
-animation.
-
-For supported static props, run `./scripts/ar-asset` for a guided terminal workflow, or `./scripts/ar-asset build /path/to/Asset.blend` for automation. Both produce an auditable validation report under `build/asset-pipeline/`.
-
-See the [`ar-asset` operator guide](scripts/README.md) for installation, guided and explicit workflows, output files, review, and troubleshooting.
-
-Install the command for use from any directory with `./scripts/ar-asset install`. The per-user installation requires no `sudo`; verify it with `ar-asset doctor`, update it by rerunning the repository install command, and remove it with `ar-asset uninstall`.
 
 ## Requirements
 
 - macOS with **Xcode 16 or newer**
 - iOS/iPadOS **18.0 or newer**
-- A physical ARKit-compatible iPhone or iPad for camera tracking and AR placement
-- An iPad with Apple Pencil for testing Pencil input and palm rejection
+- A physical ARKit-compatible iPhone or iPad for camera tracking, surface detection, and AR placement
+- An iPad with Apple Pencil for testing PencilKit input and palm rejection
 - An Apple Developer team when running on a physical device
-- XcodeGen only when regenerating the Xcode project
+- XcodeGen only when changing `project.yml` or regenerating the committed project
 
-The iOS Simulator can build and exercise non-camera screens, but it cannot fully validate AR tracking, camera permission behavior, or Apple Pencil interaction.
+The iOS Simulator can build and exercise non-camera screens, but it cannot fully validate AR tracking, camera permission behavior, scene reconstruction, or Apple Pencil interaction.
 
 ## Getting started
 
@@ -86,105 +96,99 @@ The iOS Simulator can build and exercise non-camera screens, but it cannot fully
 
 3. Select the **AniMagic** scheme.
 4. Choose an iOS 18+ simulator or a supported physical device.
-5. For a physical device, select your team under **Signing & Capabilities**.
+5. For a physical device, select your Apple Developer team under **Signing & Capabilities**.
 6. Build and run.
 
-The Core ML model and all current fonts, USDZ assets, skyboxes, images, and audio resources are already included in the repository.
+The Core ML model, fonts, audio, image resources, virtual-room assets, and current USDZ props are included in the repository.
 
-## Core ML model
+## Architecture
 
-The doodle classifier is stored at:
+Application composition and navigation are centralized in `Animagic/App`. `AppRoute` and `NavigationRouter` own pushes, sheets, full-screen covers, and dismissals so features do not introduce independent navigation state.
 
-```text
-Animagic/Resources/Models/AnimalSpeciesClassifierV4.mlpackage
-```
+| Layer | Responsibility | Representative types |
+| --- | --- | --- |
+| App | Composition, routing, shared session state | `AnimagicApp`, `AppRoute`, `NavigationRouter` |
+| Features | User-facing screens and feature-specific coordination | `CanvasPageView`, `BackpackPageView`, `NewARPlacementView`, `VirtualRoomView` |
+| Image processing | Rasterization, classification, foreground extraction | `DrawingRasterizer`, `DoodleClassificationCoordinator`, `VisionForegroundCutoutProcessor` |
+| Persistence | SwiftData records and repository-backed library state | `SavedDrawingRecord`, `CutoutAssetRecord`, `ArtworkLibraryStore` |
+| Rendering | Cutout meshes, contours, rims, materials, and shadows | `CutoutEntityFactory`, `CardboardRimMeshGenerator`, `CutoutDeformation.metal` |
+| Shared UI | Design tokens and reusable controls | `AnimagicDesignSystem`, `ColorToken`, shared UI components |
 
-At build time, Xcode compiles the package into `AnimalSpeciesClassifierV4.mlmodelc`. Runtime loading is implemented in `Animagic/Core/ImageProcessing/DoodleClassification.swift`.
-
-The bundled V4 model is trained specifically for AniMagic from Google's [Quick, Draw! dataset](https://github.com/googlecreativelab/quickdraw-dataset), without third-party pretrained model weights. The companion [`animal-sketch-coreml`](https://github.com/MorpKnight/animal-sketch-coreml) repository contains the training, evaluation, and Core ML export pipelines, along with the model-generation history and published artifacts.
-
-When replacing the model:
-
-1. Keep the resource name `AnimalSpeciesClassifierV4.mlpackage`, or update the runtime lookup.
-2. Ensure the package is included in the **AniMagic** target.
-3. Preserve the expected image-classifier output (`VNClassificationObservation`).
-4. Re-test label-to-motion mapping and low-confidence behavior in AR.
-5. Perform a clean build so Xcode recompiles the model.
-
-The current model recognizes multiple animal-sketch classes, including birds, aquatic animals, mammals, reptiles, insects, and an `other` class. RealityKit behavior is resolved separately through the supported animal archetypes in `LocomotionConfiguration.swift`.
+Artwork persistence is local. `SavedDrawingRecord` stores the editable PencilKit drawing and metadata, while `CutoutAssetRecord` stores the rendered image, source drawing relationship, classification result or error, and optional manual label override.
 
 ## Project structure
 
 ```text
 Animagic/
-├── App/
-│   ├── Navigation/          # AppRoute and NavigationRouter
-│   └── State/               # Cross-feature session state
+├── App/                    # App composition, routing, and session state
 ├── Core/
-│   ├── ImageProcessing/     # Rasterization, Vision, and Core ML
-│   ├── Models/              # Domain value types
-│   ├── Persistence/         # SwiftData records and repository
-│   ├── Rendering/           # RealityKit and Metal rendering
-│   └── Stores/              # Artwork library orchestration
+│   ├── Audio/              # Music, sound effects, and audio sessions
+│   ├── ImageProcessing/    # Rasterization, Vision, Core ML, and cutouts
+│   ├── Models/             # Domain models and artwork categories
+│   ├── Persistence/        # SwiftData records and repositories
+│   ├── Rendering/          # RealityKit, procedural geometry, and Metal
+│   └── Stores/             # Artwork library orchestration
 ├── Features/
-│   ├── ARPlacement/
-│   ├── Backpack/
-│   ├── Canvas/
-│   ├── CutoutLibrary/
-│   ├── HanddrawnDetail/
-│   ├── Home/
-│   └── VirtualRoom/
-├── Resources/               # Assets, fonts, Core ML, USDZ, and skyboxes
-└── Shared/                  # Design system and reusable UI
+│   ├── ARPlacement/        # AR session, interaction, placement, and motion
+│   ├── Backpack/           # Saved artwork library
+│   ├── Canvas/             # PencilKit drawing experience
+│   ├── CutoutLibrary/      # Photo foreground extraction
+│   ├── Home/               # App home screen and entry points
+│   └── VirtualRoom/        # Explore/edit environments and 3D props
+├── Resources/              # Core ML, fonts, audio, images, and USDZ assets
+└── Shared/                 # Design system and reusable UI
+
+AnimagicTests/              # Focused XCTest source files
+docs/                       # Architecture and asset-pipeline documentation
+scripts/                    # Project utilities and AR asset tooling
+project.yml                 # XcodeGen specification
 ```
 
-Navigation is centralized in `AppRoute` and `NavigationRouter`. Feature views coordinate presentation, while image processing, persistence, and rendering are kept under `Core`.
+## Model and AR assets
 
-## Persistence
+The bundled classifier is stored at:
 
-Artwork is stored locally using SwiftData:
+```text
+Animagic/Resources/Models/AnimalSpeciesClassifierV4.mlpackage
+```
 
-- `SavedDrawingRecord` stores the PencilKit drawing, name, category, classification metadata, manual-name status, and creation date.
-- `CutoutAssetRecord` stores the rendered PNG, source drawing ID, original dimensions, classification result or error, and optional corrected label.
+Xcode compiles the package into `AnimalSpeciesClassifierV4.mlmodelc` at build time. Runtime loading is implemented in `Animagic/Core/ImageProcessing/DoodleClassification.swift`. Unknown or failed classifications remain usable through generic cutout behavior, while manual labels can override the motion profile without replacing the original prediction metadata.
 
-Empty drawings are rejected. Draft autosave updates the active drawing ID rather than creating duplicate records, and autosave never starts classification or AR navigation.
+Static Blender-derived props follow the repository's AR asset pipeline. The pipeline preserves artist source files, optimizes mobile geometry and textures, packages explicit USD dependencies, runs `usdchecker`, and produces an Apple Metal validation render.
 
-## Permissions
+> [!IMPORTANT]
+> Never overwrite an artist's source `.blend` file or accept a USDZ based only on successful export. Structural dependency checks and an Apple Metal render are required.
 
-AniMagic requests:
+For the guided workflow:
 
-- **Camera access** for AR placement.
-- **Photo Library Add access** when saving artwork to Photos.
+```bash
+./scripts/ar-asset
+```
 
-If camera access is denied, enable it from **Settings → Privacy & Security → Camera → AniMagic**.
+For automation:
 
-## Regenerating the Xcode project
+```bash
+./scripts/ar-asset build /path/to/Asset.blend
+./scripts/ar-asset approve build/asset-pipeline/Asset
+```
+
+See the [AR asset pipeline](docs/asset-pipeline/README.md) and the [script operator guide](scripts/README.md) for prerequisites, output artifacts, validation gates, and troubleshooting.
+
+## Development
+
+### Regenerate the Xcode project
 
 The committed `AniMagic.xcodeproj` is generated from `project.yml`.
 
-Install XcodeGen:
-
 ```bash
 brew install xcodegen
-```
-
-Verify that the committed project matches the specification:
-
-```bash
 ./generate-project.sh --check
-```
-
-Regenerate it after changing targets, resources, or build settings:
-
-```bash
 ./generate-project.sh
 ```
 
 Commit `project.yml` and the regenerated `AniMagic.xcodeproj` together.
 
-## Build from the command line
-
-Compile for a generic iOS Simulator without code signing:
+### Build from the command line
 
 ```bash
 xcodebuild \
@@ -196,44 +200,57 @@ xcodebuild \
   build
 ```
 
-There is currently no XCTest target. Changes should at minimum pass a simulator build and be manually checked on appropriate hardware for PencilKit and AR behavior.
+### Host-side asset tests
 
-## Troubleshooting
+```bash
+python3 -m unittest discover -s scripts/asset-pipeline/tests -v
+```
+
+Set `ANIMAGIC_RUN_BLENDER_INTEGRATION=1` to include the Blender-to-Metal integration smoke test when all required macOS tools are installed.
+
+The repository contains focused XCTest sources under `AnimagicTests`, but the current generated Xcode project defines only the `AniMagic` application target. Wire a dedicated test target before relying on those files through `xcodebuild test`.
+
+## Permissions and troubleshooting
+
+AniMagic uses the following capabilities at runtime:
+
+- **Camera** for AR world tracking and placement.
+- **Photo Library Add** for saving artwork to Photos.
+- **Microphone** is declared for camera video capture flows.
+
+If camera access is denied, enable it from **Settings → Privacy & Security → Camera → AniMagic**.
 
 ### The Core ML model cannot be loaded
 
-- Confirm that `AnimalSpeciesClassifierV4.mlpackage` exists under `Animagic/Resources/Models`.
-- Confirm target membership and the exact resource name.
-- Clean the build folder and rebuild.
+- Confirm `Animagic/Resources/Models/AnimalSpeciesClassifierV4.mlpackage` exists.
+- Confirm the resource is included in the **AniMagic** target.
+- Clean the build folder and rebuild so Xcode recompiles the model.
 
-### AR does not start or cannot find a surface
+### AR cannot find a surface
 
 - Use a physical ARKit-compatible device.
 - Grant camera access.
 - Move the device slowly in a well-lit area with visible surface detail.
-- Use Retry if the AR session reports a recoverable failure.
+- Wait for the tracking status to become ready before placing an object.
+
+### The generated project is out of date
+
+Run `./generate-project.sh --check`. If it fails, run `./generate-project.sh`, then review both `project.yml` and `AniMagic.xcodeproj/project.pbxproj`.
 
 ### Xcode reports a capitalization mismatch
 
-Preserve the repository's exact capitalization:
+Preserve the repository's exact casing:
 
 - Project: `AniMagic.xcodeproj`
 - Source directory: `Animagic`
 
 Do not rename one without updating `project.yml` and regenerating the project.
 
-### The generated project is out of date
+## Documentation
 
-Run `./generate-project.sh`, then review and commit both `project.yml` and `AniMagic.xcodeproj/project.pbxproj`.
-
-## Development notes
-
-- Keep application navigation in `AppRoute` and `NavigationRouter`.
-- Put feature-specific code under `Animagic/Features/<FeatureName>`.
-- Put reusable image processing, persistence, models, and rendering infrastructure under `Animagic/Core`.
-- Preserve manual drawing names when applying AI-generated names.
-- Test AR and Apple Pencil changes on physical hardware before release.
-
-## License
-
-This repository does not currently include a license file. Unless a license is added, permission to copy, modify, or redistribute the project is not granted automatically.
+- [Hand Drawing to Animated AR](docs/HAND_DRAWING_TO_ANIMATED_AR.md) — the end-to-end PencilKit, Core ML, procedural cutout, motion, and AR pipeline.
+- [ARKit & RealityKit Architecture Deep Dive](docs/ARKIT_REALITYKIT_DEEP_DIVE.md) — AR session lifecycle, raycasting, entity composition, interaction, Metal deformation, and motion simulation.
+- [AR Asset Pipeline](docs/asset-pipeline/README.md) — source-of-truth rules for Blender-to-USDZ delivery.
+- [Blender to USDZ](docs/asset-pipeline/BLENDER_TO_USDZ.md) — the scripted conversion workflow and mobile budgets.
+- [USDZ Validation and Troubleshooting](docs/asset-pipeline/VALIDATION_AND_TROUBLESHOOTING.md) — structural, dependency, shader, geometry, and Metal-render checks.
+- [AniMagic Scripts](scripts/README.md) — texture resizing and the `ar-asset` command reference.
